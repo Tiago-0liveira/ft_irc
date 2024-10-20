@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     struct pollfd server_pollfd;
     server_pollfd.fd = server_fd;
     server_pollfd.events = POLLIN;  // Ready to read incoming connection
-    fds.push_back(server_pollfd);
+        fds.emplace_back(server_pollfd);
 
     while (true) {
         int poll_count = poll(fds.data(), fds.size(), -1);  // Wait indefinitely
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
             struct pollfd new_pollfd;
             new_pollfd.fd = new_socket;
             new_pollfd.events = POLLIN;
-            fds.push_back(new_pollfd);
+            fds.emplace_back(new_pollfd);
 
             std::cout << "New client connected, socket fd: " << new_socket << std::endl;
         }
