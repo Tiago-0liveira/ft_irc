@@ -71,6 +71,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+
+	LOG("ola")
 	bool err = false;
 	int port = parse_port(argv[1], err);
 	if (err)

@@ -2,7 +2,7 @@ NAME = ircserv
 CC = @c++
 CFLAGS = -Wall -Wextra -Werror -g -std=c++98 $(INCLUDES)
 
-includefolder = includes/
+includefolder = include/
 INCLUDES = -I $(includefolder)
 
 SRC_FOLDER = src/
