@@ -17,9 +17,6 @@
 
 #define LOG(x) std::cout << "LOG::" <<  __FILE__ << ":" << __LINE__ << "|" << x << std::endl;
 
-class Server {
-
-};
 
 class Client {
 
