@@ -12,8 +12,8 @@ public:
     ~Message();
 
 private:
-    std::string _prefix, _command, _trailing;
-    std::vector<std::string>_params;
+    std::string _prefix, _command, _args;
+    // std::vector<std::string>_params;
 };
 
 #endif // !MESSAGE

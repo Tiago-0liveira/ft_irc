@@ -19,13 +19,17 @@ std::vector<std::string>strSplit(std::string const&s, char delim){
 
 Message::Message(std::string& input){
     std::vector<std::string> lines;
-    if (input.find(":") == std::string::npos)
-        lines = strSplit(input, ':');
-    if (lines[0].size() == 0)
-        lines.erase(lines.begin());
-    std::vector<std::string>args = strSplit(lines[0], ' ');
-    _prefix = args[0];
-    _command = args[0]; 
+    if (input.find(":") == std::string::npos){
+            lines = strSplit(input, ':');
+        if (lines[0].size() == 0)
+            lines.erase(lines.begin());
+        std::vector<std::string>args = strSplit(lines[0], ' ');
+        _prefix = args[0];
+        _command = args[0]; 
+    }
+    lines = strSplit(input, ' ');
+    _command = lines[0];
+    _args = lines[1];
 }
 
 Message::Message(const Message & src){
