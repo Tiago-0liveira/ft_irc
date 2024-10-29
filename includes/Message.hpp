@@ -10,9 +10,9 @@ public:
     Message(const Message & src);
     Message &operator=(const Message & rhs); 
     ~Message();
+    std::string _prefix, _command, _args;
 
 private:
-    std::string _prefix, _command, _args;
     // std::vector<std::string>_params;
 };
 
