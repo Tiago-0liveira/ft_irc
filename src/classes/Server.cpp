@@ -1,5 +1,4 @@
 #include <Server.hpp>
-#include <string.h>
 
 std::string Server::HELP_MESSAGE = 
 	"\nList of Commands:\n"
@@ -57,11 +56,6 @@ Server &Server::operator=(const Server &rhs)
 	return *this;
 }
 
-/* TODO: remove this, should use Client.sendMessage() or something like that */
-inline void sendMessage(int clientSocket, const std::string& message) {
-    send(clientSocket, message.c_str(), message.length(), 0);
-}
-
 void Server::start()
 {
 	while (true) { /* stop if ctrl+c */
@@ -78,7 +72,6 @@ void Server::start()
 				char buffer[BUFFER_SIZE];
 				memset(buffer, 0, BUFFER_SIZE);
 
-				// Read data only if POLLIN is set
 				int bytesRead = recv(clientSocket, buffer, BUFFER_SIZE, 0);
 				if (bytesRead <= 0) {
 					std::cout << "Client disconnected fd: " << clientSocket << std::endl;

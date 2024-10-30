@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <irc.hpp>
 #include <poll.h>
+#include <cstring>
+#include <misc.hpp>
 
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE ((int)1024 * (int)2)
@@ -38,9 +40,10 @@ private:
 	int m_port;
 	int m_socket;
 	std::string m_password;
-	std::map<int, std::string> m_clients;
 	struct sockaddr_in m_address;
+	std::map<int, std::string> m_clients;
 	std::vector<pollfd> m_pollFds;
+	std::vector<Channel> m_channels;
 };
 
 
