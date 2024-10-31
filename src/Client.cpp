@@ -11,6 +11,7 @@ Client::Client(std::string& nick, std::string& user, int fd)
 {
     return ;
 }
+
 Client::Client(const Client& src){
     return ;
 }
@@ -75,6 +76,10 @@ const Channel* Client::getCurrChan(void)const{
     return _currChan;
 }
 
+const Server* Client::getServer(void)const{
+    return _serv;
+}
+
 void Client::setFd(int fd){
     _fd = fd;
 }
@@ -123,3 +128,8 @@ void Client::setIsOper(void){
 void Client::setCurrChan(Channel& curr){
     _currChan = &curr;
 }
+
+void Client::setServer(Server& serv){
+    _serv = &serv;
+}
+
