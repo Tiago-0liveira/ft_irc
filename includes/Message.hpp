@@ -1,8 +1,8 @@
 #ifndef MESSAGE
 #define MESSAGE
 
+#include <deque>
 #include <string>
-#include <vector>
 
 class Message {
 public:
@@ -10,10 +10,15 @@ public:
     Message(const Message & src);
     Message &operator=(const Message & rhs); 
     ~Message();
-    std::string _prefix, _command, _args;
-
+    void setPrefix(std::string const& prefix);
+    void setCommand(std::string const& command);
+    void setArgs(std::deque<std::string> const& args);
+    std::string const& getPrefix(void)const;
+    std::string const& getCommand(void)const;
+    std::deque<std::string> const& getArgs(void)const;
 private:
-    // std::vector<std::string>_params;
+    std::string _prefix, _command;
+    std::deque<std::string>_args;
 };
 
 #endif // !MESSAGE
