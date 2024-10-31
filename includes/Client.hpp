@@ -2,8 +2,10 @@
 #define CLIENT
 
 #pragma once 
+
 #include <string>
 class Channel;
+class Server;
 
 class Client {
     public:
@@ -21,10 +23,9 @@ class Client {
         const std::string& getServ(void)const;
         const time_t* lastActiveWhen(void);
         const bool    getStatus(void)const;
-        const bool    isAuth(void)const;
-        const bool    isUserd(void)const;
         const bool    isOper(void)const;
         const Channel* getCurrChan(void)const;
+        const Server*  getServer(void)const;
 
         void setFd(int fd);
         void setHost(std::string& host);
@@ -35,23 +36,17 @@ class Client {
         void setServ(std::string& serv);
         void setLastActive(time_t& when);
         void setStatus(void);
-        void setIsAuth(void);
-        void setIsUser(void);
         void setIsOper(void);
         void setCurrChan(Channel& curr);
+        void setServer(Server& serv);
     private:
         int _fd;
-        std::string _hostname;
-        std::string _realname;
-        std::string _nickname;
-        std::string _username; 
-        std::string _mode;
+        std::string _hostname, _realname, _nickname, _username, _mode;
         std::string _passwd;
         std::string _servername;
+        Server      *_serv;
         time_t      *_lastActive;
         bool        _status;
-        bool        _isAuth;
-        bool        _isUserd;
         bool        _isOper;
         Channel     *_currChan;
 };
