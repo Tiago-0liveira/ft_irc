@@ -6,6 +6,16 @@
 //TODO: parser for generating messages types to feed specific
 //command parsers 
 
+std::string trimSpace(std::string const& input)
+{
+    const char* s = " \t\n\r\f\v";
+    int end  =  input.find_last_not_of(s);
+    int start =  input.find_first_not_of(s);
+    if (start == end)
+        return input;
+    return input.substr(start, end - start + 1);
+}
+
 //basic string splitter
 std::deque<std::string>strSplit(std::string const&s, char delim){
     std::deque<std::string> res;
@@ -20,8 +30,11 @@ std::deque<std::string>strSplit(std::string const&s, char delim){
 Message::Message(std::string& input){
     std::deque<std::string> prefixCommandsArgs, lines, args;
     std::string prefix, command;
+
+    std::string cleanStr = trimSpace(input);
+
     //Split the message by ':'
-    lines = strSplit(input, ':');
+    lines = strSplit(cleanStr, ':');
     //if the 1st string is empty it means the msg starts with ':'
     //thus it includes prefix
     if (lines[0].size() == 0){
