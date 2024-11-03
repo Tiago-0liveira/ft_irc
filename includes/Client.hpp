@@ -23,22 +23,26 @@ class Client {
         const std::string& getServ(void)const;
         const time_t* lastActiveWhen(void);
         const bool    getStatus(void)const;
+        const bool    isAuth(void)const;
+        const bool    isReg(void)const;
         const bool    isOper(void)const;
         const Channel* getCurrChan(void)const;
         const Server*  getServer(void)const;
 
         void setFd(int fd);
-        void setHost(std::string& host);
-        void setNick(std::string& nick);
-        void setUser(std::string& user);
-        void setMode(std::string& mode);
-        void setPass(std::string& pass);
-        void setServ(std::string& serv);
+        void setHost(std::string const& host);
+        void setNick(std::string const& nick);
+        void setUser(std::string const& user);
+        void setMode(std::string const& mode);
+        void setReg(void);
+        void setAuth(void);
+        void setPass(std::string const& pass);
+        void setServ(std::string const& serv);
         void setLastActive(time_t& when);
         void setStatus(void);
         void setIsOper(void);
-        void setCurrChan(Channel& curr);
-        void setServer(Server& serv);
+        void setCurrChan(Channel const& curr);
+        void setServer(Server const& serv);
     private:
         int _fd;
         std::string _hostname, _realname, _nickname, _username, _mode;
@@ -46,6 +50,8 @@ class Client {
         std::string _servername;
         Server      *_serv;
         time_t      *_lastActive;
+        bool        _auth;
+        bool        _reg;
         bool        _status;
         bool        _isOper;
         Channel     *_currChan;
