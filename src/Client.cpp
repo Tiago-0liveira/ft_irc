@@ -61,11 +61,11 @@ const bool    Client::getStatus(void)const{
 }
 
 const bool    Client::isAuth(void)const{
-    return _isAuth;
+    return _auth;
 }
 
-const bool    Client::isUserd(void)const{
-    return _isUserd;
+const bool    Client::isReg(void)const{
+    return _reg;
 }
 
 const bool    Client::isOper(void)const{
@@ -116,11 +116,11 @@ void Client::setStatus(void){
     _status = true;
 }
 
-void Client::setIsAuth(void){
-    _isAuth = true;
+void Client::setAuth(void){
+    _auth = true;
 }
-void Client::setIsUser(void){
-    _isUserd = true;
+void Client::setReg(void){
+    _reg = true;
 }
 void Client::setIsOper(void){
     _isOper = true;
