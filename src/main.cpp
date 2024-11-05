@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include <misc.hpp>
-#include <Server.hpp>
+#include "../include/Server.hpp"
 
 
 // Entry point of the IRC server

@@ -1,7 +1,7 @@
-#include "../../includes/errors.hpp"
-#include "../../includes/Client.hpp"
-#include "../../includes/Message.hpp"
-#include "../../includes/Commands.hpp"
+#include "../../include/errors.hpp"
+#include "../../include/Client.hpp"
+#include "../../include/Message.hpp"
+#include "../../include/Commands.hpp"
 
 /*  Command: USER
    Parameters: <username> <hostname> <servername> <realname>

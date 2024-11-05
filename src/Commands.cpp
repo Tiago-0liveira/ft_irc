@@ -1,7 +1,7 @@
-#include "../includes/Commands.hpp"
-#include "../includes/Message.hpp"
-#include "../includes/Client.hpp"
-#include "../includes/irc.hpp"
+#include "../include/Commands.hpp"
+#include "../include/Message.hpp"
+#include "../include/Client.hpp"
+#include "../include/irc.hpp"
 
 //TODO: creating individual function parsers for: 
 //NICK, USER, PASS, JOIN, 

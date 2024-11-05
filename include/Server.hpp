@@ -10,10 +10,10 @@
 #include <vector>
 #include <fcntl.h>
 #include <algorithm>
-#include <irc.hpp>
+#include "irc.hpp"
 #include <poll.h>
 #include <cstring>
-#include <misc.hpp>
+#include "misc.hpp"
 
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE ((int)1024 * (int)2)
@@ -36,7 +36,6 @@ public:
 private:
 	void handleNewConnections();
 	bool handleClientUpdates();
-
 	int m_port;
 	int m_socket;
 	std::string m_password;

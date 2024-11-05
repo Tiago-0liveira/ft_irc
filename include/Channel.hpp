@@ -1,9 +1,8 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
+#include "Client.hpp"
 #include <vector>
-#include <algorithm>
-#include <iostream>
 #include <misc.hpp>
 
 class Channel
@@ -35,8 +34,9 @@ public:
 
 private:
     // TODO: change to class Client (for now we're using int)
-    std::vector<int> m_clientsFds;
-    const unsigned int m_id;
+    // DONE(adilson):added Client pointers as members of channels 
+    std::vector<Client *> _member;
+    const unsigned int _id;
 };
 
 #endif

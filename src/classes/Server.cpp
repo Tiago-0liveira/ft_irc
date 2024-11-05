@@ -1,4 +1,4 @@
-#include <Server.hpp>
+#include "../../include/Server.hpp"
 
 std::string Server::HELP_MESSAGE = 
 	"\nList of Commands:\n"

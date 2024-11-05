@@ -1,6 +1,6 @@
-#include "../../includes/errors.hpp"
-#include "../../includes/Client.hpp"
-#include "../../includes/Message.hpp"
+#include "../../include/errors.hpp"
+#include "../../include/Client.hpp"
+#include "../../include/Message.hpp"
 
 /*
  * Command: NICK
