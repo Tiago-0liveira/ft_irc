@@ -18,21 +18,9 @@
 #define LOG(x) std::cout << "LOG::" <<  __FILE__ << ":" << __LINE__ << "|" << x << std::endl;
 
 
-class Client {
-
-};
-
-class Channel {
-    
-};
-
 
 class User {
 
-};
-
-struct Message {
-    std::string content;
 };
 
 
