@@ -1,4 +1,4 @@
-#include "../include/Client.hpp"
+#include "../../include/Client.hpp"
 
 //TODO: add all the implem of the client class
 
@@ -6,8 +6,8 @@
 Client::Client(void){
     return ;
 }
-Client::Client(std::string& nick, std::string& user, int fd)
-:_nickname(nick), _username(user), _fd(fd)
+Client::Client(int fd)
+:_fd(fd)
 {
     return ;
 }
@@ -84,27 +84,27 @@ void Client::setFd(int fd){
     _fd = fd;
 }
 
-void Client::setHost(std::string& host){
+void Client::setHost(std::string const& host){
     _hostname = host;
 }
 
-void Client::setNick(std::string& nick){
+void Client::setNick(std::string const& nick){
     _nickname = nick;
 }
 
-void Client::setUser(std::string& user){
+void Client::setUser(std::string const& user){
     _username = user;
 }
 
-void Client::setMode(std::string& mode){
+void Client::setMode(std::string const& mode){
     _mode = mode; 
 }
 
-void Client::setPass(std::string& pass){
+void Client::setPass(std::string const& pass){
     _passwd = pass; 
 }
 
-void Client::setServ(std::string& serv){
+void Client::setServ(std::string const& serv){
     _servername = serv;
 }
 

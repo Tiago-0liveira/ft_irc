@@ -10,7 +10,7 @@ class Server;
 class Client {
     public:
         Client(void);
-        Client(std::string& nick, std::string& user, int fd);
+        Client(int fd);
         Client(const Client& src);
         Client& operator=(const Client& rhs);
         ~Client(void);
@@ -41,8 +41,8 @@ class Client {
         void setLastActive(time_t& when);
         void setStatus(void);
         void setIsOper(void);
-        void setCurrChan(Channel const& curr);
-        void setServer(Server const& serv);
+        void setCurrChan(Channel & curr);
+        void setServer(Server & serv);
     private:
         int _fd;
         std::string _hostname, _realname, _nickname, _username, _mode;
