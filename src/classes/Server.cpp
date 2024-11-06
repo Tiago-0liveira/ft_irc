@@ -1,4 +1,14 @@
 #include "../../include/Server.hpp"
+#include "../../include/errors.hpp"
+#include "../../include/Message.hpp"
+#include <algorithm>
+#include <cctype>
+#include <map>
+#include <netinet/in.h>
+#include <stdexcept>
+#include <sys/poll.h>
+#include <iostream>
+#include "../../include/Commands.hpp"
 
 std::string Server::HELP_MESSAGE = 
 	"\nList of Commands:\n"
@@ -58,75 +68,94 @@ Server &Server::operator=(const Server &rhs)
 
 void Server::start()
 {
+    m_pollFds.reserve(MAX_CLIENTS + 1);
+    m_pollFds[0].fd = m_socket; 
+    m_pollFds[0].events = POLLIN;
+    m_fdNum = 1;
+
 	while (true) { /* stop if ctrl+c */
-		int pollCount = poll(m_pollFds.data(), m_pollFds.size(), -1);
-		if (pollCount == -1) {
-			std::cerr << "Poll error" << std::endl;
-			break;
-		}
-		handleNewConnections();
+		int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
+		if (pollCount == -1)
+            std::runtime_error("Poll error\n");
+        for( size_t i = 1; i < m_fdNum; ++i){
+            if (m_pollFds[i].revents & POLLIN){
+                if (m_pollFds[i].fd == m_socket){
+                    handleNewConnections();
+                    if (addNewFd(m_newFd)){
+                        m_clients.push_back(new Client(m_newFd));
+                        break ;
+                    }
+                }
+            }
+            receiveData(i);
+        }
 
-		for (size_t i = 1; i < m_pollFds.size(); ++i) {
-			if (m_pollFds[i].revents & POLLIN) {
-				int clientSocket = m_pollFds[i].fd;
-				char buffer[BUFFER_SIZE];
-				memset(buffer, 0, BUFFER_SIZE);
-
-				int bytesRead = recv(clientSocket, buffer, BUFFER_SIZE, 0);
-				if (bytesRead <= 0) {
-					std::cout << "Client disconnected fd: " << clientSocket << std::endl;
-					close(clientSocket);
-					m_pollFds.erase(m_pollFds.begin() + i);
-					m_clients.erase(clientSocket);
-					--i;
-				} else {
-					m_clients[clientSocket] += std::string(buffer, bytesRead);
-
-					// Process message with basic command handling
-					std::string& message = m_clients[clientSocket];
-					if (message.find("\n") != std::string::npos) {
-						std::string command = message.substr(0, message.find("\n"));
-						message.erase(0, message.find("\n") + 1);
-
-						if (command == "HELP") {
-							sendMessage(clientSocket, HELP_MESSAGE);
-						} else if (command == "QUIT") {
-							close(clientSocket);
-							m_pollFds.erase(m_pollFds.begin() + i);
-							m_clients.erase(clientSocket);
-							--i;
-						} else {
-							sendMessage(clientSocket, "Unknown command\n");
-						}
-					}
-				}
-			}
-		}
 	}
 }
 
-void Server::handleNewConnections()
-{
-	if (m_pollFds[0].revents & POLLIN) {
-		sockaddr_in clientAddr;
-		socklen_t clientAddrSize = sizeof(clientAddr);
-		int clientSocket = accept(m_socket, (struct sockaddr*)&clientAddr, &clientAddrSize);
-
-		if (clientSocket == -1) {
-			std::cerr << "Failed to accept client" << std::endl;
-			return;
-		}
-
-		// Add new client to poll list (no need to set non-blocking mode)
-		m_pollFds.push_back((pollfd){clientSocket, POLLIN | POLLOUT, 0});
-		m_clients[clientSocket] = "";  // Initialize client buffer
-		std::cout << "New connection from " << inet_ntoa(clientAddr.sin_addr) << " fd: " << clientSocket << std::endl;
-	} 
+bool Server::addNewFd(int newfd){
+    if (m_fdNum == MAX_CLIENTS + 1){
+        std::string msg = ERR_SERVERISFULL(m_name);
+        sendMessage(newfd, msg);
+        return false;
+    }
+    m_pollFds[m_fdNum].fd = m_newFd;
+    m_pollFds[m_fdNum].events = POLLIN;
+    m_fdNum++;
+    return true;
 }
 
-bool Server::handleClientUpdates()
+bool Server::receiveData(int idx){
+    char buf[BUFFER_SIZE];
+
+    memset(buf, 0, BUFFER_SIZE);
+    int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
+    if (bytesRead <= 0){
+        std::cout <<"Client disconnected\n";
+        m_pollFds.erase(m_pollFds.begin() + idx);
+        // m_clients.erase(client.begin() + idx);
+    }
+    if (bytesRead < 0)
+        throw std::runtime_error(strerror(errno));
+    std::string msgStr(buf);
+    Message strToMsg(msgStr);
+    handleClientUpdates(strToMsg, *m_clients[idx]);
+    return true;
+}
+bool Server::deleteFd(int fd){
+    int i = 0;
+    for(; i < m_fdNum; i++){
+        if (m_pollFds[i].fd == fd)
+            break;
+    }
+    m_pollFds.erase(m_pollFds.begin() + i);
+    return true;
+}
+void Server::handleNewConnections()
 {
-	return false;
+		sockaddr_in clientAddr;
+		socklen_t clientAddrSize = sizeof(clientAddr);
+		m_newFd = accept(m_socket, (struct sockaddr*)&clientAddr, &clientAddrSize);
+
+		if (m_newFd == -1)
+            throw std::runtime_error(strerror(errno));
+        std::cout << "new client "<< m_newFd
+            << "from "<< inet_ntoa(clientAddr.sin_addr)
+            << ":" << ntohs(clientAddr.sin_port)<<"\n";
+}
+
+bool Server::handleClientUpdates(Message& msg, Client& cli)
+{
+    std::string command(msg.getCommand());
+    std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+
+    std::map<std::string, FuncPtr>m;
+
+    m["PASS"] = passCommand;
+    m["USER"] = userCommand;
+    m["NICK"] = nickCommand;
+
+    return true;
 }
 
 int Server::getPort() const

@@ -13,7 +13,9 @@
 #include "irc.hpp"
 #include <poll.h>
 #include <cstring>
+#include "Client.hpp"
 #include "misc.hpp"
+#include "Message.hpp"
 
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE ((int)1024 * (int)2)
@@ -35,12 +37,18 @@ public:
 
 private:
 	void handleNewConnections();
-	bool handleClientUpdates();
+	bool handleClientUpdates(Message& msg, Client& cli);
+    bool receiveData(int index);
+    bool addNewFd(int newfd); 
+    bool deleteFd(int fd);
 	int m_port;
 	int m_socket;
+    int m_newFd;
+    int m_fdNum;
+    std::string m_name;
+    std::vector<Client*>m_clients;
 	std::string m_password;
 	struct sockaddr_in m_address;
-	std::map<int, std::string> m_clients;
 	std::vector<pollfd> m_pollFds;
 	std::vector<Channel> m_channels;
 };
