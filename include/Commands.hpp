@@ -4,6 +4,8 @@
 #include "Client.hpp"
 #include "Message.hpp"
 
+typedef void (*FuncPtr)(Client& cli, Message& msg );
+
 
 void passCommand(Client& cli, Message& msg);
 void nickCommand(Client& cli, Message& msg);
