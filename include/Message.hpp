@@ -4,6 +4,8 @@
 #include <deque>
 #include <string>
 
+#define MSG_PRF ":"
+#define MSG_END "\r\n"
 class Message {
 public:
     Message(std::string& input);
@@ -15,8 +17,7 @@ public:
     void setArgs(std::deque<std::string> const& args);
     std::string const& getPrefix(void)const;
     std::string const& getCommand(void)const;
-    std::deque<std::string> const& getArgs(void)const;
-private:
+    // std::deque<std::string> const& getArgs(void)const;
     std::string _prefix, _command;
     std::deque<std::string>_args;
 };

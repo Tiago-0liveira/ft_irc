@@ -6,6 +6,7 @@
 #include <map>
 #include <netinet/in.h>
 #include <stdexcept>
+#include <string>
 #include <sys/poll.h>
 #include <iostream>
 #include "../../include/Commands.hpp"
@@ -154,13 +155,30 @@ bool Server::handleClientUpdates(Message& msg, Client& cli)
     m["PASS"] = passCommand;
     m["USER"] = userCommand;
     m["NICK"] = nickCommand;
+    m["PING"] = pingCommand;
+    m["PONG"] = pongCommand;
 
+    if (m.count(command)){
+        m[command](cli, msg);
+    }
+    else{
+        send_error(cli, ERR_UNKNOWNCOMMAND, msg.getCommand());
+        return false;
+    }
     return true;
 }
 
 int Server::getPort() const
 {
 	return m_port;
+}
+
+void Server::setHost(std::string const& host){
+    m_host = host;
+}
+
+std::string const& Server::getHost(void)const{
+    return m_host;
 }
 
 int Server::getSocketFd() const

@@ -3,9 +3,10 @@
 
 #pragma once
 #include <string>
+#include "Client.hpp"
 
 std::string errmap(int errcode);
-void send_error(Client& cli, int errnum, std::string& arg);
+void send_error(Client& cli, int errnum, const std::string& arg);
 // REPLIES
 # define RPL_WELCOME(nick, user, host) (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
 # define RPL_YOURHOST(servername, version) (":Your host is " + servername + ", running version " + version + "\r\n")

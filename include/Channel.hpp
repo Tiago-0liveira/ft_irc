@@ -1,10 +1,11 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-#include "Client.hpp"
 #include <vector>
-#include <misc.hpp>
+#include "misc.hpp"
 
+
+class Client;
 class Channel
 {
 public:
@@ -39,4 +40,5 @@ private:
     const unsigned int _id;
 };
 
+#include "Client.hpp"
 #endif

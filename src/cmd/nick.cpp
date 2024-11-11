@@ -33,15 +33,24 @@
 
    :WiZ NICK Kilroy                ; WiZ changed his nickname to Kilroy.
 */
-bool checkNick(std::string const& nick){
-    //TODO: check nick 
-}
 
 void nickCommand(Client& cli, Message& msg){
-    if (msg.getArgs().size() == 0){
-        // send_error(cli, ERR_NEEDMOREPARAMS, msg->getCommand());
+    Server *ptr = cli.getServer();
+    if (msg._args.size() == 0){
+        send_error(cli, ERR_NONICKNAMEGIVEN, msg.getCommand());
         return ;
     }
-    cli.setNick(msg.getArgs()[0]);
+    else if (msg._args[0].size() < NICK_MIN_LENGTH
+            || msg._args[0].size() > NICK_MAX_LENGTH){
+        send_error(cli, ERR_ERRONEUSNICKNAME, msg.getCommand());
+        return ;
+    }
+    else if (ptr->m_nickSet.insert(msg._args[0]).second == false){
+        send_error(cli, ERR_NICKNAMEINUSE, msg.getCommand());
+        return ;
+    }
+    cli.setNick(msg._args[0]);
+    cli.setAuth();
+    std::cout<< "User #"<< cli.getFd() << " nick set\n";
 } 
 
