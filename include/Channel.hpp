@@ -29,7 +29,7 @@ class Channel
 		std::string				_channel;
 		std::string				_pass;
 		std::string				_topic;
-		std::string				_modes[5];
+		std::string				_modes[50];
 		std::map<char, t_exe>	_functions;
 		std::vector<Client *>	_member;
 		std::vector<Client *>	_op;
@@ -47,12 +47,12 @@ class Channel
 		bool	removeClient(std::string clientNick);
 		void	topic(std::string topic);
 		void	broadcastMessage(const std::string &message, int exceptFd);
-		Client*	findClient(std::string clientName);
-
+		
 		void	addMode(Client &client, std::string mode, std::string argument);
 		bool	isOp(Client& client);
 		void	addOp(Client &client);
 		void	removeOp(Client& client);
+		Client*	findClient(std::string clientName);
 		void	operatorMode(Client &client, std::string mode, std::string argument);
 
 		//Acessers

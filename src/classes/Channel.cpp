@@ -77,26 +77,12 @@ void Channel::broadcastMessage(const std::string &message, int exceptFd)
 	}
 }
 
-Client* Channel::findClient(std::string clientNick)
-{
-	std::vector<Client*>::iterator find;
-
-	for (find = _member.begin(); find != _member.end(); ++find)
-	{
-		if (clientNick.compare((*find)->getNick()) == 0)
-			return (*find);
-	}
-	return (NULL);
-}
-
-
 void Channel::addMode(Client &client, std::string mode, std::string argument)
 {
 	std::map<char, t_exe>::const_iterator	found = _functions.find(mode[1]);
 	if (found != _functions.end() && mode.size() == 2)
 		(this->*(found->second))(client, mode, argument);
 }
-
 
 bool Channel::isOp(Client& client)
 {
@@ -127,28 +113,38 @@ void Channel::removeOp(Client& client)
 		_op.push_back(_member[0]);
 }
 
+// Client* Channel::findClient(std::string clientNick)
+// {
+// 	std::vector<Client*>::iterator find;
+
+// 	for (find = _member.begin(); find != _member.end(); ++find)
+// 	{
+// 		if (clientNick.compare((*find)->getNick()) == 0)
+// 			return (*find);
+// 	}
+// 	return (NULL);
+// }
+
 void Channel::operatorMode(Client &client, std::string mode, std::string argument)
 {
-	std::string str;
+	//std::string str;
 	if (argument.empty())
 		return ;
-	Client *argClient = this->findClient(argument);
-	if (mode[0] == '+' && argClient && !this->isOp(*argClient))
+	if (mode[0] == '+' && !this->isOp(client))
 	{
-		std::cout << "Mode " << mode << " : " <<  client.getNick() << " was promoted to operator of channel " << _channel << std::endl;
+		std::cout << "Mode " << mode << ": " << client.getNick() << " was promoted to operator of channel " << _channel << std::endl;
 		//str = format("Mode %s: %s was promoted to operator of channel %s", mode,, );
 		//broadcastMessage(str, argClient->getFd());
-		addOp(*argClient);
+		addOp(client);
 	}
-	else if (mode[0] == '-' && argClient && this->isOp(*argClient) && _op.size() > 1)
+	else if (mode[0] == '-' && this->isOp(client) && _op.size() > 0)
 	{
-		str = format("Mode %s: %s is no longer a operator of channel %s", mode, client.getNick(), _channel);
-		
+		//str = format("Mode %s: %s is no longer a operator of channel %s", mode, client.getNick(), _channel);
 		//broadcastMessage(str, argClient->getFd());
-		removeOp(*argClient);
+		std::cout << "Mode " << mode << ": " << client.getNick() << " is no longer a operator of channel " << _channel << std::endl;
+		removeOp(client);
 	}
 }
-
 
 std::vector<Client *>	&Channel::getMembers()
 {	return (_member);	}
@@ -183,6 +179,7 @@ int main()
 	canal.addClient(toy,"");
 	canal.addClient(taylor,"");
 	canal.addClient(meghan,"");
+	canal.addMode(meghan, "+o", "added as an operator");
 
 	std::cout << std::endl;
 	std::vector<Client*>::iterator it;
@@ -192,7 +189,6 @@ int main()
 		std::cout << (*it)->getNick() << ", ";
 	std::cout << std::endl;
 
-	canal.addOp(meghan);
 	std::cout << PURPLE << "Opratores of " << canal.getName() << ":  " << RESET;
 	for(it = canal.getOp().begin(); it != canal.getOp().end(); ++it)
 		std::cout << (*it)->getNick() << ", ";
@@ -201,12 +197,13 @@ int main()
 
 	std::cout << GREEN << "<<<<<<<<<<<<<<<<<<<<<<<< Remove >>>>>>>>>>>>>>>>>>>>>>>>" << RESET << std::endl;
 	canal.removeClient("Taylor");
+	canal.addMode(toy, "-o", "remove operator");
+	
 	std::cout << std::endl << CYAN << "Members of " << canal.getName() << ": " << RESET;
 	for(it = canal.getMembers().begin(); it != canal.getMembers().end(); ++it)
 		std::cout << (*it)->getNick() << ", ";
 	std::cout << std::endl;
-
-	canal.removeOp(toy);
+	
 	std::cout << PURPLE << "Opratores of " << canal.getName() << ":  " << RESET;
 	for(it = canal.getOp().begin(); it != canal.getOp().end(); ++it)
 		std::cout << (*it)->getNick() << ", ";
