@@ -164,8 +164,6 @@ std::string	Channel::getTopic() const
 void	Channel::setTopic(std::string topic)
 {	this->_topic = topic;	}
 
-std::string	Channel::getMode(char mode)
-{	return _modes[(int)mode];	}
 
 int main() 
 {

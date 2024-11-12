@@ -29,7 +29,6 @@ class Channel
 		std::string				_channel;
 		std::string				_pass;
 		std::string				_topic;
-		std::string				_modes[50];
 		std::map<char, t_exe>	_functions;
 		std::vector<Client *>	_member;
 		std::vector<Client *>	_op;
