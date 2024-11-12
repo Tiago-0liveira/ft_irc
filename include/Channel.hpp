@@ -2,41 +2,67 @@
 #define CHANNEL_H
 
 #include "Client.hpp"
+#include "Server.hpp"
 #include <vector>
+#include <map>
+#include <iostream>
 #include <misc.hpp>
+
+# define RESET "\033[0m"
+# define RED "\033[0;31m"
+# define GREEN "\033[0;32m"
+# define YELLOW "\033[0;33m"
+# define BLUE "\033[0;34m"
+# define PURPLE "\033[0;35m"
+# define CYAN "\033[0;36m"
+
+class Client;
+class Server;
 
 class Channel
 {
-public:
-    static std::string JOIN_MESSAGE;
-    static std::string LEAVE_MESSAGE;
+	private:
+		// TODO: change to class Client (for now we're using int)
+		// DONE(adilson):added Client pointers as members of channels 
+		typedef void	(Channel::*t_exe)(Client&, std::string, std::string);
+		
+		std::string				_channel;
+		std::string				_pass;
+		std::string				_topic;
+		std::string				_modes[5];
+		std::map<char, t_exe>	_functions;
+		std::vector<Client *>	_member;
+		std::vector<Client *>	_op;
 
-    Channel(unsigned int id);
-    ~Channel();
-    Channel(const Channel &cpy);
-    Channel &operator=(const Channel &rhs);
+	public:
+		static std::string JOIN_MESSAGE;
+		static std::string LEAVE_MESSAGE;
+		static std::string TOPIC_MESSAGE;
 
-    void addClient(int fd);
-    /* 
-        @return
-            - 1 if fd exists and removes it from the channel sending a message to all others saying he left
+		Channel(std::string name);
+		~Channel();
 
-            - 0 if fd does not exist
-     */
-    bool removeClient(int fd);
-    /* 
-        @param message: the message that will be broadcasted
-        @param exceptFd: if different than 0 will not broadcast message to that fd
-     */
-    void broadcastMessage(const std::string &message, int exceptFd = 0);
+		//Member functions
+		void	addClient(Client& client, std::string password);
+		bool	removeClient(std::string clientNick);
+		void	topic(std::string topic);
+		void	broadcastMessage(const std::string &message, int exceptFd);
+		Client*	findClient(std::string clientName);
 
-    unsigned int getId() const;
+		void	addMode(Client &client, std::string mode, std::string argument);
+		bool	isOp(Client& client);
+		void	addOp(Client &client);
+		void	removeOp(Client& client);
+		void	operatorMode(Client &client, std::string mode, std::string argument);
 
-private:
-    // TODO: change to class Client (for now we're using int)
-    // DONE(adilson):added Client pointers as members of channels 
-    std::vector<Client *> _member;
-    const unsigned int _id;
+		//Acessers
+		std::vector<Client *>	&getMembers();
+		std::vector<Client *>	&getOp();
+		std::string				getName();
+		std::string 			getpass();
+		std::string				getTopic() const;
+		void					setTopic(std::string topic);
+		std::string				getMode(char mode);
 };
 
 #endif

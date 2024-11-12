@@ -14,6 +14,9 @@ class Client {
         Client(const Client& src);
         Client& operator=(const Client& rhs);
         ~Client(void);
+
+        //friend class Channel;
+
         const int&         getFd(void)const;
         const std::string& getHost(void)const;
         const std::string& getNick(void)const;
@@ -22,10 +25,10 @@ class Client {
         const std::string& getPass(void)const;
         const std::string& getServ(void)const;
         const time_t* lastActiveWhen(void);
-        const bool    getStatus(void)const;
-        const bool    isAuth(void)const;
-        const bool    isReg(void)const;
-        const bool    isOper(void)const;
+        bool    getStatus(void)const;
+        bool    isAuth(void)const;
+        bool    isReg(void)const;
+        bool    isOper(void)const;
         const Channel* getCurrChan(void)const;
         const Server*  getServer(void)const;
 
@@ -43,7 +46,9 @@ class Client {
         void setIsOper(void);
         void setCurrChan(Channel & curr);
         void setServer(Server & serv);
+
     private:
+
         int _fd;
         std::string _hostname, _realname, _nickname, _username, _mode;
         std::string _passwd;
