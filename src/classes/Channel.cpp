@@ -7,7 +7,7 @@ std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
 
 Channel::Channel(std::string name): _channel(name), _pass(""), _topic(""), _op()
 {
-	_functions['o'] = &Channel::operatorMode;
+	_modes['o'] = &Channel::operatorMode;
 }
 
 Channel::~Channel()
@@ -79,8 +79,8 @@ void Channel::broadcastMessage(const std::string &message, int exceptFd)
 
 void Channel::addMode(Client &client, std::string mode, std::string argument)
 {
-	std::map<char, t_exe>::const_iterator	found = _functions.find(mode[1]);
-	if (found != _functions.end() && mode.size() == 2)
+	std::map<char, t_exe>::const_iterator	found = _modes.find(mode[1]);
+	if (found != _modes.end() && mode.size() == 2)
 		(this->*(found->second))(client, mode, argument);
 }
 
