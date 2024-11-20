@@ -82,6 +82,11 @@ const Server* Client::getServer(void)const{
     return _serv;
 }
 
+std::vector<std::string> &Client::getChannalInvites(void)
+{
+    return _channel_invites;
+}
+
 void Client::setFd(int fd){
     _fd = fd;
 }

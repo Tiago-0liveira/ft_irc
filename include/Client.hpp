@@ -4,6 +4,7 @@
 #pragma once 
 
 #include <string>
+#include <vector>
 class Channel;
 class Server;
 
@@ -31,6 +32,7 @@ class Client {
         bool    isOper(void)const;
         const Channel* getCurrChan(void)const;
         const Server*  getServer(void)const;
+        std::vector<std::string>  &getChannalInvites(void);
 
         void setFd(int fd);
         void setHost(std::string const& host);
@@ -53,6 +55,7 @@ class Client {
         std::string _hostname, _realname, _nickname, _username, _mode;
         std::string _passwd;
         std::string _servername;
+        std::vector<std::string> _channel_invites;
         Server      *_serv;
         time_t      *_lastActive;
         bool        _auth;
