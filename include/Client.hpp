@@ -1,6 +1,7 @@
 #ifndef CLIENT
 #define CLIENT
 
+#include <vector>
 #pragma once 
 
 #include <string>
@@ -27,11 +28,11 @@ class Client {
         const std::string& getMode(void)const;
         const std::string& getPass(void)const;
         const time_t* lastActiveWhen(void);
-        const bool    getStatus(void)const;
-        const bool    isAuth(void)const;
-        const bool    isPasswordSet(void)const;
-        const bool    isReg(void)const;
-        const bool    isOper(void)const;
+        bool getStatus(void)const;
+        bool isAuth(void)const;
+        bool isPasswordSet(void)const;
+        bool isReg(void)const;
+        bool isOper(void)const;
         const Channel* getCurrChan(void)const;
         Server*  getServer(void);
 

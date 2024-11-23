@@ -17,6 +17,7 @@ Client::Client(const Client& src){
 }
 
 Client& Client::operator=(const Client& rhs){
+
     return *this;
 }
 
@@ -60,19 +61,19 @@ const time_t* Client::lastActiveWhen(void){
     return _lastActive;
 }
 
-const bool    Client::getStatus(void)const{
+bool Client::getStatus(void)const{
     return _status;
 }
 
-const bool    Client::isAuth(void)const{
+bool Client::isAuth(void)const{
     return _auth;
 }
 
-const bool    Client::isReg(void)const{
+bool Client::isReg(void)const{
     return _reg;
 }
 
-const bool    Client::isOper(void)const{
+bool Client::isOper(void)const{
     return _isOper;
 }
 

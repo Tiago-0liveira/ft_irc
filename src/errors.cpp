@@ -6,8 +6,6 @@
 #include "../include/errors.hpp"
 
 
-
-
 std::string errmap(int errcode){
     static std::map<int, std::string> m;
 
@@ -43,6 +41,7 @@ std::string errmap(int errcode){
     m[ERR_PASSWDMISMATCH] = " :Password incorrect";
 
     return m[errcode];
+
 }
 
 void send_error(Client& cli, int errnum,  const std::string& arg){

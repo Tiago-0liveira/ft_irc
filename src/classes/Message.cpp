@@ -1,4 +1,4 @@
-#include "../include/Message.hpp"
+#include "../../include/Message.hpp"
 #include <sstream>
 #include <string>
 #include <deque>
@@ -38,6 +38,7 @@ Message::Message(std::string& input){
     //if the 1st string is empty it means the msg starts with ':'
     //thus it includes prefix
     if (lines[0].size() == 0){
+        // lines.erase(lines.begin() + 0);
         prefixCommandsArgs = strSplit(lines[1], ' ');
         _prefix = prefixCommandsArgs.front();
         prefixCommandsArgs.pop_front();
@@ -87,9 +88,13 @@ std::string const& Message::getPrefix(void)const{
 
 std::string const& Message::getCommand(void)const{
     return _command;
+
+    std::string h("helo helo");
 }
 
 std::deque<std::string> const& Message::getArgs(void)const{
     return _args;
 }
+
+
 

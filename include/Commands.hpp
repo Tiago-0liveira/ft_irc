@@ -11,6 +11,9 @@ void nickCommand(Client& cli, Message& msg);
 void userCommand(Client& cli, Message& msg);
 void pingCommand(Client& cli, Message& msg);
 void pongCommand(Client& cli, Message& msg);
+void privmsgCommand(Client& cli, Message& msg);
+void noticeCommand(Client& cli, Message& msg);
+// void pongCommand(Client& cli, Message& msg);
 
 
 

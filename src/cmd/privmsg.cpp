@@ -49,15 +49,15 @@
 //                             ; Message to all users who come from a
 //                             host which has a name matching *.edu.
 
-void brodcastToChannel(Client& cli, Message& msg, Channel& chan){
-    while(curr->cli, != cli){
-        sendMessage()
-    }
-}
-
 void privmsg(Client& cli, Message& msg){
+    Server* ptr = cli.getServer();
     if (msg._args.empty())
             return send_error(cli, ERR_NORECIPIENT, msg.getCommand());
     else if (msg._args.size() < 2)
         return send_error(cli, ERR_NOTEXTTOSEND, msg.getCommand());
+    else if (ptr->m_nickSet.count(msg._args[0]) == 0)
+        return send_error(cli, ERR_NOSUCHNICK, msg.getCommand());
+    //deal with channels modes or channel not existing
+    // sendMessage(cli.getFd(), )
+    // std::cout<< "User #"<< cli.getFd() << " sent mes\n";
 }
