@@ -5,6 +5,7 @@
 #pragma once 
 
 #include <string>
+#include <vector>
 class Channel;
 class Server;
 
@@ -19,6 +20,9 @@ class Client {
         Client(const Client& src);
         Client& operator=(const Client& rhs);
         ~Client(void);
+
+        //friend class Channel;
+
         const int&         getFd(void)const;
         const std::string& getHost(void)const;
         const std::string& getNick(void)const;
@@ -28,13 +32,13 @@ class Client {
         const std::string& getMode(void)const;
         const std::string& getPass(void)const;
         const time_t* lastActiveWhen(void);
-        bool getStatus(void)const;
-        bool isAuth(void)const;
-        bool isPasswordSet(void)const;
-        bool isReg(void)const;
-        bool isOper(void)const;
+        bool    getStatus(void)const;
+        bool    isAuth(void)const;
+        bool    isReg(void)const;
+        bool    isOper(void)const;
         const Channel* getCurrChan(void)const;
-        Server*  getServer(void);
+        const Server*  getServer(void)const;
+        std::vector<std::string>  &getChannalInvites(void);
 
         void setFd(int fd);
         void setHost(std::string const& host);
@@ -51,11 +55,14 @@ class Client {
         void setIsOper(void);
         void setCurrChan(Channel & curr);
         void setServer(Server & serv);
+
     private:
+
         int _fd;
         std::string _hostname, _realname, _nickname, _username, _mode;
         std::string _passwd;
         std::string _servername;
+        std::vector<std::string> _channel_invites;
         Server      *_serv;
         time_t      *_lastActive;
         bool        _auth;

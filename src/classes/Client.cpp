@@ -13,11 +13,12 @@ Client::Client(int fd)
 }
 
 Client::Client(const Client& src){
+    *this = src;
     return ;
 }
 
 Client& Client::operator=(const Client& rhs){
-
+    (void)rhs;
     return *this;
 }
 
@@ -61,19 +62,19 @@ const time_t* Client::lastActiveWhen(void){
     return _lastActive;
 }
 
-bool Client::getStatus(void)const{
+bool    Client::getStatus(void)const{
     return _status;
 }
 
-bool Client::isAuth(void)const{
+bool    Client::isAuth(void)const{
     return _auth;
 }
 
-bool Client::isReg(void)const{
+bool    Client::isReg(void)const{
     return _reg;
 }
 
-bool Client::isOper(void)const{
+bool    Client::isOper(void)const{
     return _isOper;
 }
 
@@ -83,6 +84,11 @@ const Channel* Client::getCurrChan(void)const{
 
 Server* Client::getServer(void){
     return _serv;
+}
+
+std::vector<std::string> &Client::getChannalInvites(void)
+{
+    return _channel_invites;
 }
 
 void Client::setFd(int fd){
