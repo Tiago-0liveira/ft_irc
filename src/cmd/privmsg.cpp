@@ -23,10 +23,8 @@
 //
 // Numeric Replies:
 //
-//        ERR_NORECIPIENT                 ERR_NOTEXTTOSEND
 //        ERR_CANNOTSENDTOCHAN            ERR_NOTOPLEVEL
 //        ERR_WILDTOPLEVEL                ERR_TOOMANYTARGETS
-//        ERR_NOSUCHNICK
 //        RPL_AWAY
 //
 // Examples:
@@ -51,12 +49,24 @@
 
 void privmsg(Client& cli, Message& msg){
     Server* ptr = cli.getServer();
+    std::vector<std::string>targets;
     if (msg._args.empty())
             return send_error(cli, ERR_NORECIPIENT, msg.getCommand());
     else if (msg._args.size() < 2)
         return send_error(cli, ERR_NOTEXTTOSEND, msg.getCommand());
     else if (ptr->m_nickSet.count(msg._args[0]) == 0)
         return send_error(cli, ERR_NOSUCHNICK, msg.getCommand());
+    if (msg._args[0].find(",") != std::string::npos)
+    if (msg._args[0][0] == '#' || msg._args[0][0] == '&'){
+        if (ptr->m_channelSet.count(msg._args[0]) != 0)
+        {
+
+        }
+        return send_error(cli, ERR_NOSUCHCHANNEL, msg.getCommand());
+    }
+        //find channel
+        //check if channel mode permits 
+        //if not send ERR_CANNOTSENDTOCHAN
     //deal with channels modes or channel not existing
     // sendMessage(cli.getFd(), )
     // std::cout<< "User #"<< cli.getFd() << " sent mes\n";

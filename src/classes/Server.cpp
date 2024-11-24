@@ -1,4 +1,5 @@
 #include "../../include/Server.hpp"
+#include "../../include/Channel.hpp"
 #include "../../include/errors.hpp"
 #include "../../include/Message.hpp"
 #include <algorithm>
@@ -176,10 +177,15 @@ Client& Server::findClient(std::string const& nick){
             return *it;
     }
 
-    std::vector<Client* > vv;
+}
 
+Channel& Server::findChannel(std::string const& name){
+    std::vector<Channel>::iterator it;
 
-    vv[0] = *it;
+    for (it = m_channels.begin(); it != m_channels.end(); it++){
+        if (it->getName() == name)
+            return *it;
+    }
 }
 
 void Server::setHost(std::string const& host){

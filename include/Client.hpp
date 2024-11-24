@@ -1,11 +1,11 @@
 #ifndef CLIENT
 #define CLIENT
 
-#include <vector>
 #pragma once 
 
-#include <string>
 #include <vector>
+#include <string>
+
 class Channel;
 class Server;
 
@@ -35,9 +35,7 @@ class Client {
         bool    getStatus(void)const;
         bool    isAuth(void)const;
         bool    isReg(void)const;
-        bool    isOper(void)const;
-        const Channel* getCurrChan(void)const;
-        const Server*  getServer(void)const;
+        Server*  getServer(void)const;
         std::vector<std::string>  &getChannalInvites(void);
 
         void setFd(int fd);
@@ -52,8 +50,6 @@ class Client {
         void setPass(std::string const& pass);
         void setLastActive(time_t& when);
         void setStatus(void);
-        void setIsOper(void);
-        void setCurrChan(Channel & curr);
         void setServer(Server & serv);
 
     private:

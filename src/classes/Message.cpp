@@ -29,7 +29,7 @@ std::deque<std::string>strSplit(std::string const&s, char delim){
 
 Message::Message(std::string& input){
     std::deque<std::string> prefixCommandsArgs, lines, args;
-    std::string prefix, command;
+    std::string target, prefix, command;
 
     std::string cleanStr = trimSpace(input);
 
@@ -38,7 +38,7 @@ Message::Message(std::string& input){
     //if the 1st string is empty it means the msg starts with ':'
     //thus it includes prefix
     if (lines[0].size() == 0){
-        // lines.erase(lines.begin() + 0);
+        lines.pop_front();
         prefixCommandsArgs = strSplit(lines[1], ' ');
         _prefix = prefixCommandsArgs.front();
         prefixCommandsArgs.pop_front();

@@ -21,6 +21,7 @@
 #define BUFFER_SIZE ((int)1024 * (int)2)
 
 class Client;
+class Channel;
 
 class Server {
 public:
@@ -33,13 +34,16 @@ public:
 
 	void start();
 
-    std::set<std::string>m_nickSet;
 	int getPort() const;
-    Client& findClient(std::string const& nick);
-	int getSocketFd() const;
+    int getSocketFd() const;
     std::string const& getHost(void)const;
+    Client& findClient(std::string const& nick);
+    Channel& findChannel(std::string const& name);
+
     void setHost(std::string const& host);
 	const std::string &getPassword() const;
+    std::set<std::string>m_channelSet;
+    std::set<std::string>m_nickSet;
 
 private:
 	void handleNewConnections();
@@ -55,7 +59,6 @@ private:
     std::vector<Client>m_clients;
 	std::string m_password;
     std::string m_host;
-    std::set<std::string>ChannelSet;
 	struct sockaddr_in m_address;
 	std::vector<pollfd> m_pollFds;
 	std::vector<Channel> m_channels;
@@ -63,5 +66,6 @@ private:
 
 
 #include "Client.hpp"
+#include "Channel.hpp"
 
 #endif
