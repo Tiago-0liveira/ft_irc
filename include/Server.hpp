@@ -39,6 +39,7 @@ public:
     std::string const& getHost(void)const;
     Client& findClient(std::string const& nick);
     Channel& findChannel(std::string const& name);
+	bool nickExists(std::string const &nick);
 
     void setHost(std::string const& host);
 	const std::string &getPassword() const;

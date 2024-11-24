@@ -1,7 +1,7 @@
-#include "../../include/Server.hpp"
-#include "../../include/Channel.hpp"
-#include "../../include/errors.hpp"
-#include "../../include/Message.hpp"
+#include <Server.hpp>
+#include <Channel.hpp>
+#include <errors.hpp>
+#include <Message.hpp>
 #include <algorithm>
 #include <cctype>
 #include <map>
@@ -11,7 +11,7 @@
 #include <sys/poll.h>
 #include <iostream>
 #include <vector>
-#include "../../include/Commands.hpp"
+#include <Commands.hpp>
 
 Server::Server(int port, const std::string &password)
 : m_port(port), m_password(password)
@@ -186,6 +186,11 @@ Channel& Server::findChannel(std::string const& name){
         if (it->getName() == name)
             return *it;
     }
+}
+
+bool Server::nickExists(std::string const &nick)
+{
+    return m_nickSet.find(nick) != m_nickSet.end();
 }
 
 void Server::setHost(std::string const& host){
