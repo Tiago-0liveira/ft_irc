@@ -1,9 +1,8 @@
 #include <Channel.hpp>
 
-std::string Channel::JOIN_MESSAGE = "The User %s joined!";
-std::string Channel::LEAVE_MESSAGE = "The User %s left!";
-std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
-
+// std::string Channel::JOIN_MESSAGE = "The User %s joined!";
+// std::string Channel::LEAVE_MESSAGE = "The User %s left!";
+// std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
 
 Channel::Channel(std::string name): _channel(name), _pass(""), _topic(""), _limit(10), _op()
 {
@@ -64,6 +63,16 @@ void Channel::addClient(Client &client, std::string password)
 		_op.push_back(&client);
 }
 
+bool Channel::isMember(Client& client)
+{
+	std::vector<Client*>::iterator find;
+
+	find = std::find(_member.begin(), _member.end(), &client);
+	if (find != _member.end())
+		return true;
+	return false;
+}
+
 void Channel::inviteClient(Client &member, Client &invited)
 {
 	if (!isMember(member))
@@ -80,7 +89,7 @@ void Channel::inviteClient(Client &member, Client &invited)
 	}
 }
 
-bool Channel::removeClient(std::string clientNick)
+bool Channel::kickClient(std::string clientNick)
 {
 	std::vector<Client*>::iterator find = _op.begin();
 
@@ -111,7 +120,10 @@ void	Channel::topic(std::string topic, Client& client)
 	if (!topic.empty())
 		setTopic(topic);
 	//sendMessage(_op[0]->getFd(), format(TOPIC_MESSAGE, _channel, _topic));
-	std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
+	if (_topic.empty())
+		std::cout << RED << "Channel " << _channel << " dosen't have a topic." << RESET << std::endl;
+	else
+		std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 }
 
 void Channel::broadcastMessage(const std::string &message, int exceptFd)
@@ -132,18 +144,82 @@ void Channel::broadcastMessage(const std::string &message, int exceptFd)
 void Channel::addMode(Client &client, std::string mode, std::string argument)
 {
 	std::map<char, t_exe>::const_iterator	found = _modes.find(mode[1]);
+	std::map<char, int>::iterator aux = _nbr_modes.find(mode[1]);;
+	if (aux->second >= 3)
+	{
+		std::cout << RED << "Error: You have already used mode " << mode[1] << " tree times " << RESET << std::endl;
+		return;
+	}
 	if (found != _modes.end() && mode.size() == 2)
 		(this->*(found->second))(client, mode, argument);
 }
 
-bool Channel::isMember(Client& client)
+void Channel::inviteMode(Client &client, std::string mode, std::string argument)
 {
-	std::vector<Client*>::iterator find;
+	(void)argument;
+	std::map<char, int>::iterator aux = _nbr_modes.find('i');
+	
+	if (!this->isOp(client))
+		std::cout << RED << "Member " << client.getNick() << " cant't invete other people to the channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
+	else if (mode[0] == '+')
+	{
+		aux->second += 1;
+		_invite_only = true;
+		std::cout << "Mode " << mode << ": " << argument << " was invited to the channal " << _channel << std::endl;
+	}
+	else if (mode[0] == '-')
+	{
+		aux->second += 1;
+		_invite_only = false;
+		std::cout << "Mode " << mode << ": Invite to channel " << _channel  << " was removed from " << argument << std::endl;
+	}
+}
 
-	find = std::find(_member.begin(), _member.end(), &client);
-	if (find != _member.end())
-		return true;
-	return false;
+void Channel::topicMode(Client &client, std::string mode, std::string argument)
+{
+	(void)argument;
+	std::map<char, int>::iterator aux = _nbr_modes.find('t');
+	
+	if (!this->isOp(client) && !_topic_change)
+		std::cout << RED << "Member " << client.getNick() << " cant't change the topic in the channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
+	else if (mode[0] == '+')
+	{
+		_topic_change = true;
+		aux->second += 1;
+		std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel  << " is free to use."  << std::endl;
+	}
+	else if (mode[0] == '-')
+	{
+		_topic_change = false;
+		aux->second += 1;
+		std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel  << " is now restricted." << std::endl;
+	}
+}
+
+void Channel::keyMode(Client &client, std::string mode, std::string argument)
+{
+	std::map<char, int>::iterator aux = _nbr_modes.find('k');
+	
+	if (!this->isOp(client))
+		std::cout << RED << "Member " << client.getNick() << " dosen't have the clerence to add a password to channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
+	else if (mode[0] == '+')
+	{
+		if (_is_key == true)
+		{
+			std::cout << RED << "Key is already set." << _channel << std::endl;
+			return;
+		}
+		aux->second += 1;
+		_pass = argument;
+		std::cout << "Mode " << mode << ":  password was add to the channal " << _channel << std::endl;
+	}
+	else if (mode[0] == '-')
+	{
+		aux->second += 1;
+		_is_key = false;
+		_pass = "";
+		std::cout << "Mode " << mode << ": password was removed from the channel " << _channel << std::endl;
+	}
 }
 
 bool Channel::isOp(Client& client)
@@ -175,96 +251,11 @@ void Channel::removeOp(Client& client)
 		_op.push_back(_member[0]);
 }
 
-void Channel::inviteMode(Client &client, std::string mode, std::string argument)
-{
-	std::map<char, int>::iterator aux = _nbr_modes.find('i');
-	(void)argument;
-	if (aux->second >= 3)
-	{
-		std::cout << RED << "Error: You have already used mode i tree times " << RESET << std::endl;
-		return;
-	}
-	if (!this->isOp(client))
-		std::cout << RED << "Member " << client.getNick() << " cant't invete other people to the channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
-	else if (mode[0] == '+')
-	{
-		aux->second += 1;
-		_invite_only = true;
-		std::cout << "Mode " << mode << ": " << argument << " was invited to the channal " << _channel << std::endl;
-	}
-	else if (mode[0] == '-')
-	{
-		aux->second += 1;
-		_invite_only = false;
-		std::cout << "Mode " << mode << ": Invite to channel " << _channel  << " was removed from " << argument << std::endl;
-	}
-}
-
-void Channel::topicMode(Client &client, std::string mode, std::string argument)
-{
-	(void)argument;
-	std::map<char, int>::iterator aux = _nbr_modes.find('t');
-	//check if is a member of the channel
-	if (aux->second >= 3)
-	{
-		std::cout << RED << "Error: You have already used mode t tree times " << RESET << std::endl;
-		return;
-	}
-	if (!this->isOp(client) && !_topic_change)
-		std::cout << RED << "Member " << client.getNick() << " cant't change the topic in the channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
-	else if (mode[0] == '+')
-	{
-		_topic_change = true;
-		aux->second += 1;
-		std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel  << " is free to use."  << std::endl;
-	}
-	else if (mode[0] == '-')
-	{
-		_topic_change = false;
-		aux->second += 1;
-		std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel  << " is now restricted." << std::endl;
-	}
-}
-
-void Channel::keyMode(Client &client, std::string mode, std::string argument)
-{
-	std::map<char, int>::iterator aux = _nbr_modes.find('k');
-	if (aux->second >= 3)
-	{
-		std::cout << RED << "Error: You have already used mode k tree times " << RESET << std::endl;
-		return;
-	}
-	if (!this->isOp(client))
-		std::cout << RED << "Member " << client.getNick() << " dosen't have the clerence to add a password to channel " << _channel << " because he/she is not an operator." << RESET << std::endl;
-	else if (mode[0] == '+')
-	{
-		if (_is_key == true)
-		{
-			std::cout << RED << "Key is already set." << _channel << std::endl;
-			return;
-		}
-		aux->second += 1;
-		_pass = argument;
-		std::cout << "Mode " << mode << ":  password was add to the channal " << _channel << std::endl;
-	}
-	else if (mode[0] == '-')
-	{
-		aux->second += 1;
-		_is_key = false;
-		_pass = "";
-		std::cout << "Mode " << mode << ": password was removed from the channel " << _channel << std::endl;
-	}
-}
-
 void Channel::operatorMode(Client &client, std::string mode, std::string argument)
 {
-	std::map<char, int>::iterator aux = _nbr_modes.find('o');
 	(void)argument;
-	if (aux->second >= 3)
-	{
-		std::cout << RED << "Error: You have already used mode o tree times " << RESET << std::endl;
-		return;
-	}
+	std::map<char, int>::iterator aux = _nbr_modes.find('o');
+	
 	if (mode[0] == '+' && !this->isOp(client))
 	{
 		std::cout << "Mode " << mode << ": " << client.getNick() << " was promoted to operator of channel " << _channel << std::endl;
@@ -294,7 +285,6 @@ int	nbrLimit(std::string str)
 	}
 	if (i == str.size())
 		n = atoi(str.c_str());
-	//std::cout << "n: " << n << std::endl;
 	return (n);
 }
 
@@ -302,17 +292,11 @@ void Channel::limitMode(Client &client, std::string mode, std::string argument)
 {
 	(void)client;
 	std::map<char, int>::iterator aux = _nbr_modes.find('l');;
-	if (aux->second >= 3)
-	{
-		std::cout << RED << "Error: You have already used mode l tree times " << RESET << std::endl;
-		return;
-	}
+
 	if (mode[0] == '+' && mode[1] == 'l')
 	{
 		_is_limited = true;
 		int n = nbrLimit(argument);
-		// std::cout << "arg: |" << argument << "|" << std::endl;
-		// std::cout << "nbr: |" << n << "|" << std::endl;
 		if (n == -1)
 			std::cout << RED << "Error: invalid limit nbr on channel " << _channel << RESET << std::endl;
 		_limit = n;
@@ -349,7 +333,7 @@ std::string	Channel::getTopic() const
 void	Channel::setTopic(std::string topic)
 {	this->_topic = topic;	}
 
-
+/*
 int main() 
 {
 	Client toy, taylor, meghan, phill, nickle;
@@ -388,8 +372,10 @@ int main()
 	std::cout << std::endl << std::endl;
 
 	std::cout << GREEN << "<<<<<<<<<<<<<<<<<<<<<<<< Remove >>>>>>>>>>>>>>>>>>>>>>>>" << RESET << std::endl;
-	canal.removeClient("Taylor");
+	canal.kickClient("Taylor");
 	canal.addMode(toy, "-o", "remove operator");
+	canal.addMode(meghan, "-t", "");
+	canal.addMode(meghan, "+t", "banana");
 	canal.addMode(meghan, "-t", "");
 	canal.addMode(meghan, "-l", "");
 	canal.addClient(phill,"");
@@ -410,8 +396,9 @@ int main()
 	canal.topic("", taylor);
 	canal.topic("poop", meghan);
 
-	// std::map<char, int>::iterator aux;
-	// for(aux = canal.getNbrMode().begin(); aux != canal.getNbrMode().end(); ++aux)
-	// 	std::cout << "{" << aux->first << ", " << aux->second <<  "}" << std::endl;
-	// std::cout << std::endl;
+	std::map<char, int>::iterator aux;
+	for(aux = canal.getNbrMode().begin(); aux != canal.getNbrMode().end(); ++aux)
+		std::cout << "{" << aux->first << ", " << aux->second <<  "}" << std::endl;
+	std::cout << std::endl;
 }
+*/

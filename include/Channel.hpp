@@ -40,28 +40,28 @@ class Channel
 		std::vector<Client *>	_op;
 
 	public:
-		static std::string JOIN_MESSAGE;
-		static std::string LEAVE_MESSAGE;
-		static std::string TOPIC_MESSAGE;
+		// static std::string JOIN_MESSAGE;
+		// static std::string LEAVE_MESSAGE;
+		// static std::string TOPIC_MESSAGE;
 
 		Channel(std::string name);
 		~Channel();
 
 		//Member functions
 		void	addClient(Client& client, std::string password);
+		bool	isMember(Client& client);
 		void	inviteClient(Client &member, Client &invited);
-		bool	removeClient(std::string clientNick);
+		bool	kickClient(std::string clientNick);
 		void	topic(std::string topic, Client& client);
 		void	broadcastMessage(const std::string &message, int exceptFd);
 		
 		void	addMode(Client &client, std::string mode, std::string argument);
-		bool	isMember(Client& client);
-		bool	isOp(Client& client);
-		void	addOp(Client &client);
-		void	removeOp(Client& client);
 		void	inviteMode(Client &client, std::string mode, std::string argument);
 		void	topicMode(Client &client, std::string mode, std::string argument);
 		void	keyMode(Client &client, std::string mode, std::string argument);
+		bool	isOp(Client& client);
+		void	addOp(Client &client);
+		void	removeOp(Client& client);
 		void	operatorMode(Client &client, std::string mode, std::string argument);
 		void	limitMode(Client &client, std::string mode, std::string argument);
 
