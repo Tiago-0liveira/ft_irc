@@ -24,4 +24,5 @@ public:
     //PRIVMSG maria, adilson : "Ola tudo bem"
 };
 
+std::set<std::string>targetSplit(std::string const&s);
 #endif // !MESSAGE

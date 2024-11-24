@@ -2,9 +2,19 @@
 #include <sstream>
 #include <string>
 #include <deque>
+#include <set>
 
 //TODO: parser for generating messages types to feed specific
 //command parsers 
+std::set<std::string>targetSplit(std::string const&s){
+    std::set<std::string> res;
+    std::stringstream ss(s);
+    std::string split;
+    while(getline(ss, split, ',')){
+        res.emplace_back(split);
+    }
+    return res;
+}
 
 std::string trimSpace(std::string const& input)
 {

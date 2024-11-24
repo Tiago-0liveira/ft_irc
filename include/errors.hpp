@@ -67,6 +67,7 @@ void send_error(Client& cli, int errnum, const std::string& arg);
 # define ERR_BANNEDFROMCHAN		474
 # define ERR_BADCHANNELKEY		475
 # define ERR_BADCHANMASK		476
+# define ERR_BADCHANNAME		479
 # define ERR_CHANOPRIVSNEEDED	482
 # define ERR_NOOPERHOST			491
 # define ERR_UMODEUNKNOWNFLAG	501

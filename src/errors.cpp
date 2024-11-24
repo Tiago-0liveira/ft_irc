@@ -39,6 +39,7 @@ std::string errmap(int errcode){
     m[ERR_USERSDONTMATCH] = " :Can't change mode for other users not being IRC operator";
     m[ERR_NOOPERHOST] = " :No O-lines for your host";
     m[ERR_PASSWDMISMATCH] = " :Password incorrect";
+    m[ERR_BADCHANNAME] = ":Cannot join channel";
 
     return m[errcode];
 
