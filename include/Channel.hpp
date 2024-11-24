@@ -3,6 +3,8 @@
 
 #include "Client.hpp"
 #include "Server.hpp"
+#include "Message.hpp"
+#include "errors.hpp"
 #include <vector>
 #include <map>
 #include <iostream>
@@ -51,8 +53,8 @@ class Channel
 		void	addClient(Client& client, std::string password);
 		bool	isMember(Client& client);
 		void	inviteClient(Client &member, Client &invited);
-		bool	kickClient(std::string clientNick);
-		void	topic(std::string topic, Client& client);
+		bool	kickClient(Client &chop, Client &member);
+		void	topic(std::string topic, Client& member);
 		void	broadcastMessage(const std::string &message, int exceptFd);
 		
 		void	addMode(Client &client, std::string mode, std::string argument);

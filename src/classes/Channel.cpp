@@ -46,19 +46,23 @@ void Channel::addClient(Client &client, std::string password)
 			std::vector<std::string>::iterator find_invite = std::find(client.getChannalInvites().begin(), client.getChannalInvites().end(), _channel);
 			if (find_invite == client.getChannalInvites().end())
 			{
-				std::cout << RED << client.getNick() << " dosen't have the invitation for the channel " << _channel << RESET << std::endl;
+				send_error(client, ERR_INVITEONLYCHAN, "JOIN"); //Cannot join channel (+i)
+				//std::cout << RED << client.getNick() << " dosen't have the invitation for the channel " << _channel << RESET << std::endl;
 				return;
 			}
 		}
 		if (_member.size() == _limit)
 		{
-			std::cout << RED << "Channel " << _channel  << " has reached max number of people." << RESET << std::endl;
+			send_error(client, ERR_CHANNELISFULL, "JOIN"); //Cannot join channel (+l)
+			//std::cout << RED << "Channel " << _channel  << " has reached max number of people." << RESET << std::endl;
 			return;
 		}
 		_member.push_back(&client);
 		//broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()), _member.back()->getFd());
 		std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel << std::endl;
-	}	
+	}
+	else
+		send_error(client, ERR_USERONCHANNEL, "JOIN"); //is already on channel
 	if (_op.size() == 0)
 		_op.push_back(&client);
 }
@@ -77,7 +81,8 @@ void Channel::inviteClient(Client &member, Client &invited)
 {
 	if (!isMember(member))
 	{
-		std::cout << "The User " << member.getNick() << " can't invite people/ not part of the channel " << _channel << std::endl;
+		send_error(member, ERR_NOTONCHANNEL, "INVITE"); //You're not on that channel
+		//std::cout << "The User " << member.getNick() << " can't invite people/ not part of the channel " << _channel << std::endl;
 		return;
 	}
 	std::vector<std::string>::iterator find = std::find(invited.getChannalInvites().begin(), invited.getChannalInvites().end(), _channel);
@@ -89,41 +94,52 @@ void Channel::inviteClient(Client &member, Client &invited)
 	}
 }
 
-bool Channel::kickClient(std::string clientNick)
+bool Channel::kickClient(Client &chop, Client &member)
 {
-	std::vector<Client*>::iterator find = _op.begin();
-
-	while (find != _op.end() && clientNick.compare((*find)->getNick()))
-		find++;
-	if (find != _op.end())
-		_op.erase(find);
-
-	find = _member.begin();
-	while (find != _member.end() && clientNick.compare((*find)->getNick()))
-		find++;
-	if (find == _member.end())
+	if (!isOp(chop))
+	{
+		send_error(chop, ERR_CHANOPRIVSNEEDED, "KICK"); //You're not channel operator
 		return false;
-	std::cout << "The User " << (*find)->getNick() << " left!" << std::endl;
-	//broadcastMessage(format(LEAVE_MESSAGE, (*find)->getNick()), -1);
-	_member.erase(find);
+	}
+
+	if (isMember(member))
+	{
+		//broadcastMessage(format(LEAVE_MESSAGE, (*find)->getNick()), -1);
+		std::cout << "The User " << member.getNick() << " left!" << std::endl;
+		_member.erase(std::find(_member.begin(), _member.end(), member));
+		if (isOp(member))
+			_op.erase(std::find(_op.begin(), _op.end(), member));
+	}
 
 	return true;
 }
 
-void	Channel::topic(std::string topic, Client& client)
+void	Channel::topic(std::string topic, Client& member)
 {
-	if (_topic_change == false && !isOp(client))
+	if (!isMember(member))
 	{
-		std::cout << RED << client.getNick() << " can't change TOPIC of the channel " << _channel << RESET << std::endl;
+		send_error(member, ERR_NOTONCHANNEL, "TOPIC"); //You're not on that channel
+		return;
+	}
+	if (_topic_change == false && !isOp(member))
+	{
+		send_error(member, ERR_CHANOPRIVSNEEDED, "TOPIC"); //You're not channel operator
+		//std::cout << RED << member.getNick() << " can't change TOPIC of the channel " << _channel << RESET << std::endl;
 		return;
 	}
 	if (!topic.empty())
 		setTopic(topic);
 	//sendMessage(_op[0]->getFd(), format(TOPIC_MESSAGE, _channel, _topic));
 	if (_topic.empty())
+	{
+		//RPL_NOTOPIC
 		std::cout << RED << "Channel " << _channel << " dosen't have a topic." << RESET << std::endl;
+	}
 	else
+	{
+		//RPL_TOPIC
 		std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
+	}
 }
 
 void Channel::broadcastMessage(const std::string &message, int exceptFd)
