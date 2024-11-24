@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <set>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -13,12 +14,13 @@
 #include "irc.hpp"
 #include <poll.h>
 #include <cstring>
-#include "Client.hpp"
 #include "misc.hpp"
 #include "Message.hpp"
 
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE ((int)1024 * (int)2)
+
+class Client;
 
 class Server {
 public:
@@ -31,8 +33,12 @@ public:
 
 	void start();
 
+    std::set<std::string>m_nickSet;
 	int getPort() const;
+    Client& findClient(std::string const& nick);
 	int getSocketFd() const;
+    std::string const& getHost(void)const;
+    void setHost(std::string const& host);
 	const std::string &getPassword() const;
 
 private:
@@ -46,13 +52,16 @@ private:
     int m_newFd;
     int m_fdNum;
     std::string m_name;
-    std::vector<Client*>m_clients;
+    std::vector<Client>m_clients;
 	std::string m_password;
+    std::string m_host;
+    std::set<std::string>ChannelSet;
 	struct sockaddr_in m_address;
 	std::vector<pollfd> m_pollFds;
 	std::vector<Channel> m_channels;
 };
 
 
+#include "Client.hpp"
 
 #endif

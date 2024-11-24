@@ -8,8 +8,13 @@ INCLUDES = -I $(includefolder)
 SRC_FOLDER = src/
 OBJ_DIR = obj/
 
-SRC_ROOT_FILES = main.cpp misc.cpp
-CLASSES = Client.cpp Channel.cpp 
+SRC_ROOT_FILES = main.cpp       \
+				 misc.cpp       \
+				 errors.cpp     \
+				 cmd/pass.cpp   \
+				 cmd/user.cpp   \
+				 cmd/nick.cpp   
+CLASSES = Server.cpp Message.cpp Client.cpp
 
 INCLUDE_HEADERS = $(addprefix $(includefolder), \
 	$(CLASSES:%.cpp=%.hpp) \

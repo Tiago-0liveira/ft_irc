@@ -1,14 +1,31 @@
-#ifndef ERRORS
-#define ERRORS
+#ifndef REPLIES
+#define REPLIES
 
-#pragma once
-#include <string>
 #include "Client.hpp"
 
-std::string errmap(int errcode);
-void send_error(Client& cli, int errnum, const std::string& arg);
+void rpl_welcome(Client& cli);
+void rpl_yourhost(Client& cli);
+void rpl_created(Client& cli);
+void rpl_myinfo(Client& cli);
+void rpl_motdstart(Client& cli);
+void rpl_motd(Client& cli);
+void rpl_endofmotd(Client& cli);
+void rpl_umodeis(Client& cli);
+void rpl_whoreply(Client& cli);
+void rpl_endofwho(Client& cli);
+void rpl_chaennelmodeis(Client& cli);
+void rpl_notopic(Client& cli);
+void rpl_topic(Client& cli);
+void rpl_topicwhotime(Client& cli);
+void rpl_namereply(Client& cli);
+void rpl_endofnames(Client& cli);
+void rpl_away(Client& cli);
+void rpl_creationtime(Client& cli);
+void rpl_banlist(Client& cli);
+void rpl_endofbanlist(Client& cli);
+void rpl_inviting(Client& cli);
+void rpl_serverisfull(Client& cli);
 
-// REPLIES
 # define RPL_WELCOME(nick, user, host) (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
 # define RPL_YOURHOST(servername, version) (":Your host is " + servername + ", running version " + version + "\r\n")
 # define RPL_CREATED(date) (":This server was created " + date + "\r\n")
@@ -35,41 +52,5 @@ void send_error(Client& cli, int errnum, const std::string& arg);
 # define RPL_INVITING(guest, channel) (guest + " :" + channel + "\r\n")
 # define ERR_SERVERISFULL(host) ("ERROR :Closing link: (unknown@" + host + ") [No more connections allowed from your host via this connect class (local)]\r\n")
 
-//ERRORS
-# define ERR_NOSUCHNICK			401
-# define ERR_NOSUCHSERVER		402
-# define ERR_NOSUCHCHANNEL		403
-# define ERR_CANNOTSENDTOCHAN	404
-# define ERR_TOOMANYCHANNELS	405
-# define ERR_WASNOSUCHNICK		406 // "<nickname> :There was no such nickname"
-# define ERR_TOOMANYTARGETS		407
-# define ERR_NOORIGIN			409
-# define ERR_NORECIPIENT		411
-# define ERR_NOTEXTTOSEND		412
-# define ERR_NOTOPLEVEL			413 // "<mask> :No toplevel domain specified"
-# define ERR_WILDTOPLEVEL		414 // "<mask> :Wildcard in toplevel domain"
-# define ERR_UNKNOWNCOMMAND		421 // "<command> :Unknown command"
-# define ERR_NOMOTD				422
-# define ERR_NOADMININFO		423 // "<server> :No administrative info available"
-# define ERR_NONICKNAMEGIVEN	431
-# define ERR_ERRONEUSNICKNAME	432
-# define ERR_NICKNAMEINUSE		433
-# define ERR_NOTONCHANNEL		442
-# define ERR_USERONCHANNEL		443
-# define ERR_NOTREGISTERED		451
-# define ERR_NEEDMOREPARAMS		461
-# define ERR_ALREADYREGISTRED	462
-# define ERR_PASSWDMISMATCH		464
-# define ERR_KEYSET				467
-# define ERR_CHANNELISFULL		471
-# define ERR_UNKNOWNMODE		472
-# define ERR_INVITEONLYCHAN		473
-# define ERR_BANNEDFROMCHAN		474
-# define ERR_BADCHANNELKEY		475
-# define ERR_BADCHANMASK		476
-# define ERR_CHANOPRIVSNEEDED	482
-# define ERR_NOOPERHOST			491
-# define ERR_UMODEUNKNOWNFLAG	501
-# define ERR_USERSDONTMATCH		502
 
-#endif // !ERRORS
+#endif // !REPLIES

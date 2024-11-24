@@ -51,5 +51,23 @@
    */
 
 void userCommand(Client& cli, Message& msg){
-    //TODO: implement the user;
+    if (msg._args.empty() || msg._args.size() < 4){
+        send_error(cli, ERR_NEEDMOREPARAMS, msg.getCommand());
+        return ;
+    }
+    else if (cli.isAuth()){
+        send_error(cli, ERR_ALREADYREGISTRED, msg.getCommand());
+        return ;
+    }
+    cli.setUser(msg._args[0]);
+    cli.setHost(msg._args[1]);
+    cli.setServname(msg._args[2]);
+    cli.setRealname(msg._args[3] + msg._args[4]);
+    cli.setReg();
+    if (!cli.isAuth() && !cli.isPasswordSet())
+        return ;
+    std::cout << "User #" << cli.getFd()
+        << " registered as "<<cli.getNick();
+    //TODO: MesssageOfTheDay func()
+    return ;
 }

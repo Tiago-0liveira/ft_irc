@@ -6,12 +6,6 @@
 #include "../include/errors.hpp"
 
 
-
-
-void show_usage(void){
-    std::cout <<"Usage: ./ircserver <port> <password> "<<"\n";
-}
-
 std::string errmap(int errcode){
     static std::map<int, std::string> m;
 
@@ -47,9 +41,10 @@ std::string errmap(int errcode){
     m[ERR_PASSWDMISMATCH] = " :Password incorrect";
 
     return m[errcode];
+
 }
 
-void send_error(Client& cli, int errnum, std::string& arg){
+void send_error(Client& cli, int errnum,  const std::string& arg){
     std::ostringstream os;
 
     os <<":mariairc "<<errnum << " * " << arg <<errmap(errnum)<<"\r\n";

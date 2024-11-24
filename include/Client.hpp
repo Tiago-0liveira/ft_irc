@@ -1,12 +1,17 @@
 #ifndef CLIENT
 #define CLIENT
 
+#include <vector>
 #pragma once 
 
 #include <string>
 #include <vector>
 class Channel;
 class Server;
+
+
+#define NICK_MIN_LENGTH 4
+#define NICK_MAX_LENGTH 9
 
 class Client {
     public:
@@ -22,9 +27,10 @@ class Client {
         const std::string& getHost(void)const;
         const std::string& getNick(void)const;
         const std::string& getUser(void)const;
+        const std::string& getServname(void)const;
+        const std::string& getRealname(void)const;
         const std::string& getMode(void)const;
         const std::string& getPass(void)const;
-        const std::string& getServ(void)const;
         const time_t* lastActiveWhen(void);
         bool    getStatus(void)const;
         bool    isAuth(void)const;
@@ -38,11 +44,12 @@ class Client {
         void setHost(std::string const& host);
         void setNick(std::string const& nick);
         void setUser(std::string const& user);
+        void setRealname(std::string const& realname);
+        void setServname(std::string const& servname);
         void setMode(std::string const& mode);
         void setReg(void);
         void setAuth(void);
         void setPass(std::string const& pass);
-        void setServ(std::string const& serv);
         void setLastActive(time_t& when);
         void setStatus(void);
         void setIsOper(void);
@@ -60,9 +67,13 @@ class Client {
         time_t      *_lastActive;
         bool        _auth;
         bool        _reg;
+        bool        _pSet;
         bool        _status;
         bool        _isOper;
         Channel     *_currChan;
 };
+
+#include "Server.hpp"
+#include "Channel.hpp"
 
 #endif // !CLIENT

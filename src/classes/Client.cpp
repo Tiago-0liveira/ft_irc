@@ -42,6 +42,10 @@ const std::string& Client::getUser(void)const{
     return _username;
 }
 
+const std::string& Client::getRealname(void)const{
+    return _realname;
+}
+
 const std::string& Client::getMode(void)const{ 
     return _mode;
 }
@@ -50,7 +54,7 @@ const std::string& Client::getPass(void)const{
     return _passwd;
 }
 
-const std::string& Client::getServ(void)const{
+const std::string& Client::getServname(void)const{
     return _servername;
 }
 
@@ -78,7 +82,7 @@ const Channel* Client::getCurrChan(void)const{
     return _currChan;
 }
 
-const Server* Client::getServer(void)const{
+Server* Client::getServer(void){
     return _serv;
 }
 
@@ -103,6 +107,15 @@ void Client::setUser(std::string const& user){
     _username = user;
 }
 
+
+void Client::setRealname(std::string const& realname){
+    _username = realname;
+}
+
+void Client::setServname(std::string const& servername){
+    _username = servername;
+}
+
 void Client::setMode(std::string const& mode){
     _mode = mode; 
 }
@@ -111,8 +124,8 @@ void Client::setPass(std::string const& pass){
     _passwd = pass; 
 }
 
-void Client::setServ(std::string const& serv){
-    _servername = serv;
+const bool Client::isPasswordSet(void)const{
+    return _pSet;
 }
 
 void Client::setLastActive(time_t& when){
@@ -126,6 +139,7 @@ void Client::setStatus(void){
 void Client::setAuth(void){
     _auth = true;
 }
+
 void Client::setReg(void){
     _reg = true;
 }

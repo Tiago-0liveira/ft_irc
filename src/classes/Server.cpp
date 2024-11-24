@@ -6,18 +6,11 @@
 #include <map>
 #include <netinet/in.h>
 #include <stdexcept>
+#include <string>
 #include <sys/poll.h>
 #include <iostream>
+#include <vector>
 #include "../../include/Commands.hpp"
-
-std::string Server::HELP_MESSAGE = 
-	"\nList of Commands:\n"
-	" - LOGIN\n"
-	" - SETNICK\n"
-	" - SETUSER\n"
-	" - JOIN\n"
-	" - QUIT\n"
-	"\n";
 
 Server::Server(int port, const std::string &password)
 : m_port(port), m_password(password)
@@ -77,12 +70,12 @@ void Server::start()
 		int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
 		if (pollCount == -1)
             std::runtime_error("Poll error\n");
-        for( size_t i = 1; i < m_fdNum; ++i){
+        for( int i = 1; i < m_fdNum; ++i){
             if (m_pollFds[i].revents & POLLIN){
                 if (m_pollFds[i].fd == m_socket){
                     handleNewConnections();
                     if (addNewFd(m_newFd)){
-                        m_clients.push_back(new Client(m_newFd));
+                        m_clients.emplace_back(Client(m_newFd));
                         break ;
                     }
                 }
@@ -119,9 +112,10 @@ bool Server::receiveData(int idx){
         throw std::runtime_error(strerror(errno));
     std::string msgStr(buf);
     Message strToMsg(msgStr);
-    handleClientUpdates(strToMsg, *m_clients[idx]);
+    handleClientUpdates(strToMsg, m_clients[idx]);
     return true;
 }
+
 bool Server::deleteFd(int fd){
     int i = 0;
     for(; i < m_fdNum; i++){
@@ -154,13 +148,46 @@ bool Server::handleClientUpdates(Message& msg, Client& cli)
     m["PASS"] = passCommand;
     m["USER"] = userCommand;
     m["NICK"] = nickCommand;
+    m["PING"] = pingCommand;
+    m["PONG"] = pongCommand;
+    m["PRIVMSG"] = privmsgCommand;
+    m["NOTICE"] = noticeCommand;
 
+    if (m.count(command)){
+        m[command](cli, msg);
+    }
+    else{
+        send_error(cli, ERR_UNKNOWNCOMMAND, msg.getCommand());
+        return false;
+    }
     return true;
 }
 
 int Server::getPort() const
 {
 	return m_port;
+}
+
+Client& Server::findClient(std::string const& nick){
+    std::vector<Client>::iterator it;
+
+    for(it = m_clients.begin(); it != m_clients.end(); it++){
+        if (it->getNick() == nick)
+            return *it;
+    }
+
+    std::vector<Client* > vv;
+
+
+    vv[0] = *it;
+}
+
+void Server::setHost(std::string const& host){
+    m_host = host;
+}
+
+std::string const& Server::getHost(void)const{
+    return m_host;
 }
 
 int Server::getSocketFd() const

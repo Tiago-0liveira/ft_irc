@@ -29,15 +29,15 @@
 // void send_error(Client& cli, int errnum, std::string& arg)
 
 void passCommand(Client& cli, Message& msg){
-    if (msg.getArgs().size() == 0){
-        send_error(cli, ERR_ALREADYREGISTRED, msg.getArgs()[0]);
+    if (msg._args.size() == 0){
+        send_error(cli, ERR_NEEDMOREPARAMS, msg.getCommand());
         return ;
     }
-    if (cli.isReg()){
-        send_error(cli, ERR_NEEDMOREPARAMS, msg.getArgs()[0]);
+    else if (cli.isReg()){
+        send_error(cli, ERR_ALREADYREGISTRED, msg.getCommand());
         return ;
     }
-    cli.setPass(msg.getArgs()[0]);
+    cli.setPass(msg._args[0]);
     std::cout<< "User #"<< cli.getFd() << " password added\n";
 }
 
