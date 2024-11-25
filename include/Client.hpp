@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <ctime>
 
 class Channel;
 class Server;
@@ -36,7 +37,9 @@ class Client {
         bool    isAuth(void)const;
         bool    isReg(void)const;
         Server*  getServer(void)const;
-        std::vector<std::string>  &getChannalInvites(void);
+        bool isOper(void) const;
+        const Channel *getCurrChan(void) const;
+        std::vector<std::string> &getChannalInvites(void);
 
         void setFd(int fd);
         void setHost(std::string const& host);
@@ -48,9 +51,12 @@ class Client {
         void setReg(void);
         void setAuth(void);
         void setPass(std::string const& pass);
+        bool isPasswordSet(void) const;
         void setLastActive(time_t& when);
         void setStatus(void);
         void setServer(Server & serv);
+        void setCurrChan(Channel& curr);
+        void setIsOper(void);
 
     private:
 

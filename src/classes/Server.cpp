@@ -76,14 +76,13 @@ void Server::start()
                 if (m_pollFds[i].fd == m_socket){
                     handleNewConnections();
                     if (addNewFd(m_newFd)){
-                        m_clients.emplace_back(Client(m_newFd));
+                        m_clients.push_back(Client(m_newFd));
                         break ;
                     }
                 }
             }
             receiveData(i);
         }
-
 	}
 }
 
@@ -151,8 +150,8 @@ bool Server::handleClientUpdates(Message& msg, Client& cli)
     m["NICK"] = nickCommand;
     m["PING"] = pingCommand;
     m["PONG"] = pongCommand;
-    m["PRIVMSG"] = privmsgCommand;
-    m["NOTICE"] = noticeCommand;
+    /* m["PRIVMSG"] = privmsgCommand;
+    m["NOTICE"] = noticeCommand; */
 
     if (m.count(command)){
         m[command](cli, msg);

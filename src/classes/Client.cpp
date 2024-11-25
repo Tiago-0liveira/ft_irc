@@ -1,4 +1,5 @@
 #include "../../include/Client.hpp"
+#include "Client.hpp"
 
 //TODO: add all the implem of the client class
 
@@ -74,16 +75,17 @@ bool    Client::isReg(void)const{
     return _reg;
 }
 
-bool    Client::isOper(void)const{
+Server *Client::getServer(void) const
+{
+    return _serv;
+}
+bool Client::isOper(void) const
+{
     return _isOper;
 }
 
 const Channel* Client::getCurrChan(void)const{
     return _currChan;
-}
-
-Server* Client::getServer(void){
-    return _serv;
 }
 
 std::vector<std::string> &Client::getChannalInvites(void)
@@ -124,7 +126,7 @@ void Client::setPass(std::string const& pass){
     _passwd = pass; 
 }
 
-const bool Client::isPasswordSet(void)const{
+bool Client::isPasswordSet(void)const{
     return _pSet;
 }
 

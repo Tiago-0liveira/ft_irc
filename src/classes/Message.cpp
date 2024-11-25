@@ -3,18 +3,8 @@
 #include <string>
 #include <deque>
 #include <set>
+#include "Message.hpp"
 
-//TODO: parser for generating messages types to feed specific
-//command parsers 
-std::set<std::string>targetSplit(std::string const&s){
-    std::set<std::string> res;
-    std::stringstream ss(s);
-    std::string split;
-    while(getline(ss, split, ',')){
-        res.emplace_back(split);
-    }
-    return res;
-}
 
 std::string trimSpace(std::string const& input)
 {
@@ -32,7 +22,7 @@ std::deque<std::string>strSplit(std::string const&s, char delim){
     std::stringstream ss(s);
     std::string split;
     while(getline(ss, split, delim)){
-        res.emplace_back(split);
+        res.push_back(split);
     }
     return res;
 }

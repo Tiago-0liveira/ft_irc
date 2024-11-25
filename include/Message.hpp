@@ -18,11 +18,11 @@ public:
     void setArgs(std::deque<std::string> const& args);
     std::string const& getPrefix(void)const;
     std::string const& getCommand(void)const;
+    std::deque<std::string> const &getArgs(void) const;
     // std::deque<std::string> const& getArgs(void)const;
     std::string _target, _prefix, _command, _singleArg;
     std::deque<std::string>_targets, _args;
     //PRIVMSG maria, adilson : "Ola tudo bem"
 };
 
-std::set<std::string>targetSplit(std::string const&s);
 #endif // !MESSAGE

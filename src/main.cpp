@@ -3,7 +3,7 @@
 
 
 // Entry point of the IRC server
-/*
+
 int main(int argc, char* argv[]) {
     // Ensure proper usage: ./ircserv <port> <password>
     if (argc != 3) {
@@ -26,4 +26,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-*/

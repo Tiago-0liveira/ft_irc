@@ -52,5 +52,5 @@ void nickCommand(Client& cli, Message& msg){
     cli.setNick(msg._args[0]);
     cli.setAuth();
     std::cout<< "User #"<< cli.getFd() << " nick set\n";
-} 
+}
 
