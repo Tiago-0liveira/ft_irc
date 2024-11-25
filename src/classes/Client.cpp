@@ -2,7 +2,6 @@
 
 //TODO: add all the implem of the client class
 
-
 Client::Client(void){
     return ;
 }
@@ -74,14 +73,6 @@ bool    Client::isReg(void)const{
     return _reg;
 }
 
-bool    Client::isOper(void)const{
-    return _isOper;
-}
-
-const Channel* Client::getCurrChan(void)const{
-    return _currChan;
-}
-
 Server* Client::getServer(void){
     return _serv;
 }
@@ -124,10 +115,6 @@ void Client::setPass(std::string const& pass){
     _passwd = pass; 
 }
 
-const bool Client::isPasswordSet(void)const{
-    return _pSet;
-}
-
 void Client::setLastActive(time_t& when){
     _lastActive = &when;
 }
@@ -143,14 +130,7 @@ void Client::setAuth(void){
 void Client::setReg(void){
     _reg = true;
 }
-void Client::setIsOper(void){
-    _isOper = true;
-}
-void Client::setCurrChan(Channel& curr){
-    _currChan = &curr;
-}
 
 void Client::setServer(Server& serv){
     _serv = &serv;
 }
-

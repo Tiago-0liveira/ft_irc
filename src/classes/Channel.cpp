@@ -77,6 +77,16 @@ bool Channel::isMember(Client& client)
 	return false;
 }
 
+bool Channel::isOp(Client& client)
+{
+	std::vector<Client*>::iterator find;
+
+	find = std::find(_op.begin(), _op.end(), &client);
+	if (find != _op.end())
+		return true;
+	return false;
+}
+
 void Channel::inviteClient(Client &member, Client &invited)
 {
 	if (!isMember(member))
@@ -85,23 +95,34 @@ void Channel::inviteClient(Client &member, Client &invited)
 		//std::cout << "The User " << member.getNick() << " can't invite people/ not part of the channel " << _channel << std::endl;
 		return;
 	}
+	else if (!isOp(member))
+	{
+		send_error(member, ERR_CHANOPRIVSNEEDED, "INVITE"); //You're not channel operator
+		return;
+	}
+	else if (isMember(invited))
+	{
+		send_error(member, ERR_USERONCHANNEL, "INVITE"); //is already on channel
+		return;
+	}
+	
 	std::vector<std::string>::iterator find = std::find(invited.getChannalInvites().begin(), invited.getChannalInvites().end(), _channel);
 	if (find == invited.getChannalInvites().end())
 	{
 		invited.getChannalInvites().push_back(_channel);
+		//RPL_INVITING
 		//broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()), _member.back()->getFd());
 		std::cout << "The User " << invited.getNick() << " was invided channel " << _channel << std::endl;
 	}
 }
 
-bool Channel::kickClient(Client &chop, Client &member)
+void Channel::kickClient(Client &chop, Client &member)
 {
 	if (!isOp(chop))
 	{
 		send_error(chop, ERR_CHANOPRIVSNEEDED, "KICK"); //You're not channel operator
-		return false;
+		return;
 	}
-
 	if (isMember(member))
 	{
 		//broadcastMessage(format(LEAVE_MESSAGE, (*find)->getNick()), -1);
@@ -110,11 +131,9 @@ bool Channel::kickClient(Client &chop, Client &member)
 		if (isOp(member))
 			_op.erase(std::find(_op.begin(), _op.end(), member));
 	}
-
-	return true;
 }
 
-void	Channel::topic(std::string topic, Client& member)
+void	Channel::topic(Client& member, std::string topic)
 {
 	if (!isMember(member))
 	{
@@ -129,16 +148,15 @@ void	Channel::topic(std::string topic, Client& member)
 	}
 	if (!topic.empty())
 		setTopic(topic);
-	//sendMessage(_op[0]->getFd(), format(TOPIC_MESSAGE, _channel, _topic));
 	if (_topic.empty())
 	{
-		//RPL_NOTOPIC
-		std::cout << RED << "Channel " << _channel << " dosen't have a topic." << RESET << std::endl;
+		broadcastMessage(RPL_NOTOPIC(_channel), member.getFd()); // No topic is set
+		//std::cout << RED << "Channel " << _channel << " dosen't have a topic." << RESET << std::endl;
 	}
 	else
 	{
-		//RPL_TOPIC
-		std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
+		broadcastMessage(RPL_TOPIC(_channel, _topic), member.getFd()); // Channel :topic
+		//std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 	}
 }
 
@@ -236,16 +254,6 @@ void Channel::keyMode(Client &client, std::string mode, std::string argument)
 		_pass = "";
 		std::cout << "Mode " << mode << ": password was removed from the channel " << _channel << std::endl;
 	}
-}
-
-bool Channel::isOp(Client& client)
-{
-	std::vector<Client*>::iterator find;
-
-	find = std::find(_op.begin(), _op.end(), &client);
-	if (find != _op.end())
-		return true;
-	return false;
 }
 
 void Channel::addOp(Client &client)

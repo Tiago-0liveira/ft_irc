@@ -13,15 +13,14 @@ class Server;
 #define NICK_MIN_LENGTH 4
 #define NICK_MAX_LENGTH 9
 
-class Client {
+class Client
+{
     public:
         Client(void);
         Client(int fd);
         Client(const Client& src);
         Client& operator=(const Client& rhs);
         ~Client(void);
-
-        //friend class Channel;
 
         const int&         getFd(void)const;
         const std::string& getHost(void)const;
@@ -35,7 +34,7 @@ class Client {
         bool    getStatus(void)const;
         bool    isAuth(void)const;
         bool    isReg(void)const;
-        Server*  getServer(void)const;
+        Server*  getServer(void);
         std::vector<std::string>  &getChannalInvites(void);
 
         void setFd(int fd);
@@ -53,7 +52,6 @@ class Client {
         void setServer(Server & serv);
 
     private:
-
         int _fd;
         std::string _hostname, _realname, _nickname, _username, _mode;
         std::string _passwd;
@@ -63,10 +61,10 @@ class Client {
         time_t      *_lastActive;
         bool        _auth;
         bool        _reg;
-        bool        _pSet;
         bool        _status;
-        bool        _isOper;
-        Channel     *_currChan;
+        // bool        _pSet;
+        // bool        _isOper;
+        // Channel     *_currChan;
 };
 
 #include "Server.hpp"

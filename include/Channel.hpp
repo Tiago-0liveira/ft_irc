@@ -50,22 +50,23 @@ class Channel
 		~Channel();
 
 		//Member functions
-		void	addClient(Client& client, std::string password);
+		void	addClient(Client& client, std::string password);	//JOIN
 		bool	isMember(Client& client);
-		void	inviteClient(Client &member, Client &invited);
-		bool	kickClient(Client &chop, Client &member);
-		void	topic(std::string topic, Client& member);
+		bool	isOp(Client& client);
+		//RPL_INVITING needs to be done
+		void	inviteClient(Client &member, Client &invited);		//INVITE
+		void	kickClient(Client &chop, Client &member);			// KICK
+		void	topic(Client& member, std::string topic);			//TOPIC
 		void	broadcastMessage(const std::string &message, int exceptFd);
 		
 		void	addMode(Client &client, std::string mode, std::string argument);
-		void	inviteMode(Client &client, std::string mode, std::string argument);
-		void	topicMode(Client &client, std::string mode, std::string argument);
-		void	keyMode(Client &client, std::string mode, std::string argument);
-		bool	isOp(Client& client);
+		void	inviteMode(Client &client, std::string mode, std::string argument);		// MODE -/+i
+		void	topicMode(Client &client, std::string mode, std::string argument);		// MODE -/+t
+		void	keyMode(Client &client, std::string mode, std::string argument);		// MODE -/+k
 		void	addOp(Client &client);
 		void	removeOp(Client& client);
-		void	operatorMode(Client &client, std::string mode, std::string argument);
-		void	limitMode(Client &client, std::string mode, std::string argument);
+		void	operatorMode(Client &client, std::string mode, std::string argument);	// MODE -/+k
+		void	limitMode(Client &client, std::string mode, std::string argument);		// MODE -/+l
 
 		//Acessers
 		std::vector<Client *>	&getMembers();
