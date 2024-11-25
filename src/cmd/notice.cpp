@@ -39,11 +39,11 @@ void noticeCommand(Client& cli, Message& msg){
         return ;
     }
     Server *serverPtr = cli.getServer();
-    if (!serverPtr->nickExists(msg._args.at(0)))
+    Client *target = serverPtr->findClient(msg._args.at(0));
+    if (!target)
     {
         send_error(cli, ERR_NOSUCHNICK, msg.getCommand());
         return ;
     }
-    Client &client = serverPtr->findClient(msg._args.at(0));
-    sendMessage(cli.getFd(), msg._args.at(1));
+    sendMessage(target->getFd(), msg._args.at(1));
 }
