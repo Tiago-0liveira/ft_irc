@@ -1,4 +1,4 @@
-#include "../include/Commands.hpp"
+#include "Commands.hpp"
 #include "../include/Message.hpp"
 #include "../include/Client.hpp"
 #include "../include/irc.hpp"
