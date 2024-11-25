@@ -1,19 +1,18 @@
 #ifndef COMMON_HEADERS
-#include <iostream>
-#include <vector>
-#include <string>
-#include <cstdlib>
 #include <algorithm>
-#include <fstream>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/epoll.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdint>
-#include <signal.h>
 #include <fcntl.h>
+#include <fstream>
+#include <iostream>
+#include <signal.h>
+#include <string>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 #endif // !COMMON_HEADERS

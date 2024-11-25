@@ -1,0 +1,22 @@
+# ClangFormat configuration file
+
+BasedOnStyle: LLVM           # Base style: LLVM, Google, Mozilla, Chromium, etc.
+IndentWidth: 4               # Number of spaces per indentation level
+TabWidth: 4                  # Tab width
+UseTab: Never                # Use tabs for indentation: Never, ForIndentation, Always
+
+BreakBeforeBraces: Allman    # Style for braces: Attach, Linux, Allman, GNU, etc.
+AllowShortFunctionsOnASingleLine: Inline # Allow short functions on a single line
+ColumnLimit: 100             # Maximum line length
+PointerAlignment: Left       # Align pointers: Left, Right, Middle
+SpaceBeforeParens: ControlStatements # Space before parentheses in control statements
+
+AlignConsecutiveAssignments: true  # Align variable assignments
+AlignConsecutiveDeclarations: true # Align declarations
+AlignTrailingComments: true        # Align trailing comments
+
+SortIncludes: true            # Automatically sort #include statements
+AccessModifierOffset: -2      # Indent for public/private/protected keywords
+
+# Optional: Customize specific cases
+StatementMacros: [Q_UNUSED]   # Special macros treated like statements

@@ -3,29 +3,22 @@
 
 #include <iostream>
 
-#include <cstdlib>
-#include <climits>
 #include <cerrno>
+#include <climits>
+#include <cstdlib>
 
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <algorithm>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
-#include <fcntl.h>
-#include <algorithm>
 
-#define LOG(x) std::cout << "LOG::" <<  __FILE__ << ":" << __LINE__ << "|" << x << std::endl;
+#define LOG(x) std::cout << "LOG::" << __FILE__ << ":" << __LINE__ << "|" << x << std::endl;
 
-
-
-class User {
-
+class User
+{
 };
-
-
-
-
-
 
 #endif

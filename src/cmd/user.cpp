@@ -1,7 +1,7 @@
-#include "../../include/errors.hpp"
 #include "../../include/Client.hpp"
-#include "../../include/Message.hpp"
 #include "../../include/Commands.hpp"
+#include "../../include/Message.hpp"
+#include "../../include/errors.hpp"
 
 /*  Command: USER
    Parameters: <username> <hostname> <servername> <realname>
@@ -50,14 +50,17 @@
                                    belongs to
    */
 
-void userCommand(Client& cli, Message& msg){
-    if (msg._args.empty() || msg._args.size() < 4){
+void userCommand(Client& cli, Message& msg)
+{
+    if (msg._args.empty() || msg._args.size() < 4)
+    {
         send_error(cli, ERR_NEEDMOREPARAMS, msg.getCommand());
-        return ;
+        return;
     }
-    else if (cli.isAuth()){
+    else if (cli.isAuth())
+    {
         send_error(cli, ERR_ALREADYREGISTRED, msg.getCommand());
-        return ;
+        return;
     }
     cli.setUser(msg._args[0]);
     cli.setHost(msg._args[1]);
@@ -65,9 +68,8 @@ void userCommand(Client& cli, Message& msg){
     cli.setRealname(msg._args[3] + msg._args[4]);
     cli.setReg();
     if (!cli.isAuth() && !cli.isPasswordSet())
-        return ;
-    std::cout << "User #" << cli.getFd()
-        << " registered as "<<cli.getNick();
-    //TODO: MesssageOfTheDay func()
-    return ;
+        return;
+    std::cout << "User #" << cli.getFd() << " registered as " << cli.getNick();
+    // TODO: MesssageOfTheDay func()
+    return;
 }

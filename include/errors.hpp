@@ -2,75 +2,80 @@
 #define ERRORS
 
 #pragma once
-#include <string>
 #include "Client.hpp"
+#include <string>
 
 std::string errmap(int errcode);
-void send_error(Client& cli, int errnum, const std::string& arg);
+void        send_error(Client& cli, int errnum, const std::string& arg);
 
 // REPLIES
-# define RPL_WELCOME(nick, user, host) (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
-# define RPL_YOURHOST(servername, version) (":Your host is " + servername + ", running version " + version + "\r\n")
-# define RPL_CREATED(date) (":This server was created " + date + "\r\n")
-# define RPL_MYINFO(servername, version, available_user_modes, available_channel_modes) \
-	(":" + servername + " " + version + " " + available_user_modes + " " + available_channel_modes + "\r\n")
-# define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
-# define RPL_MOTD(txt) (txt + "\r\n")
-# define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
-# define RPL_UMODEIS(user_mode) (user_mode + "\r\n")
-# define RPL_WHOREPLY(curr_chan, username, hostname, servname, nick, ircoper, chanoper, realname) \
-	(curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + ircoper \
-	+ chanoper + " :0 " + realname + "\r\n")
-# define RPL_ENDOFWHO(name) (name + " :End of /WHO list\r\n")
-# define RPL_CHANNELMODEIS(channel, mode) (channel + " :+" + mode + "\r\n")
-# define RPL_NOTOPIC(channel) (channel + " :No topic is set" + "\r\n")
-# define RPL_TOPIC(channel, topic) (channel + " :" + topic + "\r\n")
-# define RPL_TOPICWHOTIME(channel, who, when) (channel + " " + who + " :" + when + "\r\n")
-# define RPL_NAMREPLY(channel, list) ("= " + channel + " :" + list + "\r\n")
-# define RPL_ENDOFNAMES(channel) (channel + " :End of /NAMES list.\r\n")
-# define RPL_AWAY(nick, msg) (nick + " :" + msg + "\r\n")
-# define RPL_CREATIONTIME(channel, creation_time) (channel + " :" + creation_time + "\r\n")
-# define RPL_BANLIST(channel, mask) (channel + " :" + mask + "\r\n")
-# define RPL_ENDOFBANLIST(channel) (channel + " :End of channel ban list\r\n")
-# define RPL_INVITING(guest, channel) (guest + " :" + channel + "\r\n")
-# define ERR_SERVERISFULL(host) ("ERROR :Closing link: (unknown@" + host + ") [No more connections allowed from your host via this connect class (local)]\r\n")
+#define RPL_WELCOME(nick, user, host)                                                              \
+    (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
+#define RPL_YOURHOST(servername, version)                                                          \
+    (":Your host is " + servername + ", running version " + version + "\r\n")
+#define RPL_CREATED(date) (":This server was created " + date + "\r\n")
+#define RPL_MYINFO(servername, version, available_user_modes, available_channel_modes)             \
+    (":" + servername + " " + version + " " + available_user_modes + " " +                         \
+     available_channel_modes + "\r\n")
+#define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
+#define RPL_MOTD(txt) (txt + "\r\n")
+#define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
+#define RPL_UMODEIS(user_mode) (user_mode + "\r\n")
+#define RPL_WHOREPLY(curr_chan, username, hostname, servname, nick, ircoper, chanoper, realname)   \
+    (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + ircoper +  \
+     chanoper + " :0 " + realname + "\r\n")
+#define RPL_ENDOFWHO(name) (name + " :End of /WHO list\r\n")
+#define RPL_CHANNELMODEIS(channel, mode) (channel + " :+" + mode + "\r\n")
+#define RPL_NOTOPIC(channel) (channel + " :No topic is set" + "\r\n")
+#define RPL_TOPIC(channel, topic) (channel + " :" + topic + "\r\n")
+#define RPL_TOPICWHOTIME(channel, who, when) (channel + " " + who + " :" + when + "\r\n")
+#define RPL_NAMREPLY(channel, list) ("= " + channel + " :" + list + "\r\n")
+#define RPL_ENDOFNAMES(channel) (channel + " :End of /NAMES list.\r\n")
+#define RPL_AWAY(nick, msg) (nick + " :" + msg + "\r\n")
+#define RPL_CREATIONTIME(channel, creation_time) (channel + " :" + creation_time + "\r\n")
+#define RPL_BANLIST(channel, mask) (channel + " :" + mask + "\r\n")
+#define RPL_ENDOFBANLIST(channel) (channel + " :End of channel ban list\r\n")
+#define RPL_INVITING(guest, channel) (guest + " :" + channel + "\r\n")
+#define ERR_SERVERISFULL(host)                                                                     \
+    ("ERROR :Closing link: (unknown@" + host +                                                     \
+     ") [No more connections allowed from your host via this connect class (local)]\r\n")
 
-//ERRORS
-# define ERR_NOSUCHNICK			401
-# define ERR_NOSUCHSERVER		402
-# define ERR_NOSUCHCHANNEL		403
-# define ERR_CANNOTSENDTOCHAN	404
-# define ERR_TOOMANYCHANNELS	405
-# define ERR_WASNOSUCHNICK		406 // "<nickname> :There was no such nickname"
-# define ERR_TOOMANYTARGETS		407
-# define ERR_NOORIGIN			409
-# define ERR_NORECIPIENT		411
-# define ERR_NOTEXTTOSEND		412
-# define ERR_NOTOPLEVEL			413 // "<mask> :No toplevel domain specified"
-# define ERR_WILDTOPLEVEL		414 // "<mask> :Wildcard in toplevel domain"
-# define ERR_UNKNOWNCOMMAND		421 // "<command> :Unknown command"
-# define ERR_NOMOTD				422
-# define ERR_NOADMININFO		423 // "<server> :No administrative info available"
-# define ERR_NONICKNAMEGIVEN	431
-# define ERR_ERRONEUSNICKNAME	432
-# define ERR_NICKNAMEINUSE		433
-# define ERR_NOTONCHANNEL		442
-# define ERR_USERONCHANNEL		443
-# define ERR_NOTREGISTERED		451
-# define ERR_NEEDMOREPARAMS		461
-# define ERR_ALREADYREGISTRED	462
-# define ERR_PASSWDMISMATCH		464
-# define ERR_KEYSET				467
-# define ERR_CHANNELISFULL		471
-# define ERR_UNKNOWNMODE		472
-# define ERR_INVITEONLYCHAN		473
-# define ERR_BANNEDFROMCHAN		474
-# define ERR_BADCHANNELKEY		475
-# define ERR_BADCHANMASK		476
-# define ERR_BADCHANNAME		479
-# define ERR_CHANOPRIVSNEEDED	482
-# define ERR_NOOPERHOST			491
-# define ERR_UMODEUNKNOWNFLAG	501
-# define ERR_USERSDONTMATCH		502
+// ERRORS
+#define ERR_NOSUCHNICK 401
+#define ERR_NOSUCHSERVER 402
+#define ERR_NOSUCHCHANNEL 403
+#define ERR_CANNOTSENDTOCHAN 404
+#define ERR_TOOMANYCHANNELS 405
+#define ERR_WASNOSUCHNICK 406 // "<nickname> :There was no such nickname"
+#define ERR_TOOMANYTARGETS 407
+#define ERR_NOORIGIN 409
+#define ERR_NORECIPIENT 411
+#define ERR_NOTEXTTOSEND 412
+#define ERR_NOTOPLEVEL 413     // "<mask> :No toplevel domain specified"
+#define ERR_WILDTOPLEVEL 414   // "<mask> :Wildcard in toplevel domain"
+#define ERR_UNKNOWNCOMMAND 421 // "<command> :Unknown command"
+#define ERR_NOMOTD 422
+#define ERR_NOADMININFO 423 // "<server> :No administrative info available"
+#define ERR_NONICKNAMEGIVEN 431
+#define ERR_ERRONEUSNICKNAME 432
+#define ERR_NICKNAMEINUSE 433
+#define ERR_NOTONCHANNEL 442
+#define ERR_USERONCHANNEL 443
+#define ERR_NOTREGISTERED 451
+#define ERR_NEEDMOREPARAMS 461
+#define ERR_ALREADYREGISTRED 462
+#define ERR_PASSWDMISMATCH 464
+#define ERR_KEYSET 467
+#define ERR_CHANNELISFULL 471
+#define ERR_UNKNOWNMODE 472
+#define ERR_INVITEONLYCHAN 473
+#define ERR_BANNEDFROMCHAN 474
+#define ERR_BADCHANNELKEY 475
+#define ERR_BADCHANMASK 476
+#define ERR_BADCHANNAME 479
+#define ERR_CHANOPRIVSNEEDED 482
+#define ERR_NOOPERHOST 491
+#define ERR_UMODEUNKNOWNFLAG 501
+#define ERR_USERSDONTMATCH 502
 
 #endif // !ERRORS

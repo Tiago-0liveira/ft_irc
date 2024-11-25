@@ -1,7 +1,7 @@
-#include <iostream>
-#include "../../include/errors.hpp"
 #include "../../include/Client.hpp"
 #include "../../include/Message.hpp"
+#include "../../include/errors.hpp"
+#include <iostream>
 
 /*
  * Password message
@@ -28,16 +28,18 @@
 
 // void send_error(Client& cli, int errnum, std::string& arg)
 
-void passCommand(Client& cli, Message& msg){
-    if (msg._args.size() == 0){
+void passCommand(Client& cli, Message& msg)
+{
+    if (msg._args.size() == 0)
+    {
         send_error(cli, ERR_NEEDMOREPARAMS, msg.getCommand());
-        return ;
+        return;
     }
-    else if (cli.isReg()){
+    else if (cli.isReg())
+    {
         send_error(cli, ERR_ALREADYREGISTRED, msg.getCommand());
-        return ;
+        return;
     }
     cli.setPass(msg._args[0]);
-    std::cout<< "User #"<< cli.getFd() << " password added\n";
+    std::cout << "User #" << cli.getFd() << " password added\n";
 }
-

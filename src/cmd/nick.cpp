@@ -1,6 +1,6 @@
-#include "../../include/errors.hpp"
 #include "../../include/Client.hpp"
 #include "../../include/Message.hpp"
+#include "../../include/errors.hpp"
 
 /*
  * Command: NICK
@@ -34,23 +34,25 @@
    :WiZ NICK Kilroy                ; WiZ changed his nickname to Kilroy.
 */
 
-void nickCommand(Client& cli, Message& msg){
-    Server *ptr = cli.getServer();
-    if (msg._args.size() == 0){
+void nickCommand(Client& cli, Message& msg)
+{
+    Server* ptr = cli.getServer();
+    if (msg._args.size() == 0)
+    {
         send_error(cli, ERR_NONICKNAMEGIVEN, msg.getCommand());
-        return ;
+        return;
     }
-    else if (msg._args[0].size() < NICK_MIN_LENGTH
-            || msg._args[0].size() > NICK_MAX_LENGTH){
+    else if (msg._args[0].size() < NICK_MIN_LENGTH || msg._args[0].size() > NICK_MAX_LENGTH)
+    {
         send_error(cli, ERR_ERRONEUSNICKNAME, msg.getCommand());
-        return ;
+        return;
     }
-    else if (ptr->m_nickSet.insert(msg._args[0]).second == false){
+    else if (ptr->m_nickSet.insert(msg._args[0]).second == false)
+    {
         send_error(cli, ERR_NICKNAMEINUSE, msg.getCommand());
-        return ;
+        return;
     }
     cli.setNick(msg._args[0]);
     cli.setAuth();
-    std::cout<< "User #"<< cli.getFd() << " nick set\n";
+    std::cout << "User #" << cli.getFd() << " nick set\n";
 }
-

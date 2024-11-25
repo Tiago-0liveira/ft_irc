@@ -1,7 +1,7 @@
 #include "../../include/Client.hpp"
+#include "../../include/Commands.hpp"
 #include "../../include/Message.hpp"
 #include "../../include/errors.hpp"
-#include "../../include/Commands.hpp"
 
 // Command: PONG
 // Parameters: <daemon> [<daemon2>]
@@ -19,11 +19,12 @@
 //
 // PONG csd.bu.edu tolsun.oulu.fi  ; PONG message from csd.bu.edu to
 
-
-void pongCommand(Client& cli, Message& msg){
-    if (msg._args.empty()){
+void pongCommand(Client& cli, Message& msg)
+{
+    if (msg._args.empty())
+    {
         send_error(cli, ERR_NOORIGIN, msg.getCommand());
-        return ;
+        return;
     }
-    //TODO: complete this command;
+    // TODO: complete this command;
 }
