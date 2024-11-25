@@ -169,23 +169,22 @@ int Server::getPort() const
 	return m_port;
 }
 
-Client& Server::findClient(std::string const& nick){
-    std::vector<Client>::iterator it;
-
-    for(it = m_clients.begin(); it != m_clients.end(); it++){
-        if (it->getNick() == nick)
-            return *it;
+Client* Server::findClient(std::string const& nick){
+    for (std::vector<Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+        if (it->getNick() == nick) {
+            return &(*it);
+        }
     }
-
+    return NULL;
 }
 
-Channel& Server::findChannel(std::string const& name){
-    std::vector<Channel>::iterator it;
-
-    for (it = m_channels.begin(); it != m_channels.end(); it++){
-        if (it->getName() == name)
-            return *it;
+Channel* Server::findChannel(std::string const& name){
+    for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
+        if (it->getName() == name) {
+            return &(*it);
+        }
     }
+    return NULL;
 }
 
 void Server::setHost(std::string const& host){
