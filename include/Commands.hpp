@@ -2,17 +2,17 @@
 #define COMMANDS
 
 #include "Client.hpp"
-#include "Message.hpp"
+#include <string>
 
-typedef void (*FuncPtr)(Client& cli, Message& msg);
+typedef void (*FuncPtr)(Client& cli, std::string& msg);
 
-void passCommand(Client& cli, Message& msg);
-void nickCommand(Client& cli, Message& msg);
-void userCommand(Client& cli, Message& msg);
-void pingCommand(Client& cli, Message& msg);
-void pongCommand(Client& cli, Message& msg);
-void privmsgCommand(Client& cli, Message& msg);
-void noticeCommand(Client& cli, Message& msg);
-// void pongCommand(Client& cli, Message& msg);
+void passCommand(Client& cli, std::string& msg);
+void nickCommand(Client& cli, std::string& msg);
+void userCommand(Client& cli, std::string& msg);
+void pingCommand(Client& cli, std::string& msg);
+void pongCommand(Client& cli, std::string& msg);
+void privmsgCommand(Client& cli, std::string& msg);
+void noticeCommand(Client& cli, std::string& msg);
+// void pongCommand(Client& cli, std::string& msg);
 
 #endif // !COMMANDS
