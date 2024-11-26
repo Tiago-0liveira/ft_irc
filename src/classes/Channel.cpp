@@ -139,7 +139,7 @@ void Channel::topic(std::string topic, Client& client)
 
 bool Channel::broadcastMessage(Client& cli, const std::string& message, int exceptFd)
 {
-    if (isOp(cli) == false)
+    if (isMember(cli) == false)
         return false;
     std::vector<Client*>::iterator it = _member.begin();
 
