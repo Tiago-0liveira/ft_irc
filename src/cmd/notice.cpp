@@ -1,7 +1,7 @@
 #include "../../include/Client.hpp"
 #include "../../include/Commands.hpp"
-#include "../../include/Message.hpp"
 #include "../../include/errors.hpp"
+#include <sstream>
 
 /*
     Command: NOTICE
@@ -28,24 +28,30 @@
         RPL_AWAY
 */
 
-void noticeCommand(Client& cli, Message& msg)
+void noticeCommand(Client& cli, std::string& msg)
 {
-    if (msg._args.empty())
+    std::string cmd, nick, text;
+    std::istringstream stream(msg);
+    stream >> cmd;
+    stream >> nick;
+    stream >> text;
+
+    if (nick.empty())
     {
-        send_error(cli, ERR_NORECIPIENT, msg.getCommand());
+        send_error(cli, ERR_NORECIPIENT, cmd);
         return;
     }
-    else if (msg._args.size() < 2)
+    else if (text.empty())
     {
-        send_error(cli, ERR_NOTEXTTOSEND, msg.getCommand());
+        send_error(cli, ERR_NOTEXTTOSEND, cmd);
         return;
     }
     Server* serverPtr = cli.getServer();
-    Client* target    = serverPtr->findClient(msg._args.at(0));
+    Client* target    = serverPtr->findClient(nick);
     if (!target)
     {
-        send_error(cli, ERR_NOSUCHNICK, msg.getCommand());
+        send_error(cli, ERR_NOSUCHNICK, cmd);
         return;
     }
-    sendMessage(target->getFd(), msg._args.at(1));
+    sendMessage(target->getFd(), text); 
 }
