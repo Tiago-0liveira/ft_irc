@@ -1,7 +1,7 @@
 #include "../../include/Client.hpp"
 #include "../../include/Commands.hpp"
-#include "../../include/Message.hpp"
 #include "../../include/errors.hpp"
+#include <sstream>
 #include <string>
 
 // Command: PING
@@ -33,19 +33,25 @@
 //
 // PING WiZ                        ; PING message being sent to nick WiZ
 
-void pingCommand(Client& cli, Message& msg)
+void pingCommand(Client& cli, std::string& msg)
 {
-    if (msg._args.empty())
+    std::istringstream stream(msg);
+    std::string cmd, arg;
+    
+    stream >> cmd;
+    stream >> arg;
+
+    if (arg.empty())
     {
-        send_error(cli, ERR_NOORIGIN, msg.getCommand());
+        send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
-    else if (msg._args.size() > 1)
-    {
-        send_error(cli, ERR_NOSUCHSERVER, msg.getCommand());
-        return;
-    }
-    Server*     ptr = cli.getServer();
-    std::string ping =
-        MSG_PRF + ptr->getHost() + " PONG " + ptr->getHost() + " " + msg._args[0] + MSG_END;
+    // else if ()
+    // {
+    //     send_error(cli, ERR_NOSUCHSERVER, cmd);
+    //     return;
+    // }
+    // Server*     ptr = cli.getServer();
+    // std::string ping =
+    //     MSG_PRF + ptr->getHost() + " PONG " + ptr->getHost() + " " + msg._args[0] + MSG_END;
 }
