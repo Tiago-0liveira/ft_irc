@@ -146,6 +146,7 @@ void Client::setMode(std::string const& mode)
 void Client::setPass(std::string const& pass)
 {
     _passwd = pass;
+    _pSet = true;
 }
 
 bool Client::isPasswordSet(void) const
@@ -171,14 +172,6 @@ void Client::setAuth(void)
 void Client::setReg(void)
 {
     _reg = true;
-}
-void Client::setIsOper(void)
-{
-    _isOper = true;
-}
-void Client::setCurrChan(Channel& curr)
-{
-    _currChan = &curr;
 }
 
 void Client::setServer(Server& serv)
