@@ -1,7 +1,7 @@
 #include <Channel.hpp>
 #include <Commands.hpp>
-#include <Message.hpp>
 #include <Server.hpp>
+#include <misc.hpp>
 #include <algorithm>
 #include <cctype>
 #include <errors.hpp>
@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 #include <sys/poll.h>
 #include <vector>
 
@@ -111,6 +112,7 @@ bool Server::addNewFd(int newfd)
 bool Server::receiveData(int idx)
 {
     char buf[BUFFER_SIZE];
+    std::vector<std::string>splitMsg;
 
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
@@ -123,8 +125,8 @@ bool Server::receiveData(int idx)
     if (bytesRead < 0)
         throw std::runtime_error(strerror(errno));
     std::string msgStr(buf);
-    Message     strToMsg(msgStr);
-    handleClientUpdates(strToMsg, m_clients[idx]);
+    splitMsg = strSplit(buf, '\n');
+    handleClientUpdates(splitMsg, m_clients[idx]);
     return true;
 }
 
@@ -151,29 +153,34 @@ void Server::handleNewConnections()
               << ntohs(clientAddr.sin_port) << "\n";
 }
 
-bool Server::handleClientUpdates(Message& msg, Client& cli)
+bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
 {
-    std::string command(msg.getCommand());
-    std::transform(command.begin(), command.end(), command.begin(), ::toupper);
-
+    std::vector<std::string>::iterator it;
     std::map<std::string, FuncPtr> m;
+    std::string command;
 
     m["PASS"] = passCommand;
     m["USER"] = userCommand;
     m["NICK"] = nickCommand;
     m["PING"] = pingCommand;
     m["PONG"] = pongCommand;
-    /* m["PRIVMSG"] = privmsgCommand;
-    m["NOTICE"] = noticeCommand; */
+    // m["PRIVMSG"] = privmsgCommand;
+    // m["NOTICE"] = noticeCommand;
 
-    if (m.count(command))
-    {
-        m[command](cli, msg);
-    }
-    else
-    {
-        send_error(cli, ERR_UNKNOWNCOMMAND, msg.getCommand());
-        return false;
+    for (it = msg.begin(); it != msg.end(); it++){
+        std::istringstream stream(*it);
+        stream >> command;
+        std::transform(command.begin(), command.end(), 
+                command.begin(), ::toupper);
+        if (m.count(command) == 1)
+        {
+            m[command](cli, *it);
+        }
+        else
+        {
+            send_error(cli, ERR_UNKNOWNCOMMAND, command);
+            return false;
+        }
     }
     return true;
 }
