@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "Message.hpp"
 #include "irc.hpp"
 #include "misc.hpp"
 #include <algorithm>
@@ -48,7 +47,7 @@ class Server
 
   private:
     void                 handleNewConnections();
-    bool                 handleClientUpdates(Message& msg, Client& cli);
+    bool                 handleClientUpdates(std::vector<std::string>& msg, Client& cli);
     bool                 receiveData(int index);
     bool                 addNewFd(int newfd);
     bool                 deleteFd(int fd);
