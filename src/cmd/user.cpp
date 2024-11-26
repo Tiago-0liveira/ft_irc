@@ -1,7 +1,8 @@
-#include "../../include/Client.hpp"
-#include "../../include/Commands.hpp"
-#include "../../include/Message.hpp"
-#include "../../include/errors.hpp"
+#include <Client.hpp>
+#include <Commands.hpp>
+#include <errors.hpp>
+#include <string>
+#include <sstream>
 
 /*  Command: USER
    Parameters: <username> <hostname> <servername> <realname>
@@ -50,26 +51,33 @@
                                    belongs to
    */
 
-void userCommand(Client& cli, Message& msg)
+void userCommand(Client& cli, std::string& msg)
 {
-    if (msg._args.empty() || msg._args.size() < 4)
+    std::string cmd, user, host, serv, realname;
+    std::istringstream stream(msg);
+    stream >> cmd;
+    stream >> user;
+    stream >> host;
+    stream >> serv;
+    stream >> realname;
+
+    if (msg.size() < 4)
     {
-        send_error(cli, ERR_NEEDMOREPARAMS, msg.getCommand());
+        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
     }
     else if (cli.isAuth())
     {
-        send_error(cli, ERR_ALREADYREGISTRED, msg.getCommand());
+        send_error(cli, ERR_ALREADYREGISTRED, cmd);
         return;
     }
-    cli.setUser(msg._args[0]);
-    cli.setHost(msg._args[1]);
-    cli.setServname(msg._args[2]);
-    cli.setRealname(msg._args[3] + msg._args[4]);
+    cli.setUser(user);
+    cli.setHost(host);
+    cli.setServname(serv);
+    cli.setRealname(realname);
     cli.setReg();
     if (!cli.isAuth() && !cli.isPasswordSet())
         return;
-    std::cout << "User #" << cli.getFd() << " registered as " << cli.getNick();
     // TODO: MesssageOfTheDay func()
     return;
 }
