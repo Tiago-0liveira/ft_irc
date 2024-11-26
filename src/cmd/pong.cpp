@@ -1,7 +1,8 @@
 #include "../../include/Client.hpp"
 #include "../../include/Commands.hpp"
-#include "../../include/Message.hpp"
 #include "../../include/errors.hpp"
+#include <sstream>
+#include <string>
 
 // Command: PONG
 // Parameters: <daemon> [<daemon2>]
@@ -19,11 +20,17 @@
 //
 // PONG csd.bu.edu tolsun.oulu.fi  ; PONG message from csd.bu.edu to
 
-void pongCommand(Client& cli, Message& msg)
+void pongCommand(Client& cli, std::string& msg)
 {
-    if (msg._args.empty())
+    std::istringstream stream(msg);
+    std::string cmd, arg;
+
+    stream >> cmd;
+    stream >> arg;
+
+    if (arg.empty())
     {
-        send_error(cli, ERR_NOORIGIN, msg.getCommand());
+        send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
     // TODO: complete this command;
