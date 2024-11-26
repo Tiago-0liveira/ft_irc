@@ -137,8 +137,10 @@ void Channel::topic(std::string topic, Client& client)
         std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 }
 
-void Channel::broadcastMessage(const std::string& message, int exceptFd)
+bool Channel::broadcastMessage(Client& cli, const std::string& message, int exceptFd)
 {
+    if (isOp(cli) == false)
+        return false;
     std::vector<Client*>::iterator it = _member.begin();
 
     while (it != _member.end())
@@ -150,6 +152,7 @@ void Channel::broadcastMessage(const std::string& message, int exceptFd)
         }
         it++;
     }
+    return true;
 }
 
 void Channel::addMode(Client& client, std::string mode, std::string argument)
