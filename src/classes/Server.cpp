@@ -49,6 +49,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
         throw std::runtime_error("listen failed");
     }
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
+	m_clients.push_back(Client(m_socket));//This way the indexes are right
 	m_fdNum = 1;
 }
 
@@ -72,7 +73,8 @@ Server& Server::operator=(const Server& rhs)
 
 void Server::start()
 {
-    while (true)
+	std::cout << format("Server listening on port: %d with password: ", m_port) << m_password << std::endl;
+	while (true)
     { /* stop if ctrl+c */
         int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
         if (pollCount == -1)
@@ -84,8 +86,7 @@ void Server::start()
                 if (m_pollFds[i].fd == m_socket)
                 {
                     handleNewConnections();
-                    if (addNewFd(m_newFd))
-                        m_clients.push_back(Client(m_newFd));
+                    addNewFd(m_newFd);
                 }
                 else
                     receiveData(i);
@@ -103,8 +104,13 @@ bool Server::addNewFd(int newfd)
         return false;
     }
     m_pollFds.push_back(((pollfd){newfd, POLLIN, 0}));
-    // m_pollFds[m_fdNum].fd     = m_newFd;
-    // m_pollFds[m_fdNum].events = POLLIN;
+
+	m_clients.push_back(Client(m_newFd)); 
+	// Warning: Client is created but then is copied to the array so the copy constructor is called
+	Client &freshClient = m_clients[m_fdNum];
+	freshClient.setFd(m_newFd);
+	freshClient.setServer(*this);
+
     m_fdNum++;
     return true;
 }
@@ -167,6 +173,7 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["NICK"] = nickCommand;
     m["PING"] = pingCommand;
     m["PONG"] = pongCommand;
+	m["CAP"] = ignoreCommand;
     // m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 

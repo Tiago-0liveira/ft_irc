@@ -9,6 +9,7 @@ Client::Client(void)
 }
 Client::Client(int fd) : _fd(fd)
 {
+	std::cout << "Client constructor _fd:" << _fd << std::endl;
     return;
 }
 
@@ -20,7 +21,12 @@ Client::Client(const Client& src)
 
 Client& Client::operator=(const Client& rhs)
 {
-    (void)rhs;
+	if (this == &rhs)
+	{
+		// TODO: extremely imcomplete
+		// do it later
+		this->_fd = rhs.getFd();
+	}
     return *this;
 }
 
