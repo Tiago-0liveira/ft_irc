@@ -49,6 +49,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
         throw std::runtime_error("listen failed");
     }
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
+	m_fdNum = 1;
 }
 
 Server::~Server()
@@ -71,10 +72,6 @@ Server& Server::operator=(const Server& rhs)
 
 void Server::start()
 {
-    // m_pollFds.reserve(MAX_CLIENTS + 1);
-    m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
-    m_fdNum += 1;
-
     while (true)
     { /* stop if ctrl+c */
         int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
