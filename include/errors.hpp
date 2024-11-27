@@ -40,6 +40,21 @@ void        send_error(Client& cli, int errnum, const std::string& arg);
     ("ERROR :Closing link: (unknown@" + host +                                                     \
      ") [No more connections allowed from your host via this connect class (local)]\r\n")
 
+// NOTICES
+#define NTC_NICK(nick) ("NICK :" + nick)
+#define NTC_MODE(nick, mode) ("MODE " + nick + " :" + mode)
+#define NTC_JOIN(channel) ("JOIN :" + channel)
+#define NTC_PART(channel) ("PART :" + channel)
+#define NTC_PART_MSG(channel, msg) ("PART " + channel + " :\"" + msg + "\"")
+#define NTC_PRIVMSG(dest, msg) ("PRIVMSG " + dest + " " + msg)
+#define NTC_NOTICE(dest, msg) ("NOTICE " + dest + " " + msg)
+#define NTC_QUIT(msg) (" QUIT :Quit: " + msg)
+#define NTC_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
+#define NTC_CHANMODE(channel, mode) ("MODE " + channel + " :" + mode)
+#define NTC_CHANMODE_ARG(channel, mode, arg) ("MODE " + channel + " " + mode + " :" + arg)
+#define NTC_KICK(channel, usr, reason) ("KICK " + channel + " " + usr + " " + reason)
+#define NTC_INVITE(channel, usr) ("INVITE " + usr + " :" + channel)
+
 // ERRORS
 #define ERR_NOSUCHNICK 401
 #define ERR_NOSUCHSERVER 402

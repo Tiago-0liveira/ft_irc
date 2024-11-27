@@ -21,9 +21,16 @@ int main(int argc, char* argv[])
     }
     std::string password = argv[2];
 
-    Server sv(port, password);
+    try
+    {
+        Server sv(port, password);
 
-    sv.start();
+        sv.start();
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << "\n";
+    }
 
     return 0;
 }

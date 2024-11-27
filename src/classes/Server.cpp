@@ -1,16 +1,20 @@
 #include <Channel.hpp>
 #include <Commands.hpp>
 #include <Server.hpp>
-#include <misc.hpp>
 #include <algorithm>
+#include <cassert>
 #include <cctype>
+#include <cstring>
 #include <errors.hpp>
+#include <fcntl.h>
 #include <iostream>
+#include <irc.hpp>
 #include <map>
+#include <misc.hpp>
 #include <netinet/in.h>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
 #include <sys/poll.h>
 #include <vector>
 
@@ -27,6 +31,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     {
         throw std::runtime_error("Failed to set socket options");
     }
+    if (fcntl(m_socket, F_SETFL, O_NONBLOCK) == -1)
+        throw std::runtime_error(strerror(errno));
 
     m_address.sin_family      = AF_INET;
     m_address.sin_addr.s_addr = INADDR_ANY;
@@ -42,7 +48,6 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     {
         throw std::runtime_error("listen failed");
     }
-
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
 }
 
@@ -66,17 +71,16 @@ Server& Server::operator=(const Server& rhs)
 
 void Server::start()
 {
-    m_pollFds.reserve(MAX_CLIENTS + 1);
-    m_pollFds[0].fd     = m_socket;
-    m_pollFds[0].events = POLLIN;
-    m_fdNum             = 1;
+    // m_pollFds.reserve(MAX_CLIENTS + 1);
+    m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
+    m_fdNum += 1;
 
     while (true)
     { /* stop if ctrl+c */
         int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
         if (pollCount == -1)
             std::runtime_error("Poll error\n");
-        for (int i = 1; i < m_fdNum; ++i)
+        for (int i = 0; i < m_fdNum; ++i)
         {
             if (m_pollFds[i].revents & POLLIN)
             {
@@ -84,13 +88,11 @@ void Server::start()
                 {
                     handleNewConnections();
                     if (addNewFd(m_newFd))
-                    {
                         m_clients.push_back(Client(m_newFd));
-                        break;
-                    }
                 }
+                else
+                    receiveData(i);
             }
-            receiveData(i);
         }
     }
 }
@@ -103,17 +105,19 @@ bool Server::addNewFd(int newfd)
         sendMessage(newfd, msg);
         return false;
     }
-    m_pollFds[m_fdNum].fd     = m_newFd;
-    m_pollFds[m_fdNum].events = POLLIN;
+    m_pollFds.push_back(((pollfd){newfd, POLLIN, 0}));
+    // m_pollFds[m_fdNum].fd     = m_newFd;
+    // m_pollFds[m_fdNum].events = POLLIN;
     m_fdNum++;
     return true;
 }
 
 bool Server::receiveData(int idx)
 {
-    char buf[BUFFER_SIZE];
-    std::vector<std::string>splitMsg;
+    char                     buf[BUFFER_SIZE];
+    std::vector<std::string> splitMsg;
 
+    LOG("receiveData");
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
     if (bytesRead <= 0)
@@ -146,18 +150,20 @@ void Server::handleNewConnections()
     sockaddr_in clientAddr;
     socklen_t   clientAddrSize = sizeof(clientAddr);
     m_newFd                    = accept(m_socket, (struct sockaddr*)&clientAddr, &clientAddrSize);
-
+    if (fcntl(m_newFd, F_SETFL, O_NONBLOCK) == -1)
+        throw std::runtime_error(strerror(errno));
     if (m_newFd == -1)
         throw std::runtime_error(strerror(errno));
-    std::cout << "new client " << m_newFd << "from " << inet_ntoa(clientAddr.sin_addr) << ":"
+    std::cout << "new client " << m_newFd << " from " << inet_ntoa(clientAddr.sin_addr) << ":"
               << ntohs(clientAddr.sin_port) << "\n";
+    return;
 }
 
 bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
 {
     std::vector<std::string>::iterator it;
-    std::map<std::string, FuncPtr> m;
-    std::string command;
+    std::map<std::string, FuncPtr>     m;
+    std::string                        command;
 
     m["PASS"] = passCommand;
     m["USER"] = userCommand;
@@ -167,11 +173,11 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     // m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
-    for (it = msg.begin(); it != msg.end(); it++){
+    for (it = msg.begin(); it != msg.end(); it++)
+    {
         std::istringstream stream(*it);
         stream >> command;
-        std::transform(command.begin(), command.end(), 
-                command.begin(), ::toupper);
+        std::transform(command.begin(), command.end(), command.begin(), ::toupper);
         if (m.count(command) == 1)
         {
             m[command](cli, *it);
