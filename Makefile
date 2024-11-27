@@ -9,14 +9,14 @@ SRC_FOLDER = src/
 OBJ_DIR = obj/
 
 SRC_ROOT_FILES =  errors.cpp  main.cpp  misc.cpp parsing.cpp\
-				 $(addprefix cmd/, \
+				# $(addprefix cmd/, \
 					invite.cpp  kick.cpp  nick.cpp    oper.cpp  pass.cpp  pong.cpp     quit.cpp   user.cpp \
 					join.cpp    mode.cpp  notice.cpp  part.cpp  ping.cpp  privmsg.cpp  topic.cpp  who.cpp \
 				 )
 				 
 				 
 				 
-CLASSES = Server.cpp Client.cpp Channel.cpp
+CLASSES =  Client.cpp Channel.cpp #Server.cpp
 
 INCLUDE_HEADERS = $(addprefix $(includefolder), \
 	$(CLASSES:%.cpp=%.hpp) \

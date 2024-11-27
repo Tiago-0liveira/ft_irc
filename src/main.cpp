@@ -2,7 +2,7 @@
 #include <iostream>
 
 // Entry point of the IRC server
-
+/*
 int main(int argc, char* argv[])
 {
     // Ensure proper usage: ./ircserv <port> <password>
@@ -34,3 +34,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+*/

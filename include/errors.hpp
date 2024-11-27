@@ -36,6 +36,7 @@ void        send_error(Client& cli, int errnum, const std::string& arg);
 #define RPL_BANLIST(channel, mask) (channel + " :" + mask + "\r\n")
 #define RPL_ENDOFBANLIST(channel) (channel + " :End of channel ban list\r\n")
 #define RPL_INVITING(guest, channel) (guest + " :" + channel + "\r\n")
+#define RPL_JOINING(guest, channel) (guest + " :Joined " + channel + "\r\n")
 #define ERR_SERVERISFULL(host)                                                                     \
     ("ERROR :Closing link: (unknown@" + host +                                                     \
      ") [No more connections allowed from your host via this connect class (local)]\r\n")
