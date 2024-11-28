@@ -1,4 +1,6 @@
 #include "../include/errors.hpp"
+#include "Channel.hpp"
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -50,7 +52,32 @@ void send_error(Client& cli, int errnum, const std::string& arg)
 
     os << ":mariairc " << errnum << " * " << arg << errmap(errnum) << "\r\n";
 
-    std::string s = os.str();
-    if (send(cli.getFd(), s.c_str(), s.size(), 0) == -1)
-        throw std::runtime_error("failure to send");
+    if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
+        throw std::runtime_error("failure to send error");
+}
+
+void send_reply(Client& cli, std::string& msg, int rpl_code)
+{
+
+    std::ostringstream os;
+    os << ":mariair " << std::setfill('0') << std::setw(3) << rpl_code << " " << cli.getNick()
+       << " " << msg;
+    if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
+        throw std::runtime_error("failure to send error");
+}
+
+void broadcastNotice(Client& src, Channel& dst, std::string notice)
+{
+
+    std::ostringstream os;
+    os << ":" << src.getFd() << " " << notice << "\r\n";
+    dst.broadcastMessage(src, os.str(), 0);
+}
+
+void send_notice(Client& src, Client& dst, std::string notice)
+{
+    std::ostringstream os;
+    os << ":" << src.getFd() << " " << notice << "\r\n";
+    if (send(dst.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
+        throw std::runtime_error("failure to send error");
 }
