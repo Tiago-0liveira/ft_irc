@@ -7,9 +7,10 @@ Client::Client(void)
 {
     return;
 }
+
 Client::Client(int fd) : _fd(fd)
 {
-	std::cout << "Client constructor _fd:" << _fd << std::endl;
+    std::cout << "Client constructor _fd:" << _fd << std::endl;
     return;
 }
 
@@ -21,13 +22,34 @@ Client::Client(const Client& src)
 
 Client& Client::operator=(const Client& rhs)
 {
-	if (this == &rhs)
-	{
-		// TODO: extremely imcomplete
-		// do it later
-		this->_fd = rhs.getFd();
-	}
+    if (this != &rhs)
+    {
+        _hostname        = rhs.getHost();
+        _realname        = rhs.getRealname();
+        _nickname        = rhs.getNick();
+        _username        = rhs.getUser();
+        _mode            = rhs.getMode();
+        _passwd          = rhs.getPass();
+        _servername      = rhs.getServname();
+        _channel_invites = rhs.getChannalInvites();
+        _serv            = rhs.getServer();
+        _lastActive      = rhs.lastActiveWhen();
+        _auth            = rhs.isAuth();
+        _reg             = rhs.isReg();
+        _pSet            = rhs.isPasswordSet();
+        _status          = rhs.getStatus();
+        _fd              = rhs.getFd();
+    }
     return *this;
+}
+
+bool Client::operator==(const Client* rhs) const
+{
+    return _nickname == rhs->getNick();
+}
+bool Client::operator!=(const Client& rhs) const
+{
+    return _nickname != rhs.getNick();
 }
 
 Client::~Client(void)
@@ -35,7 +57,7 @@ Client::~Client(void)
     return;
 }
 
-const int& Client::getFd(void) const
+int Client::getFd(void) const
 {
     return _fd;
 }
@@ -75,7 +97,7 @@ const std::string& Client::getServname(void) const
     return _servername;
 }
 
-const time_t* Client::lastActiveWhen(void)
+time_t Client::lastActiveWhen(void) const
 {
     return _lastActive;
 }
@@ -99,17 +121,8 @@ Server* Client::getServer(void) const
 {
     return _serv;
 }
-bool Client::isOper(void) const
-{
-    return _isOper;
-}
 
-const Channel* Client::getCurrChan(void) const
-{
-    return _currChan;
-}
-
-std::vector<std::string>& Client::getChannalInvites(void)
+std::vector<std::string> Client::getChannalInvites(void) const
 {
     return _channel_invites;
 }
@@ -152,7 +165,7 @@ void Client::setMode(std::string const& mode)
 void Client::setPass(std::string const& pass)
 {
     _passwd = pass;
-    _pSet = true;
+    _pSet   = true;
 }
 
 bool Client::isPasswordSet(void) const
@@ -160,9 +173,9 @@ bool Client::isPasswordSet(void) const
     return _pSet;
 }
 
-void Client::setLastActive(time_t& when)
+void Client::setLastActive(time_t when)
 {
-    _lastActive = &when;
+    _lastActive = when;
 }
 
 void Client::setStatus(void)

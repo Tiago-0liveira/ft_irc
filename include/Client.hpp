@@ -20,26 +20,29 @@ class Client
     Client(int fd);
     Client(const Client& src);
     Client& operator=(const Client& rhs);
+    // NOTE: std::find requires to define a way to compare user defined types
+    // thus I provided this function in order for client to be used with
+    // std::find
+    bool operator==(const Client* rhs) const;
+    bool operator!=(const Client& rhs) const;
     ~Client(void);
 
     // friend class Channel;
 
-    const int&                getFd(void) const;
-    const std::string&        getHost(void) const;
-    const std::string&        getNick(void) const;
-    const std::string&        getUser(void) const;
-    const std::string&        getServname(void) const;
-    const std::string&        getRealname(void) const;
-    const std::string&        getMode(void) const;
-    const std::string&        getPass(void) const;
-    const time_t*             lastActiveWhen(void);
-    bool                      getStatus(void) const;
-    bool                      isAuth(void) const;
-    bool                      isReg(void) const;
-    Server*                   getServer(void) const;
-    bool                      isOper(void) const;
-    const Channel*            getCurrChan(void) const;
-    std::vector<std::string>& getChannalInvites(void);
+    int                      getFd(void) const;
+    const std::string&       getHost(void) const;
+    const std::string&       getNick(void) const;
+    const std::string&       getUser(void) const;
+    const std::string&       getServname(void) const;
+    const std::string&       getRealname(void) const;
+    const std::string&       getMode(void) const;
+    const std::string&       getPass(void) const;
+    time_t                   lastActiveWhen(void) const;
+    bool                     getStatus(void) const;
+    bool                     isAuth(void) const;
+    bool                     isReg(void) const;
+    Server*                  getServer(void) const;
+    std::vector<std::string> getChannalInvites(void) const;
 
     void setFd(int fd);
     void setHost(std::string const& host);
@@ -52,11 +55,9 @@ class Client
     void setAuth(void);
     void setPass(std::string const& pass);
     bool isPasswordSet(void) const;
-    void setLastActive(time_t& when);
+    void setLastActive(time_t when);
     void setStatus(void);
     void setServer(Server& serv);
-    void setCurrChan(Channel& curr);
-    void setIsOper(void);
 
   private:
     int                      _fd;
@@ -65,13 +66,11 @@ class Client
     std::string              _servername;
     std::vector<std::string> _channel_invites;
     Server*                  _serv;
-    time_t*                  _lastActive;
+    time_t                   _lastActive;
     bool                     _auth;
     bool                     _reg;
     bool                     _pSet;
     bool                     _status;
-    bool                     _isOper;
-    Channel*                 _currChan;
 };
 
 #include "Channel.hpp"
