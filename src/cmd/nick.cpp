@@ -1,5 +1,6 @@
 #include "../../include/Client.hpp"
 #include "../../include/errors.hpp"
+#include "irc.hpp"
 #include <sstream>
 
 /*
@@ -57,6 +58,8 @@ void nickCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NICKNAMEINUSE, cmd);
         return;
     }
+    if (!cli.isPasswordSet())
+        return send_error(cli, ERR_NOTREGISTERED, cmd);
     cli.setNick(args);
     cli.setAuth();
 }
