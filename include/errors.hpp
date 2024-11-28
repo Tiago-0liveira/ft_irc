@@ -7,7 +7,7 @@
 
 std::string errmap(int errcode);
 void        send_error(Client& cli, int errnum, const std::string& arg);
-void        send_reply(Client& cli, std::string& msg, int rpl_code);
+void        send_reply(Client& cli, int rpl_code, std::string msg);
 void        broadcastNotice(Client& src, Channel& dst, std::string notice);
 void        send_notice(Client& src, Client& dst, std::string notice);
 
