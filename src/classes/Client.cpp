@@ -10,6 +10,9 @@ Client::Client(void)
 
 Client::Client(int fd) : _fd(fd)
 {
+    _auth = false;
+    _reg  = false;
+    _pSet = false;
     std::cout << "Client constructor _fd:" << _fd << std::endl;
     return;
 }
