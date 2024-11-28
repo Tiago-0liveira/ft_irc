@@ -36,8 +36,8 @@
 
 void nickCommand(Client& cli, std::string& msg)
 {
-    Server* ptr = cli.getServer();
-    std::string cmd, args;
+    Server*            ptr = cli.getServer();
+    std::string        cmd, args;
     std::istringstream stream(msg);
     stream >> cmd;
     stream >> args;
@@ -47,7 +47,7 @@ void nickCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NONICKNAMEGIVEN, cmd);
         return;
     }
-    else if (args.size() < NICK_MIN_LENGTH || args.size()> NICK_MAX_LENGTH)
+    else if (args.size() < NICK_MIN_LENGTH || args.size() > NICK_MAX_LENGTH)
     {
         send_error(cli, ERR_ERRONEUSNICKNAME, cmd);
         return;
