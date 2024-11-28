@@ -25,7 +25,7 @@ void privmsgCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOTEXTTOSEND, cmd);
         return;
     }
-    else if (targets.find(","))
+    else if (targets.find(",")) // More than one target
     {
         std::vector<std::string>::const_iterator it;
         std::vector<std::string>                 newTargets = strSplit(msg, ',');
@@ -42,4 +42,13 @@ void privmsgCommand(Client& cli, std::string& msg)
                 return send_error(cli, ERR_NOSUCHNICK, cmd);
         }
     }
+    if (ptr->findChannel(targets) != NULL) // Only one target
+    {                                      // TODO: The thing below needs changing
+        if (ptr->findChannel(targets)->broadcastMessage(cli, text, 0) == false)
+            return send_error(cli, ERR_CANNOTSENDTOCHAN, text);
+    }
+    else if (ptr->findClient(targets) != NULL && (targets[0] != '#' || targets[0] != '&'))
+        return sendMessage(ptr->findClient(targets)->getFd(), text);
+    else
+        return send_error(cli, ERR_NOSUCHNICK, cmd);
 }
