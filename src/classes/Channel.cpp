@@ -4,12 +4,14 @@
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
 // std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
 
-Channel::Channel(std::string name) : _channel(name), _pass(""), _topic(""), _limit(10), _op()
+const std::string Channel::DEFAULT_PASS = "123";
+
+Channel::Channel(std::string name, std::string key) : _channel(name), _pass(key), _topic(""), _limit(10), _op()
 {
-    if (_channel[0] == '#')
+    if (_channel[0] == '#' || key != DEFAULT_PASS)
     {
         _is_key = true;
-        _pass   = "123"; // to change
+        _pass   = key;
     }
     else
         _is_key = false;
@@ -344,6 +346,15 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
     }
 }
 
+bool Channel::validName(const std::string& name)
+{
+    if (name.length() < 2 || name.length() > 200) return false;
+	if (name.at(0) != '&' && name.at(0) != '#') return false;
+	std::size_t s = name.find(' ');
+	if (s == name.npos) return false;
+	return true;
+}
+
 std::vector<Client>& Channel::getMembers()
 {
     return (_member);
@@ -377,6 +388,11 @@ std::string Channel::getTopic() const
 void Channel::setTopic(std::string topic)
 {
     this->_topic = topic;
+}
+
+bool Channel::getInviteOnly() const
+{
+    return _invite_only;
 }
 
 /*

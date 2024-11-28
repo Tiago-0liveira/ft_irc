@@ -48,6 +48,8 @@ class Server
     const std::string&    getDateOfCreation() const;
     std::set<std::string> m_channelSet;
     std::set<std::string> m_nickSet;
+    void                  addNewChannel(Channel channel);
+	Channel*			  getLastAddedChannel();
 
   private:
     void                 handleNewConnections();
