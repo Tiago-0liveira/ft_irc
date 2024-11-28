@@ -37,14 +37,8 @@ void passCommand(Client& cli, std::string& msg)
     stream >> args;
 
     if (args.size() == 0)
-    {
-        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
-        return;
-    }
-    else if (cli.isReg())
-    {
-        send_error(cli, ERR_ALREADYREGISTRED, cmd);
-        return;
-    }
+        return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+    else if (cli.isReg() && cli.isPasswordSet() && cli.isAuth())
+        return send_error(cli, ERR_ALREADYREGISTRED, cmd);
     cli.setPass(args);
 }
