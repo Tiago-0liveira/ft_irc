@@ -31,19 +31,19 @@
 
 void passCommand(Client& cli, std::string& msg)
 {
-    std::string cmd, args;
+    std::string        cmd, args;
     std::istringstream stream(msg);
     stream >> cmd;
     stream >> args;
 
     if (args.size() == 0)
     {
-        send_error(cli, ERR_NEEDMOREPARAMS,cmd); 
+        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
     }
     else if (cli.isReg())
     {
-        send_error(cli, ERR_ALREADYREGISTRED,cmd); 
+        send_error(cli, ERR_ALREADYREGISTRED, cmd);
         return;
     }
     cli.setPass(args);
