@@ -39,6 +39,7 @@ void msgOfTheDay(Server& srv, Client& cli){
 	send_reply(cli, 002, RPL_YOURHOST(srv.getName(), SERVER_VERSION));
 	send_reply(cli, 003, RPL_CREATED(srv.getDateOfCreation()));
 	send_reply(cli, 004, RPL_MYINFO(srv.getName(), SERVER_VERSION, AVAILABLE_USER_MODES, AVAILABLE_CHANNEL_MODES));
-
-    send_error(cli, ERR_NOMOTD, "");
+	send_reply(cli, 375, RPL_MOTDSTART(srv.getName()));
+	send_reply(cli, 372, RPL_MOTD(std::string("Welcome to my IRC server!")));
+	send_reply(cli, 376, RPL_ENDOFMOTD());
 }
