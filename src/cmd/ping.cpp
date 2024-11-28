@@ -46,12 +46,5 @@ void pingCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
-    // else if ()
-    // {
-    //     send_error(cli, ERR_NOSUCHSERVER, cmd);
-    //     return;
-    // }
-    // Server*     ptr = cli.getServer();
-    // std::string ping =
-    //     MSG_PRF + ptr->getHost() + " PONG " + ptr->getHost() + " " + msg._args[0] + MSG_END;
+    sendMessage(cli.getFd(), RPL_PING(arg));
 }
