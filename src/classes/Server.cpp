@@ -20,8 +20,9 @@
 
 Server::Server(int port, const std::string& password) : m_port(port), m_password(password)
 {
-    int opt = 1;
-
+    int opt          = 1;
+    m_name           = "mariairc";
+    m_dateOfCreation = "28/11/2024";
     if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         throw std::runtime_error("Failed to open socket");
@@ -49,8 +50,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
         throw std::runtime_error("listen failed");
     }
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
-	m_clients.push_back(Client(m_socket));//This way the indexes are right
-	m_fdNum = 1;
+    m_clients.push_back(Client(m_socket)); // This way the indexes are right
+    m_fdNum = 1;
 }
 
 Server::~Server()
@@ -73,8 +74,9 @@ Server& Server::operator=(const Server& rhs)
 
 void Server::start()
 {
-	std::cout << format("Server listening on port: %d with password: ", m_port) << m_password << std::endl;
-	while (true)
+    std::cout << format("Server listening on port: %d with password: ", m_port) << m_password
+              << std::endl;
+    while (true)
     { /* stop if ctrl+c */
         int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
         if (pollCount == -1)
@@ -105,11 +107,11 @@ bool Server::addNewFd(int newfd)
     }
     m_pollFds.push_back(((pollfd){newfd, POLLIN, 0}));
 
-	m_clients.push_back(Client(m_newFd)); 
-	// Warning: Client is created but then is copied to the array so the copy constructor is called
-	Client &freshClient = m_clients[m_fdNum];
-	freshClient.setFd(m_newFd);
-	freshClient.setServer(*this);
+    m_clients.push_back(Client(m_newFd));
+    // Warning: Client is created but then is copied to the array so the copy constructor is called
+    Client& freshClient = m_clients[m_fdNum];
+    freshClient.setFd(m_newFd);
+    freshClient.setServer(*this);
 
     m_fdNum++;
     return true;
@@ -120,7 +122,6 @@ bool Server::receiveData(int idx)
     char                     buf[BUFFER_SIZE];
     std::vector<std::string> splitMsg;
 
-    LOG("receiveData");
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
     if (bytesRead <= 0)
@@ -173,7 +174,7 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["NICK"] = nickCommand;
     m["PING"] = pingCommand;
     m["PONG"] = pongCommand;
-	m["CAP"] = ignoreCommand;
+    m["CAP"]  = ignoreCommand;
     // m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
@@ -237,6 +238,26 @@ std::string const& Server::getHost(void) const
 int Server::getSocketFd() const
 {
     return m_socket;
+}
+
+void Server::setName(const std::string& name)
+{
+    m_name = name;
+}
+
+void Server::getdateOfCreation(const std::string& date)
+{
+    m_dateOfCreation = date;
+}
+
+const std::string& Server::getName() const
+{
+    return m_name;
+}
+
+const std::string& Server::getDateOfCreation() const
+{
+    return m_dateOfCreation;
 }
 
 const std::string& Server::getPassword() const

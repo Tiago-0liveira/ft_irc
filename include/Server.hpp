@@ -42,6 +42,10 @@ class Server
 
     void                  setHost(std::string const& host);
     const std::string&    getPassword() const;
+    void                  setName(const std::string& name);
+    void                  getdateOfCreation(const std::string& date);
+    const std::string&    getName() const;
+    const std::string&    getDateOfCreation() const;
     std::set<std::string> m_channelSet;
     std::set<std::string> m_nickSet;
 
@@ -54,6 +58,7 @@ class Server
     int                  m_port;
     int                  m_socket;
     int                  m_newFd;
+    std::string          m_dateOfCreation;
     int                  m_fdNum;
     std::string          m_name;
     std::vector<Client>  m_clients;
