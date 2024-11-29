@@ -4,12 +4,14 @@
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
 // std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
 
-Channel::Channel(std::string name) : _channel(name), _pass(""), _topic(""), _limit(10), _op()
+const std::string Channel::DEFAULT_PASS = "123";
+
+Channel::Channel(std::string name, std::string key) : _channel(name), _pass(key), _topic(""), _limit(10), _op()
 {
-    if (_channel[0] == '#')
+    if (_channel[0] == '#' || key != DEFAULT_PASS)
     {
         _is_key = true;
-        _pass   = "123"; // to change
+        _pass   = key;
     }
     else
         _is_key = false;
@@ -60,6 +62,8 @@ void Channel::addClient(Client& client, std::string password)
         }
         _member.push_back(client);
         // broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()),
+        // TODO: broadcast instea of sending just to the client
+        send_reply(client, 0, RPL_JOIN(_channel));
         // _member.back()->getFd());
         std::cout << "The User " << _member.back().getNick() << " joined channel " << _channel
                   << std::endl;
@@ -139,12 +143,15 @@ void Channel::topic(std::string topic, Client& client)
 
 bool Channel::broadcastMessage(Client& cli, const std::string& message, int exceptFd)
 {
-    if (isMember(cli) == false)
-        return false;
     std::vector<Client>::iterator it = _member.begin();
 
     while (it != _member.end())
     {
+        if (isMember(cli) == false)
+        {
+            it++;
+            continue;
+        }
         int memberFd = (*it).getFd();
         if (memberFd != exceptFd)
         {
@@ -344,6 +351,14 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
     }
 }
 
+bool Channel::validName(const std::string& name)
+{
+    if (name.length() < 2 || name.length() > 200) return false;
+	if (name.at(0) != '&' && name.at(0) != '#') return false;
+	std::size_t s = name.find(' ');
+	return s == name.npos;
+}
+
 std::vector<Client>& Channel::getMembers()
 {
     return (_member);
@@ -377,6 +392,11 @@ std::string Channel::getTopic() const
 void Channel::setTopic(std::string topic)
 {
     this->_topic = topic;
+}
+
+bool Channel::getInviteOnly() const
+{
+    return _invite_only;
 }
 
 /*

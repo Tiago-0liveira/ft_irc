@@ -7,6 +7,7 @@
 #include <map>
 #include <misc.hpp>
 #include <vector>
+#include <errors.hpp>
 
 #define RESET "\033[0m"
 #define RED "\033[0;31m"
@@ -21,6 +22,8 @@ class Server;
 
 class Channel
 {
+	static const std::string DEFAULT_PASS;
+
   private:
     // TODO: change to class Client (for now we're using int)
     // DONE(adilson):added Client pointers as members of channels
@@ -44,11 +47,11 @@ class Channel
     // static std::string LEAVE_MESSAGE;
     // static std::string TOPIC_MESSAGE;
 
-    Channel(std::string name);
+	Channel(std::string name, std::string key = DEFAULT_PASS);
     ~Channel();
 
     // Member functions
-    void addClient(Client& client, std::string password);
+    void addClient(Client& client, std::string password = DEFAULT_PASS);
     bool isMember(Client& client);
     void inviteClient(Client& member, Client& invited);
     bool kickClient(std::string clientNick);
@@ -64,6 +67,7 @@ class Channel
     void removeOp(Client& client);
     void operatorMode(Client& client, std::string mode, std::string argument);
     void limitMode(Client& client, std::string mode, std::string argument);
+	static bool validName(const std::string &name);
 
     // Acessers
     std::vector<Client>& getMembers();
@@ -73,6 +77,7 @@ class Channel
     std::string          getpass();
     std::string          getTopic() const;
     void                 setTopic(std::string topic);
+	bool				 getInviteOnly() const;
 };
 
 #endif

@@ -59,8 +59,10 @@ void send_error(Client& cli, int errnum, const std::string& arg)
 void send_reply(Client& cli, int rpl_code, std::string msg)
 {
     std::ostringstream os;
-    os << ":mariairc " << std::setfill('0') << std::setw(3) << rpl_code << " " << cli.getNick()
-       << " " << msg;
+    os << ":" << cli.getNick() << "!" << cli.getUser() << "@" << cli.getHost() << " ";
+    if (rpl_code != 0)
+        os << std::setfill('0') << std::setw(3) << rpl_code << " ";
+    os << cli.getNick() << " " << msg;
     if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
         throw std::runtime_error("failure to send error");
 }
