@@ -33,5 +33,5 @@ void pongCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
-    // TODO: complete this command;
+    sendMessage(cli.getFd(), RPL_PONG(arg));
 }
