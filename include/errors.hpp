@@ -28,8 +28,8 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
 #define RPL_UMODEIS(user_mode) (user_mode + "\r\n")
-#define RPL_WHOREPLY(curr_chan, username, hostname, servname, nick, ircoper, chanoper, realname)   \
-    (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + ircoper +  \
+#define RPL_WHOREPLY(curr_chan, username, hostname, servname, nick, chanoper, realname)   \
+    (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" +  \
      chanoper + " :0 " + realname + "\r\n")
 #define RPL_ENDOFWHO(name) (name + " :End of /WHO list\r\n")
 #define RPL_CHANNELMODEIS(channel, mode) (channel + " :+" + mode + "\r\n")

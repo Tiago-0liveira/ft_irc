@@ -176,11 +176,13 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["PONG"] = pongCommand;
     m["CAP"]  = ignoreCommand;
 	m["JOIN"] = joinCommand;
-    // m["MODE"] = modeCommand;
-    // m["WHO"] = whoCommand;
+    m["MODE"] = modeCommand;
+    m["WHO"] = whoCommand;
     // m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
+    // TODO: before calling any command we need to check if the client is
+    // already logged in (not all commands need auth)
     for (it = msg.begin(); it != msg.end(); it++)
     {
         std::istringstream stream(*it);
