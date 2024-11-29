@@ -46,7 +46,8 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define ERR_SERVERISFULL(host)                                                                     \
     ("ERROR :Closing link: (unknown@" + host +                                                     \
      ") [No more connections allowed from your host via this connect class (local)]\r\n")
-#define RPL_PING(server) ("PONG :" + server + "\r\n")
+#define RPL_PING(server) ("PONG :" + server + "\n")
+#define RPL_PONG(server) ("PING :" + server + "\n")
 
 // NOTICES
 #define NTC_NICK(nick) ("NICK :" + nick)
