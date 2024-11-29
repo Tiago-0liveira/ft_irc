@@ -27,19 +27,24 @@ void privmsgCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOTEXTTOSEND, cmd);
         return;
     }
+
     std::vector<std::string> newTargets = strSplit(targets, ',');
     for (it = newTargets.begin(); it != newTargets.end(); it++)
     {
+        std::ostringstream os;
+        os << ":" << cli.getNick() << "!" << cli.getUser() << "@" 
+            << cli.getHost() << " " << cmd << " " << *it << " " << text<<"\n";
+        LOG(os.str());
         LOG(*it);
         if (dupControl.insert(*it).second == false)
             send_error(cli, ERR_TOOMANYTARGETS, cmd);
         if (ptr->findChannel(*it) != NULL)
         { // TODO: The thing below needs changing
             if (ptr->findChannel(*it)->broadcastMessage(cli, text, 0) == false)
-                return send_error(cli, ERR_CANNOTSENDTOCHAN, text);
+                return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
         else if (ptr->findClient(*it) != NULL)
-            return sendMessage(ptr->findClient(*it)->getFd(), text);
+            return sendMessage(ptr->findClient(*it)->getFd(), os.str());
         else
             return send_error(cli, ERR_NOSUCHNICK, cmd);
     }
