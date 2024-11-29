@@ -62,6 +62,8 @@ void Channel::addClient(Client& client, std::string password)
         }
         _member.push_back(client);
         // broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()),
+        // TODO: broadcast instea of sending just to the client
+        send_reply(client, 0, RPL_JOIN(_channel));
         // _member.back()->getFd());
         std::cout << "The User " << _member.back().getNick() << " joined channel " << _channel
                   << std::endl;
@@ -141,12 +143,15 @@ void Channel::topic(std::string topic, Client& client)
 
 bool Channel::broadcastMessage(Client& cli, const std::string& message, int exceptFd)
 {
-    if (isMember(cli) == false)
-        return false;
     std::vector<Client>::iterator it = _member.begin();
 
     while (it != _member.end())
     {
+        if (isMember(cli) == false)
+        {
+            it++;
+            continue;
+        }
         int memberFd = (*it).getFd();
         if (memberFd != exceptFd)
         {
@@ -351,8 +356,7 @@ bool Channel::validName(const std::string& name)
     if (name.length() < 2 || name.length() > 200) return false;
 	if (name.at(0) != '&' && name.at(0) != '#') return false;
 	std::size_t s = name.find(' ');
-	if (s == name.npos) return false;
-	return true;
+	return s == name.npos;
 }
 
 std::vector<Client>& Channel::getMembers()

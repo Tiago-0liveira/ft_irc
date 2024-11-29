@@ -30,10 +30,11 @@ void userCommand(Client& cli, std::string& msg)
     cli.setUser(user);
     cli.setMode(mode);
     (void)unused;
-    cli.setRealname(realname);
+    cli.setRealname(realname.substr(1));
     cli.setReg();
     // TODO: MesssageOfTheDay func()
     //
+    sendMessage(cli.getFd(), RPL_USER(LOCALHOST, cli.getNick().c_str()));
     msgOfTheDay(*(cli.getServer()), cli);
     return;
 }

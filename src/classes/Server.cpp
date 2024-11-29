@@ -176,6 +176,8 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["PONG"] = pongCommand;
     m["CAP"]  = ignoreCommand;
 	m["JOIN"] = joinCommand;
+    // m["MODE"] = modeCommand;
+    // m["WHO"] = whoCommand;
     // m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
@@ -183,7 +185,7 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     {
         std::istringstream stream(*it);
         stream >> command;
-		LOG(format("%s", command.c_str()))
+        LOG(format("%s", command.c_str()))
         std::transform(command.begin(), command.end(), command.begin(), ::toupper);
         if (m.count(command) == 1)
         {

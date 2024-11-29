@@ -26,8 +26,7 @@ void rpl_endofbanlist(Client& cli);
 void rpl_inviting(Client& cli);
 void rpl_serverisfull(Client& cli);
 
-#define RPL_WELCOME(nick, user, host)                                                              \
-    (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
+#define RPL_WELCOME(nick, user, host) (":Welcome to the Internet Relay Network\r\n")
 #define RPL_YOURHOST(servername, version)                                                          \
     (":Your host is " + servername + ", running version " + version + "\r\n")
 #define RPL_CREATED(date) (":This server was created " + date + "\r\n")

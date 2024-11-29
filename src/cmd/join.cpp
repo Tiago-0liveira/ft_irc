@@ -77,7 +77,8 @@ void joinCommand(Client& cli, std::string& msg)
     std::istringstream passwordsStream(passwordsList);
     std::string channelName, password;
 	do {
-		channelsStream >> channelName;
+		if (!(channelsStream >> channelName))
+            break;
 		passwordsStream >> password;
 		if (!Channel::validName(channelName))
 		{
@@ -91,14 +92,16 @@ void joinCommand(Client& cli, std::string& msg)
 			{
 				serverPtr->addNewChannel(Channel(channelName, password));
 				existingChannel = serverPtr->getLastAddedChannel();
-				existingChannel->addClient(cli, password);
 			}
 			else
 			{
 				serverPtr->addNewChannel(Channel(channelName));
 				existingChannel = serverPtr->getLastAddedChannel();
-				existingChannel->addClient(cli);
 			}
 		}
+        if (password.size() != 0)
+            existingChannel->addClient(cli, password);
+        else 
+            existingChannel->addClient(cli);
 	} while (channelName.size() != 0);
 }

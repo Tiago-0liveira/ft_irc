@@ -1,5 +1,5 @@
-#include "../../include/Client.hpp"
-#include "Client.hpp"
+#include <Client.hpp>
+#include <errors.hpp>
 
 // TODO: add all the implem of the client class
 
@@ -8,7 +8,7 @@ Client::Client(void)
     return;
 }
 
-Client::Client(int fd) : _fd(fd)
+Client::Client(int fd) : _fd(fd), _hostname(LOCALHOST)
 {
     _auth = false;
     _reg  = false;
@@ -152,7 +152,7 @@ void Client::setUser(std::string const& user)
 
 void Client::setRealname(std::string const& realname)
 {
-    _username = realname;
+    _realname = realname;
 }
 
 void Client::setServname(std::string const& servername)

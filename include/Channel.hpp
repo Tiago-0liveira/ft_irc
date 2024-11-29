@@ -7,6 +7,7 @@
 #include <map>
 #include <misc.hpp>
 #include <vector>
+#include <errors.hpp>
 
 #define RESET "\033[0m"
 #define RED "\033[0;31m"

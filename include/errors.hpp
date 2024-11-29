@@ -2,7 +2,7 @@
 #define ERRORS
 
 #pragma once
-#include "Client.hpp"
+#include <Client.hpp>
 #include <string>
 
 std::string errmap(int errcode);
@@ -11,15 +11,19 @@ void        send_reply(Client& cli, int rpl_code, std::string msg);
 void        broadcastNotice(Client& src, Channel& dst, std::string notice);
 void        send_notice(Client& src, Client& dst, std::string notice);
 
+#define LOCALHOST "localhost"
+
 // REPLIES
 #define RPL_WELCOME(nick, user, host)                                                              \
-    (":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n")
+    (":Welcome to the Internet Relay Network\r\n")
 #define RPL_YOURHOST(servername, version)                                                          \
     (":Your host is " + servername + ", running version " + version + "\r\n")
 #define RPL_CREATED(date) (":This server was created " + date + "\r\n")
 #define RPL_MYINFO(servername, version, available_user_modes, available_channel_modes)             \
     (":" + servername + " " + version + " " + available_user_modes + " " +                         \
      available_channel_modes + "\r\n")
+#define RPL_USER(server, nick) (format(":%s NICK %s\r\n", server, nick))
+#define RPL_JOIN(channel) ("JOIN " + channel + "\r\n")
 #define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
