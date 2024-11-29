@@ -175,10 +175,10 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["PING"] = pingCommand;
     m["PONG"] = pongCommand;
     m["CAP"]  = ignoreCommand;
-	m["JOIN"] = joinCommand;
+    m["JOIN"] = joinCommand;
     // m["MODE"] = modeCommand;
     // m["WHO"] = whoCommand;
-    // m["PRIVMSG"] = privmsgCommand;
+    m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
     for (it = msg.begin(); it != msg.end(); it++)
@@ -271,7 +271,8 @@ void Server::addNewChannel(Channel channel)
 
 Channel* Server::getLastAddedChannel()
 {
-	if (m_channels.size() == 0) return NULL;
+    if (m_channels.size() == 0)
+        return NULL;
 
     return &m_channels.back();
 }
