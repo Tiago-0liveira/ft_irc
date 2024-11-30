@@ -124,6 +124,7 @@ bool Server::receiveData(int idx)
 
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
+    LOG(buf);
     if (bytesRead <= 0)
     {
         std::cout << "Client disconnected\n";
@@ -173,12 +174,11 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
     m["USER"] = userCommand;
     m["NICK"] = nickCommand;
     m["PING"] = pingCommand;
-    m["PONG"] = pongCommand;
     m["CAP"]  = ignoreCommand;
-	m["JOIN"] = joinCommand;
+    m["JOIN"] = joinCommand;
     // m["MODE"] = modeCommand;
     // m["WHO"] = whoCommand;
-    // m["PRIVMSG"] = privmsgCommand;
+    m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
     for (it = msg.begin(); it != msg.end(); it++)
@@ -271,7 +271,8 @@ void Server::addNewChannel(Channel channel)
 
 Channel* Server::getLastAddedChannel()
 {
-	if (m_channels.size() == 0) return NULL;
+    if (m_channels.size() == 0)
+        return NULL;
 
     return &m_channels.back();
 }
