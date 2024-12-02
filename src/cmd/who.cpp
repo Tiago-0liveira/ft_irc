@@ -42,9 +42,8 @@ void whoCommand(Client& cli, std::string& msg)
     std::string        cmd, channel_or_name;
     std::istringstream stream(msg);
 
-    (void)serverPtr;
-    (void)cmd;
-    (void)stream;
+	stream >> cmd;
+	stream >> channel_or_name;
 
     if (channel_or_name.size() == 0)
     {
@@ -60,21 +59,17 @@ void whoCommand(Client& cli, std::string& msg)
             return;
         }
         std::vector<Client>::iterator it = chan->getMembers().begin();
+		std::string namesList = "";
         while (it != chan->getMembers().end())
         {
             Client& client = *it;
 
-            send_reply(cli, 353, RPL_WHOREPLY(
-                channel_or_name.c_str(), 
-                client.getUser().c_str(), 
-                client.getHost().c_str(),
-                serverPtr->getName().c_str(),
-                client.getNick().c_str(),
-                (chan->isOp(client) ? "@" : ""), 
-                client.getRealname().c_str()
-            ));
+			if (chan->isOp(client))
+				namesList += "@";
+            namesList += client.getNick() + " ";
             it++;
         }
+		send_reply(cli, 353, RPL_NAMREPLY(cli.getUser(), channel_or_name, namesList));
         send_reply(cli, 366, RPL_ENDOFWHO(channel_or_name));
     }
 }
