@@ -1,6 +1,7 @@
 #include "../../include/Client.hpp"
 #include "../../include/Commands.hpp"
 #include "../../include/errors.hpp"
+#include "misc.hpp"
 #include <sstream>
 #include <string>
 
@@ -46,5 +47,5 @@ void pingCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
-    sendMessage(cli.getFd(), RPL_PING(arg));
+    sendMessage(cli.getFd(), RPL_PONG(USER_ID(cli.getNick(), cli.getUser()), arg));
 }

@@ -9,9 +9,11 @@
 
 void privmsgCommand(Client& cli, std::string& msg)
 {
-    std::istringstream stream(msg);
-    std::string        cmd, targets, text;
-    Server*            ptr = cli.getServer();
+    std::vector<std::string>::const_iterator it;
+    std::set<std::string>                    dupControl;
+    std::istringstream                       stream(msg);
+    std::string                              cmd, targets, text;
+    Server*                                  ptr = cli.getServer();
     stream >> cmd;
     stream >> targets;
     stream >> text;
@@ -25,30 +27,24 @@ void privmsgCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOTEXTTOSEND, cmd);
         return;
     }
-    else if (targets.find(",")) // More than one target
+
+    std::vector<std::string> newTargets = strSplit(targets, ',');
+    for (it = newTargets.begin(); it != newTargets.end(); it++)
     {
-        std::vector<std::string>::const_iterator it;
-        std::vector<std::string>                 newTargets = strSplit(msg, ',');
-        for (it = newTargets.begin(); it != newTargets.end(); it++)
-        {
-            if (ptr->findChannel(*it) != NULL)
-            { // TODO: The thing below needs changing
-                if (ptr->findChannel(*it)->broadcastMessage(cli, text, 0) == false)
-                    return send_error(cli, ERR_CANNOTSENDTOCHAN, text);
-            }
-            else if (ptr->findClient(*it) != NULL && (*it->begin() != '#' || *it->begin() != '&'))
-                return sendMessage(ptr->findClient(*it)->getFd(), text);
-            else
-                return send_error(cli, ERR_NOSUCHNICK, cmd);
+        std::ostringstream os;
+        os << USER_ID(cli.getNick(), cli.getUser())<< " " << cmd << " " << *it << " " << text<<"\n";
+        LOG(os.str());
+        LOG(*it);
+        if (dupControl.insert(*it).second == false)
+            send_error(cli, ERR_TOOMANYTARGETS, cmd);
+        if (ptr->findChannel(*it) != NULL)
+        { // TODO: The thing below needs changing
+            if (ptr->findChannel(*it)->broadcastMessage(cli, text, 0) == false)
+                return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
+        else if (ptr->findClient(*it) != NULL)
+            return sendMessage(ptr->findClient(*it)->getFd(), os.str());
+        else
+            return send_error(cli, ERR_NOSUCHNICK, cmd);
     }
-    if (ptr->findChannel(targets) != NULL) // Only one target
-    {                                      // TODO: The thing below needs changing
-        if (ptr->findChannel(targets)->broadcastMessage(cli, text, 0) == false)
-            return send_error(cli, ERR_CANNOTSENDTOCHAN, text);
-    }
-    else if (ptr->findClient(targets) != NULL && (targets[0] != '#' || targets[0] != '&'))
-        return sendMessage(ptr->findClient(targets)->getFd(), text);
-    else
-        return send_error(cli, ERR_NOSUCHNICK, cmd);
 }
