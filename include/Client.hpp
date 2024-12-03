@@ -37,6 +37,8 @@ class Client
     const std::string&       getRealname(void) const;
     const std::string&       getMode(void) const;
     const std::string&       getPass(void) const;
+    const std::string&       getReadBuf(void) const;
+    const std::string&       getSendBuf(void) const;
     time_t                   lastActiveWhen(void) const;
     bool                     getStatus(void) const;
     bool                     isAuth(void) const;
@@ -46,6 +48,9 @@ class Client
 
     void setFd(int fd);
     void setHost(std::string const& host);
+    void setSendBuf(const std::string& msg);
+    void setReadBuf(const std::string& msg);
+    void resetReadBuf(const std::string& msg);
     void setNick(std::string const& nick);
     void setUser(std::string const& user);
     void setRealname(std::string const& realname);
@@ -64,6 +69,8 @@ class Client
     std::string              _hostname, _realname, _nickname, _username, _mode;
     std::string              _passwd;
     std::string              _servername;
+    std::string              _sendbuf;
+    std::string              _readbuf;
     std::vector<std::string> _channel_invites;
     Server*                  _serv;
     time_t                   _lastActive;
