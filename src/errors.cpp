@@ -72,7 +72,7 @@ void broadcastNotice(Client& src, Channel& dst, std::string notice)
 
     std::ostringstream os;
     os << ":" << src.getFd() << " " << notice << "\r\n";
-    dst.broadcastMessage(src, os.str(), 0);
+    dst.broadcastMessage(os.str(), 0, 0);
 }
 
 void send_notice(Client& src, Client& dst, std::string notice)
