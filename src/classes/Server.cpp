@@ -94,6 +94,19 @@ void Server::start()
                     receiveData(i);
             }
         }
+		std::vector<int>::iterator it = m_deleteFds.begin();
+		while (it != m_deleteFds.end())
+		{
+			deleteFd(*it);
+			Client *client = findClient(*it);
+			if (!client)
+				LOG("client is NULL for " << *it)
+			else
+				client->setStatus();
+			it++;
+		}
+		m_fdNum -= m_deleteFds.size();
+		m_deleteFds.clear();
     }
 }
 
@@ -128,14 +141,19 @@ bool Server::receiveData(int idx)
     if (bytesRead <= 0)
     {
         std::cout << "Client disconnected\n";
-        m_pollFds.erase(m_pollFds.begin() + idx);
-        // m_clients.erase(client.begin() + idx);
+		m_deleteFds.push_back(m_pollFds[idx].fd);
+		return false;
     }
     if (bytesRead < 0)
         throw std::runtime_error(strerror(errno));
     std::string msgStr(buf);
     splitMsg = strSplit(buf, '\n');
-    handleClientUpdates(splitMsg, m_clients[idx]);
+	Client* client = findClient(m_pollFds[idx].fd);
+	if (!client)
+	{
+		LOG("CLIENT IS NULL " << idx << " " << m_pollFds[idx].fd)
+	} else 
+    	handleClientUpdates(splitMsg, *client);
     return true;
 }
 
@@ -212,6 +230,18 @@ Client* Server::findClient(std::string const& nick)
     for (std::vector<Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
     {
         if (it->getNick() == nick)
+        {
+            return &(*it);
+        }
+    }
+    return NULL;
+}
+
+Client* Server::findClient(int fd)
+{
+    for (std::vector<Client>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+    {
+        if (it->getFd() == fd)
         {
             return &(*it);
         }

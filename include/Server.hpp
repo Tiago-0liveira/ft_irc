@@ -38,6 +38,7 @@ class Server
     int                getSocketFd() const;
     std::string const& getHost(void) const;
     Client*            findClient(std::string const& nick);
+    Client*            findClient(int fd);
     Channel*           findChannel(std::string const& name);
 
     void                  setHost(std::string const& host);
@@ -68,6 +69,7 @@ class Server
     std::string          m_host;
     struct sockaddr_in   m_address;
     std::vector<pollfd>  m_pollFds;
+	std::vector<int>	 m_deleteFds;
     std::vector<Channel> m_channels;
 };
 
