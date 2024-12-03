@@ -62,7 +62,7 @@ void send_reply(Client& cli, int rpl_code, std::string msg)
     os << ":" << cli.getNick() << "!" << cli.getUser() << "@" << cli.getHost() << " ";
     if (rpl_code != 0)
         os << std::setfill('0') << std::setw(3) << rpl_code << " ";
-    os << cli.getNick() << " " << msg;
+    os << msg;
     if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
         throw std::runtime_error("failure to send error");
 }
@@ -72,7 +72,7 @@ void broadcastNotice(Client& src, Channel& dst, std::string notice)
 
     std::ostringstream os;
     os << ":" << src.getFd() << " " << notice << "\r\n";
-    dst.broadcastMessage(src, os.str(), 0);
+    dst.broadcastMessage(os.str(), 0, 0);
 }
 
 void send_notice(Client& src, Client& dst, std::string notice)

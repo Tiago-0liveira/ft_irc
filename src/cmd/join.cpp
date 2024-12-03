@@ -68,6 +68,7 @@ void joinCommand(Client& cli, std::string& msg)
     stream >> channelsList;
     stream >> passwordsList;
 
+	LOG(format("%s\\%s", cmd.c_str(), channelsList.c_str()))
     if (channelsList.size() == 0)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);

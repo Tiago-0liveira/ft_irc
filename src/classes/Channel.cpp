@@ -1,4 +1,5 @@
 #include <Channel.hpp>
+#include <Commands.hpp>
 
 // std::string Channel::JOIN_MESSAGE = "The User %s joined!";
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
@@ -61,10 +62,7 @@ void Channel::addClient(Client& client, std::string password)
             return;
         }
         _member.push_back(client);
-        // broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()),
-        // TODO: broadcast instea of sending just to the client
-        send_reply(client, 0, RPL_JOIN(_channel));
-        // _member.back()->getFd());
+        broadcastMessage(RPL_JOIN(_channel), 0, 0);
         std::cout << "The User " << _member.back().getNick() << " joined channel " << _channel
                   << std::endl;
     }
@@ -141,22 +139,24 @@ void Channel::topic(std::string topic, Client& client)
         std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 }
 
-bool Channel::broadcastMessage(Client& cli, const std::string& message, int exceptFd)
+bool Channel::broadcastMessage(const std::string& message, int rpl_code, int exceptFd)
 {
     std::vector<Client>::iterator it = _member.begin();
+	(void)exceptFd;
 
     while (it != _member.end())
     {
-        if (isMember(cli) == false)
+        if (isMember(*it) == false)
         {
             it++;
             continue;
         }
-        int memberFd = (*it).getFd();
-        if (memberFd != exceptFd)
-        {
-            sendMessage(memberFd, message);
-        }
+        /*int memberFd = (*it).getFd();*/
+        /*if (memberFd != exceptFd)
+        {*/
+            /*sendMessage(memberFd, message);*/
+			send_reply(*it, rpl_code, message);
+        /*}*/
         it++;
     }
     return true;

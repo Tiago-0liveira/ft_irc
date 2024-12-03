@@ -56,7 +56,7 @@ class Channel
     void inviteClient(Client& member, Client& invited);
     bool kickClient(std::string clientNick);
     void topic(std::string topic, Client& client);
-    bool broadcastMessage(Client& cli, const std::string& message, int exceptFd);
+    bool broadcastMessage(const std::string& message, int rpl_code, int exceptFd);
 
     void addMode(Client& client, std::string mode, std::string argument);
     void inviteMode(Client& client, std::string mode, std::string argument);

@@ -24,6 +24,7 @@ class Client;
 #define MAX_USR_PER_CHAN 10
 #define MAX_USR_NICK_LEN 9
 #define MAX_CHAN_NAME_LEN 200
+#define USER_ID(nick, user) (":" + nick + "!" + user + "@localhost")
 
 int                      parse_port(char* str, bool& error);
 std::vector<std::string> strSplit(std::string const& s, char delim);
