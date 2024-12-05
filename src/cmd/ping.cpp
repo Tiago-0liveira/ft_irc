@@ -47,5 +47,5 @@ void pingCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOORIGIN, cmd);
         return;
     }
-    sendMessage(cli.getFd(), RPL_PONG(USER_ID(cli.getNick(), cli.getUser()), arg));
+    cli.setSendBuf(RPL_PONG(USER_ID(cli.getNick(), cli.getUser()), arg));
 }
