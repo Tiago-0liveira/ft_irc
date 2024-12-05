@@ -5,6 +5,7 @@
 #include "misc.hpp"
 #include <algorithm>
 #include <arpa/inet.h>
+#include <Commands.hpp>
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
@@ -69,6 +70,7 @@ class Server
     std::string          m_host;
     struct sockaddr_in   m_address;
     std::vector<pollfd>  m_pollFds;
+    std::map<std::string, FuncPtr>     m_Cmd;
 	std::vector<int>	 m_deleteFds;
     std::vector<Channel> m_channels;
 };

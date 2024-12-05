@@ -53,6 +53,17 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
     m_clients.push_back(Client(m_socket)); // This way the indexes are right
     m_fdNum = 1;
+
+    m_Cmd["PASS"]    = passCommand;
+    m_Cmd["USER"]    = userCommand;
+    m_Cmd["NICK"]    = nickCommand;
+    m_Cmd["PING"]    = pingCommand;
+    m_Cmd["CAP"]     = ignoreCommand;
+    m_Cmd["JOIN"]    = joinCommand;
+    m_Cmd["MODE"]    = modeCommand;
+    m_Cmd["WHO"]     = whoCommand;
+    m_Cmd["PRIVMSG"] = privmsgCommand;
+    // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }
 
@@ -215,19 +226,8 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
 {
     std::vector<std::string>::iterator it;
     std::vector<std::string>           msg = strSplit(input, '\n');
-    std::map<std::string, FuncPtr>     m;
     std::string                        command;
 
-    m["PASS"]    = passCommand;
-    m["USER"]    = userCommand;
-    m["NICK"]    = nickCommand;
-    m["PING"]    = pingCommand;
-    m["CAP"]     = ignoreCommand;
-    m["JOIN"]    = joinCommand;
-    m["MODE"]    = modeCommand;
-    m["WHO"]     = whoCommand;
-    m["PRIVMSG"] = privmsgCommand;
-    // m["NOTICE"] = noticeCommand;
 
     // TODO: before calling any command we need to check if the client is
     // already logged in (not all commands need auth)
@@ -239,9 +239,9 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
         stream >> command;
         LOG(format("%s", command.c_str()))
         std::transform(command.begin(), command.end(), command.begin(), ::toupper);
-        if (m.count(command) == 1)
+        if (m_Cmd.count(command) == 1)
         {
-            m[command](cli, *it);
+            m_Cmd[command](cli, *it);
         }
         else
         {
