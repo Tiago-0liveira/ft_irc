@@ -64,10 +64,7 @@ void send_reply(Client& cli, int rpl_code, std::string msg)
     if (rpl_code != 0)
         os << std::setfill('0') << std::setw(3) << rpl_code << " ";
     os << msg;
-    // if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
-    //     throw std::runtime_error("failure to send error");
     cli.setSendBuf(os.str());
-    // LOG(cli.getSendBuf());
 }
 
 void broadcastNotice(Client& src, Channel& dst, std::string notice)

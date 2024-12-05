@@ -34,7 +34,7 @@ void privmsgCommand(Client& cli, std::string& msg)
     {
         std::ostringstream os;
         os << USER_ID(cli.getNick(), cli.getUser()) << " " << cmd << " " << *it << " " << text[1]
-           << "\n";
+           << "\r\n";
         LOG(os.str());
         LOG(*it);
         if (dupControl.insert(*it).second == false)

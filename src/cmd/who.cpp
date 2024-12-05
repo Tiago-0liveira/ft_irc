@@ -58,15 +58,15 @@ void whoCommand(Client& cli, std::string& msg)
             send_error(cli, ERR_NOSUCHCHANNEL, cmd);
             return;
         }
-        std::vector<Client>::iterator it = chan->getMembers().begin();
+        std::vector<Client*>::iterator it = chan->getMembers().begin();
 		std::string namesList = "";
         while (it != chan->getMembers().end())
         {
-            Client& client = *it;
+            Client* client = *it;
 
-			if (chan->isOp(client))
+			if (chan->isOp(*client))
 				namesList += "@";
-            namesList += client.getNick() + " ";
+            namesList += client->getNick() + " ";
             it++;
         }
 		send_reply(cli, 353, RPL_NAMREPLY(cli.getUser(), channel_or_name, namesList));

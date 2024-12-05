@@ -7,7 +7,7 @@
 
 const std::string Channel::DEFAULT_PASS = "123";
 
-Channel::Channel(std::string name, std::string key) : _channel(name), _pass(key), _topic(""), _limit(10), _op()
+Channel::Channel(std::string name, Server* server, std::string key) : _channel(name), _pass(key), _topic(""), _limit(10), _op(), _serv_ptr(server)
 {
     if (_channel[0] == '#' || key != DEFAULT_PASS)
     {
@@ -38,7 +38,7 @@ Channel::~Channel() {}
 
 void Channel::addClient(Client& client, std::string password)
 {
-    std::vector<Client>::iterator find = std::find(_member.begin(), _member.end(), &client);
+    std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
 
     (void)password;
     if (find == _member.end())
@@ -61,18 +61,18 @@ void Channel::addClient(Client& client, std::string password)
                       << RESET << std::endl;
             return;
         }
-        _member.push_back(client);
+        _member.push_back(&client);
         broadcastMessage(RPL_JOIN(_channel), 0, 0);
-        std::cout << "The User " << _member.back().getNick() << " joined channel " << _channel
+        std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
     }
     if (_op.size() == 0)
-        _op.push_back(client);
+        _op.push_back(&client);
 }
 
 bool Channel::isMember(Client& client)
 {
-    std::vector<Client>::iterator find;
+    std::vector<Client*>::iterator find;
 
     find = std::find(_member.begin(), _member.end(), &client);
     if (find != _member.end())
@@ -102,20 +102,20 @@ void Channel::inviteClient(Client& member, Client& invited)
 
 bool Channel::kickClient(std::string clientNick)
 {
-    std::vector<Client>::iterator find = _op.begin();
+    std::vector<Client*>::iterator find = _op.begin();
 
-    while (find != _op.end() && clientNick.compare((*find).getNick()))
+    while (find != _op.end() && clientNick.compare((*find)->getNick()))
         find++;
     if (find != _op.end())
         _op.erase(find);
 
     find = _member.begin();
-    while (find != _member.end() && clientNick.compare((*find).getNick()))
+    while (find != _member.end() && clientNick.compare((*find)->getNick()))
         find++;
     if (find == _member.end())
         return false;
-    std::cout << "The User " << (*find).getNick() << " left!" << std::endl;
-    // broadcastMessage(format(LEAVE_MESSAGE, (*find)->getNick()), -1);
+    std::cout << "The User " << (*find)->getNick() << " left!" << std::endl;
+    // broadcastMessage(format(LEAVE_MESSAGE, find->getNick()), -1);
     _member.erase(find);
 
     return true;
@@ -145,10 +145,13 @@ bool Channel::broadcastMessage(const std::string& message, int rpl_code, int exc
 
     for (size_t i = 0; i < _member.size(); i++)
     {
-		Client &client = _member[i];
-        if (isMember(client) == false)
+		Client *client = _member[i];
+        if (isMember(*client) == false)
             continue;
-		send_reply(client, rpl_code, message);
+		/*Client *server_client = _serv_ptr->findClient(client.getFd());
+		if (!server_client)
+			throw std::runtime_error("Client not found in server vector");*/
+		send_reply(/**server_client*/*client, rpl_code, message);
     }
     return true;
 }
@@ -250,7 +253,7 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
 
 bool Channel::isOp(Client& client)
 {
-    std::vector<Client>::iterator find;
+    std::vector<Client*>::iterator find;
 
     find = std::find(_op.begin(), _op.end(), &client);
     if (find != _op.end())
@@ -262,12 +265,12 @@ void Channel::addOp(Client& client)
 {
     if (this->isOp(client))
         return;
-    this->_op.push_back(client);
+    this->_op.push_back(&client);
 }
 
 void Channel::removeOp(Client& client)
 {
-    std::vector<Client>::iterator find;
+    std::vector<Client*>::iterator find;
 
     find = std::find(_op.begin(), _op.end(), &client);
     if (find != _op.end())
@@ -350,12 +353,12 @@ bool Channel::validName(const std::string& name)
 	return s == name.npos;
 }
 
-std::vector<Client>& Channel::getMembers()
+std::vector<Client*>& Channel::getMembers()
 {
     return (_member);
 }
 
-std::vector<Client>& Channel::getOp()
+std::vector<Client*>& Channel::getOp()
 {
     return (_op);
 }

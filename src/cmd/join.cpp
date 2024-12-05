@@ -91,12 +91,12 @@ void joinCommand(Client& cli, std::string& msg)
 		{
 			if (password.size() != 0)
 			{
-				serverPtr->addNewChannel(Channel(channelName, password));
+				serverPtr->addNewChannel(Channel(channelName, cli.getServer(), password));
 				existingChannel = serverPtr->getLastAddedChannel();
 			}
 			else
 			{
-				serverPtr->addNewChannel(Channel(channelName));
+				serverPtr->addNewChannel(Channel(channelName, cli.getServer()));
 				existingChannel = serverPtr->getLastAddedChannel();
 			}
 		}

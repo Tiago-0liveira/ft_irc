@@ -91,12 +91,10 @@ void Server::start()
                 {
                     handleNewConnections();
                     addNewFd(m_newFd);
-                    continue;
                 }
                 else
                 {
                     receiveData(i);
-                    break;
                 }
             }
             else if (m_pollFds[i].revents & POLLOUT)
@@ -106,16 +104,14 @@ void Server::start()
                     std::cerr << "Couldn't find the client to send msg to\n";
                 else
                 {
-                    sendMessage(m_pollFds[i].fd, cli->getSendBuf());
+                    sendMessage(cli->getFd(), cli->getSendBuf());
                     cli->resetSendBuf();
                     m_pollFds[i].events = POLLIN | POLLERR;
-                    break;
                 }
             }
             else if (m_pollFds[i].revents & POLLERR)
             {
                 std::cout << "Socket error [POLLERR] " << strerror(errno);
-                break;
             }
         }
         std::vector<int>::iterator it = m_deleteFds.begin();
@@ -162,7 +158,6 @@ bool Server::receiveData(int idx)
 
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
-    LOG(buf);
     if (bytesRead < 0)
     {
         std::cout << "Recv failure" << strerror(errno);
@@ -180,12 +175,12 @@ bool Server::receiveData(int idx)
         LOG("CLIENT IS NULL " << idx << " " << m_pollFds[idx].fd);
         return false;
     }
-	Client&					 clientRef = *client;
     client->setReadBuf(buf);
     if (client->getReadBuf().find("\r\n") != std::string::npos)
 	{
-		handleClientUpdates(client->getReadBuf(), clientRef);
-		if (client->getSendBuf().find("\r\n") != std::string::npos)
+		handleClientUpdates(client->getReadBuf(), *client);
+		Client* client2 = findClient(m_pollFds[idx].fd);
+		if (client2->getSendBuf().find("\n") != std::string::npos)
 			m_pollFds[idx].events = POLLOUT | POLLERR;
 	}
     return true;
@@ -237,7 +232,7 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
     // TODO: before calling any command we need to check if the client is
     // already logged in (not all commands need auth)
     // LOG("handleClientUpdates loop start\n");
-    // LOG(input);
+    LOG(input);
     for (it = msg.begin(); it != msg.end(); it++)
     {
         std::istringstream stream(*it);
@@ -255,7 +250,6 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
             // return false;
         }
     }
-    // LOG(cli.getSendBuf());
     cli.resetReadBuf();
     return true;
 }

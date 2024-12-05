@@ -39,15 +39,18 @@ class Channel
     bool                  _is_limited;
     std::map<char, int>   _nbr_modes;
     std::map<char, t_exe> _modes;
-    std::vector<Client>   _member;
-    std::vector<Client>   _op;
+	/* Vector of Client* that live inside the server class */
+    std::vector<Client*>   _member;
+	/* Vector of Client* ops that live inside the server class */
+    std::vector<Client*>   _op;
+	Server				 *_serv_ptr;
 
   public:
     // static std::string JOIN_MESSAGE;
     // static std::string LEAVE_MESSAGE;
     // static std::string TOPIC_MESSAGE;
 
-	Channel(std::string name, std::string key = DEFAULT_PASS);
+	Channel(std::string name, Server* server, std::string key = DEFAULT_PASS);
     ~Channel();
 
     // Member functions
@@ -70,8 +73,8 @@ class Channel
 	static bool validName(const std::string &name);
 
     // Acessers
-    std::vector<Client>& getMembers();
-    std::vector<Client>& getOp();
+    std::vector<Client*>& getMembers();
+    std::vector<Client*>& getOp();
     std::map<char, int>& getNbrMode();
     std::string          getName();
     std::string          getpass();
