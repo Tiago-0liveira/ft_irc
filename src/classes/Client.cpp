@@ -230,5 +230,5 @@ void Client::resetReadBuf(void)
 
 void Client::resetSendBuf(void)
 {
-    _readbuf.clear();
+    _sendbuf.clear();
 }
