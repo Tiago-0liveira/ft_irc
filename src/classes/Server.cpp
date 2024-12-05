@@ -180,9 +180,14 @@ bool Server::receiveData(int idx)
         LOG("CLIENT IS NULL " << idx << " " << m_pollFds[idx].fd);
         return false;
     }
+	Client&					 clientRef = *client;
     client->setReadBuf(buf);
     if (client->getReadBuf().find("\r\n") != std::string::npos)
-        handleClientUpdates(client->getReadBuf(), *client);
+	{
+		handleClientUpdates(client->getReadBuf(), clientRef);
+		if (client->getSendBuf().find("\r\n") != std::string::npos)
+			m_pollFds[idx].events = POLLOUT | POLLERR;
+	}
     return true;
 }
 
