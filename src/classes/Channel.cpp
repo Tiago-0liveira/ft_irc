@@ -141,23 +141,14 @@ void Channel::topic(std::string topic, Client& client)
 
 bool Channel::broadcastMessage(const std::string& message, int rpl_code, int exceptFd)
 {
-    std::vector<Client>::iterator it = _member.begin();
 	(void)exceptFd;
 
-    while (it != _member.end())
+    for (size_t i = 0; i < _member.size(); i++)
     {
-        if (isMember(*it) == false)
-        {
-            it++;
+		Client &client = _member[i];
+        if (isMember(client) == false)
             continue;
-        }
-        /*int memberFd = (*it).getFd();*/
-        /*if (memberFd != exceptFd)
-        {*/
-            /*sendMessage(memberFd, message);*/
-			send_reply(*it, rpl_code, message);
-        /*}*/
-        it++;
+		send_reply(client, rpl_code, message);
     }
     return true;
 }
