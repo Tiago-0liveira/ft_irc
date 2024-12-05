@@ -50,7 +50,8 @@ class Client
     void setHost(std::string const& host);
     void setSendBuf(const std::string& msg);
     void setReadBuf(const std::string& msg);
-    void resetReadBuf(const std::string& msg);
+    void resetReadBuf(void);
+    void resetSendBuf(void);
     void setNick(std::string const& nick);
     void setUser(std::string const& user);
     void setRealname(std::string const& realname);

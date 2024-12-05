@@ -223,8 +223,12 @@ void Client::setReadBuf(const std::string& msg)
     _readbuf += msg;
 }
 
-void Client::resetReadBuf(const std::string& msg)
+void Client::resetReadBuf(void)
 {
     _readbuf.clear();
-    _readbuf = msg;
+}
+
+void Client::resetSendBuf(void)
+{
+    _readbuf.clear();
 }
