@@ -54,7 +54,7 @@ class Server
 
   private:
     void                 handleNewConnections();
-    bool                 handleClientUpdates(std::vector<std::string>& msg, Client& cli);
+    bool                 handleClientUpdates(const std::string& msg, Client& cli);
     bool                 receiveData(int index);
     bool                 addNewFd(int newfd);
     bool                 deleteFd(int fd);
