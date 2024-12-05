@@ -45,7 +45,9 @@ void privmsgCommand(Client& cli, std::string& msg)
                 return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
         else if (ptr->findClient(*it) != NULL)
-            return sendMessage(ptr->findClient(*it)->getFd(), os.str());
+        {
+            ptr->findClient(*it)->setSendBuf(os.str());
+        }
         else
             return send_error(cli, ERR_NOSUCHNICK, cmd);
     }
