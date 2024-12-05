@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <cerrno>
 #include <cstring>
 #include <errors.hpp>
 #include <fcntl.h>
@@ -32,8 +33,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     {
         throw std::runtime_error("Failed to set socket options");
     }
-    if (fcntl(m_socket, F_SETFL, O_NONBLOCK) == -1)
-        throw std::runtime_error(strerror(errno));
+    // if (fcntl(m_socket, F_SETFL, O_NONBLOCK) == -1)
+    // throw std::runtime_error(strerror(errno));
 
     m_address.sin_family      = AF_INET;
     m_address.sin_addr.s_addr = INADDR_ANY;
@@ -52,6 +53,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
     m_clients.push_back(Client(m_socket)); // This way the indexes are right
     m_fdNum = 1;
+    LOG(m_socket);
 }
 
 Server::~Server()
@@ -89,24 +91,46 @@ void Server::start()
                 {
                     handleNewConnections();
                     addNewFd(m_newFd);
+                    continue;
                 }
                 else
+                {
                     receiveData(i);
+                    break;
+                }
+            }
+            else if (m_pollFds[i].revents & POLLOUT)
+            {
+                Client* cli = findClient(m_pollFds[i].fd);
+                if (!cli)
+                    std::cerr << "Couldn't find the client to send msg to\n";
+                else
+                {
+                    sendMessage(m_pollFds[i].fd, cli->getSendBuf());
+                    cli->resetSendBuf();
+                    m_pollFds[i].events = POLLIN | POLLERR;
+                    break;
+                }
+            }
+            else if (m_pollFds[i].revents & POLLERR)
+            {
+                std::cout << "Socket error [POLLERR] " << strerror(errno);
+                break;
             }
         }
-		std::vector<int>::iterator it = m_deleteFds.begin();
-		while (it != m_deleteFds.end())
-		{
-			deleteFd(*it);
-			Client *client = findClient(*it);
-			if (!client)
-				LOG("client is NULL for " << *it)
-			else
-				client->setStatus();
-			it++;
-		}
-		m_fdNum -= m_deleteFds.size();
-		m_deleteFds.clear();
+        std::vector<int>::iterator it = m_deleteFds.begin();
+        while (it != m_deleteFds.end())
+        {
+            deleteFd(*it);
+            Client* client = findClient(*it);
+            if (!client)
+                LOG("client is NULL for " << *it)
+            else
+                client->setStatus();
+            it++;
+        }
+        m_fdNum -= m_deleteFds.size();
+        m_deleteFds.clear();
     }
 }
 
@@ -118,7 +142,7 @@ bool Server::addNewFd(int newfd)
         sendMessage(newfd, msg);
         return false;
     }
-    m_pollFds.push_back(((pollfd){newfd, POLLIN, 0}));
+    m_pollFds.push_back(((pollfd){newfd, POLLIN | POLLOUT | POLLERR, 0}));
 
     m_clients.push_back(Client(m_newFd));
     // Warning: Client is created but then is copied to the array so the copy constructor is called
@@ -134,26 +158,31 @@ bool Server::receiveData(int idx)
 {
     char                     buf[BUFFER_SIZE];
     std::vector<std::string> splitMsg;
+    Client*                  client = findClient(m_pollFds[idx].fd);
 
     memset(buf, 0, BUFFER_SIZE);
     int bytesRead = recv(m_pollFds[idx].fd, buf, BUFFER_SIZE, 0);
     LOG(buf);
-    if (bytesRead <= 0)
+    if (bytesRead < 0)
+    {
+        std::cout << "Recv failure" << strerror(errno);
+        m_deleteFds.push_back(m_pollFds[idx].fd);
+        return false;
+    }
+    else if (bytesRead == 0)
     {
         std::cout << "Client disconnected\n";
-		m_deleteFds.push_back(m_pollFds[idx].fd);
-		return false;
+        m_deleteFds.push_back(m_pollFds[idx].fd);
+        return false;
     }
-    if (bytesRead < 0)
-        throw std::runtime_error(strerror(errno));
-    std::string msgStr(buf);
-    splitMsg = strSplit(buf, '\n');
-	Client* client = findClient(m_pollFds[idx].fd);
-	if (!client)
-	{
-		LOG("CLIENT IS NULL " << idx << " " << m_pollFds[idx].fd)
-	} else 
-    	handleClientUpdates(splitMsg, *client);
+    else if (!client)
+    {
+        LOG("CLIENT IS NULL " << idx << " " << m_pollFds[idx].fd);
+        return false;
+    }
+    client->setReadBuf(buf);
+    if (client->getReadBuf().find("\r\n") != std::string::npos)
+        handleClientUpdates(client->getReadBuf(), *client);
     return true;
 }
 
@@ -182,25 +211,28 @@ void Server::handleNewConnections()
     return;
 }
 
-bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
+bool Server::handleClientUpdates(const std::string& input, Client& cli)
 {
     std::vector<std::string>::iterator it;
+    std::vector<std::string>           msg = strSplit(input, '\n');
     std::map<std::string, FuncPtr>     m;
     std::string                        command;
 
-    m["PASS"] = passCommand;
-    m["USER"] = userCommand;
-    m["NICK"] = nickCommand;
-    m["PING"] = pingCommand;
-    m["CAP"]  = ignoreCommand;
-	m["JOIN"] = joinCommand;
-    m["MODE"] = modeCommand;
-    m["WHO"] = whoCommand;
+    m["PASS"]    = passCommand;
+    m["USER"]    = userCommand;
+    m["NICK"]    = nickCommand;
+    m["PING"]    = pingCommand;
+    m["CAP"]     = ignoreCommand;
+    m["JOIN"]    = joinCommand;
+    m["MODE"]    = modeCommand;
+    m["WHO"]     = whoCommand;
     m["PRIVMSG"] = privmsgCommand;
     // m["NOTICE"] = noticeCommand;
 
     // TODO: before calling any command we need to check if the client is
     // already logged in (not all commands need auth)
+    // LOG("handleClientUpdates loop start\n");
+    // LOG(input);
     for (it = msg.begin(); it != msg.end(); it++)
     {
         std::istringstream stream(*it);
@@ -214,9 +246,12 @@ bool Server::handleClientUpdates(std::vector<std::string>& msg, Client& cli)
         else
         {
             send_error(cli, ERR_UNKNOWNCOMMAND, command);
-            return false;
+            continue;
+            // return false;
         }
     }
+    // LOG(cli.getSendBuf());
+    cli.resetReadBuf();
     return true;
 }
 

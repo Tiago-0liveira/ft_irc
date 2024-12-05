@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "irc.hpp"
 #include <Client.hpp>
 #include <Commands.hpp>
 #include <cstddef>
@@ -12,34 +13,35 @@ void privmsgCommand(Client& cli, std::string& msg)
     std::vector<std::string>::const_iterator it;
     std::set<std::string>                    dupControl;
     std::istringstream                       stream(msg);
-    std::string                              cmd, targets, text;
-    Server*                                  ptr = cli.getServer();
+    std::string                              cmd, targets;
+    std::vector<std::string>                 text = strSplit(msg, ':');
+    Server*                                  ptr  = cli.getServer();
     stream >> cmd;
     stream >> targets;
-    stream >> text;
     if (targets.empty())
     {
         send_error(cli, ERR_NORECIPIENT, cmd);
         return;
     }
-    else if (text.empty())
+    else if (text.size() == 1)
     {
         send_error(cli, ERR_NOTEXTTOSEND, cmd);
         return;
     }
-
+    text[1]                             = ":" + text[1];
     std::vector<std::string> newTargets = strSplit(targets, ',');
     for (it = newTargets.begin(); it != newTargets.end(); it++)
     {
         std::ostringstream os;
-        os << USER_ID(cli.getNick(), cli.getUser())<< " " << cmd << " " << *it << " " << text<<"\n";
+        os << USER_ID(cli.getNick(), cli.getUser()) << " " << cmd << " " << *it << " " << text[1]
+           << "\n";
         LOG(os.str());
         LOG(*it);
         if (dupControl.insert(*it).second == false)
             send_error(cli, ERR_TOOMANYTARGETS, cmd);
         if (ptr->findChannel(*it) != NULL)
         { // TODO: The thing below needs changing
-            if (ptr->findChannel(*it)->broadcastMessage(text, 0, 0) == false)
+            if (ptr->findChannel(*it)->broadcastMessage(text[1], 0, 0) == false)
                 return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
         else if (ptr->findClient(*it) != NULL)

@@ -34,7 +34,7 @@ void userCommand(Client& cli, std::string& msg)
     cli.setReg();
     // TODO: MesssageOfTheDay func()
     //
-    sendMessage(cli.getFd(), RPL_USER(LOCALHOST, cli.getNick().c_str()));
+    cli.setSendBuf(RPL_USER(LOCALHOST, cli.getNick().c_str()));
     msgOfTheDay(*(cli.getServer()), cli);
     return;
 }

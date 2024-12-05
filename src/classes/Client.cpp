@@ -42,6 +42,8 @@ Client& Client::operator=(const Client& rhs)
         _pSet            = rhs.isPasswordSet();
         _status          = rhs.getStatus();
         _fd              = rhs.getFd();
+        _readbuf         = rhs.getReadBuf();
+        _sendbuf         = rhs.getSendBuf();
     }
     return *this;
 }
@@ -130,6 +132,16 @@ std::vector<std::string> Client::getChannalInvites(void) const
     return _channel_invites;
 }
 
+const std::string& Client::getReadBuf(void) const
+{
+    return _readbuf;
+}
+
+const std::string& Client::getSendBuf(void) const
+{
+    return _sendbuf;
+}
+
 void Client::setFd(int fd)
 {
     _fd = fd;
@@ -199,4 +211,24 @@ void Client::setReg(void)
 void Client::setServer(Server& serv)
 {
     _serv = &serv;
+}
+
+void Client::setSendBuf(const std::string& msg)
+{
+    _sendbuf += msg;
+}
+
+void Client::setReadBuf(const std::string& msg)
+{
+    _readbuf += msg;
+}
+
+void Client::resetReadBuf(void)
+{
+    _readbuf.clear();
+}
+
+void Client::resetSendBuf(void)
+{
+    _readbuf.clear();
 }
