@@ -117,7 +117,7 @@ void Server::start()
                 {
                     sendMessage(cli->getFd(), cli->getSendBuf());
                     cli->resetSendBuf();
-                    m_pollFds[i].events = POLLIN | POLLERR;
+                    m_pollFds[i].events |= POLLOUT;
                 }
             }
             else if (m_pollFds[i].revents & POLLERR)
@@ -192,7 +192,7 @@ bool Server::receiveData(int idx)
 		handleClientUpdates(client->getReadBuf(), *client);
 		Client* client2 = findClient(m_pollFds[idx].fd);
 		if (client2->getSendBuf().find("\n") != std::string::npos)
-			m_pollFds[idx].events = POLLOUT | POLLERR;
+			m_pollFds[idx].events |= POLLOUT;
 	}
     return true;
 }
