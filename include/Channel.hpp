@@ -3,11 +3,11 @@
 
 #include "Client.hpp"
 #include "Server.hpp"
+#include <errors.hpp>
 #include <iostream>
 #include <map>
 #include <misc.hpp>
 #include <vector>
-#include <errors.hpp>
 
 #define RESET "\033[0m"
 #define RED "\033[0;31m"
@@ -22,7 +22,7 @@ class Server;
 
 class Channel
 {
-	static const std::string DEFAULT_PASS;
+    static const std::string DEFAULT_PASS;
 
   private:
     // TODO: change to class Client (for now we're using int)
@@ -39,18 +39,18 @@ class Channel
     bool                  _is_limited;
     std::map<char, int>   _nbr_modes;
     std::map<char, t_exe> _modes;
-	/* Vector of Client* that live inside the server class */
-    std::vector<Client*>   _member;
-	/* Vector of Client* ops that live inside the server class */
-    std::vector<Client*>   _op;
-	Server				 *_serv_ptr;
+    /* Vector of Client* that live inside the server class */
+    std::vector<Client*> _member;
+    /* Vector of Client* ops that live inside the server class */
+    std::vector<Client*> _op;
+    Server*              _serv_ptr;
 
   public:
     // static std::string JOIN_MESSAGE;
     // static std::string LEAVE_MESSAGE;
     // static std::string TOPIC_MESSAGE;
 
-	Channel(std::string name, Server* server, std::string key = DEFAULT_PASS);
+    Channel(std::string name, Server* server, std::string key = DEFAULT_PASS);
     ~Channel();
 
     // Member functions
@@ -59,28 +59,29 @@ class Channel
     void inviteClient(Client& member, Client& invited);
     bool kickClient(std::string clientNick);
     void topic(std::string topic, Client& client);
-    bool broadcastMessage(const std::string& message, int rpl_code, int exceptFd);
+    bool broadcastMessage(const std::string& message);
+    bool broadcastReply(const std::string& message, int rpl_code);
 
-    void addMode(Client& client, std::string mode, std::string argument);
-    void inviteMode(Client& client, std::string mode, std::string argument);
-    void topicMode(Client& client, std::string mode, std::string argument);
-    void keyMode(Client& client, std::string mode, std::string argument);
-    bool isOp(Client& client);
-    void addOp(Client& client);
-    void removeOp(Client& client);
-    void operatorMode(Client& client, std::string mode, std::string argument);
-    void limitMode(Client& client, std::string mode, std::string argument);
-	static bool validName(const std::string &name);
+    void        addMode(Client& client, std::string mode, std::string argument);
+    void        inviteMode(Client& client, std::string mode, std::string argument);
+    void        topicMode(Client& client, std::string mode, std::string argument);
+    void        keyMode(Client& client, std::string mode, std::string argument);
+    bool        isOp(Client& client);
+    void        addOp(Client& client);
+    void        removeOp(Client& client);
+    void        operatorMode(Client& client, std::string mode, std::string argument);
+    void        limitMode(Client& client, std::string mode, std::string argument);
+    static bool validName(const std::string& name);
 
     // Acessers
     std::vector<Client*>& getMembers();
     std::vector<Client*>& getOp();
-    std::map<char, int>& getNbrMode();
-    std::string          getName();
-    std::string          getpass();
-    std::string          getTopic() const;
-    void                 setTopic(std::string topic);
-	bool				 getInviteOnly() const;
+    std::map<char, int>&  getNbrMode();
+    std::string           getName();
+    std::string           getpass();
+    std::string           getTopic() const;
+    void                  setTopic(std::string topic);
+    bool                  getInviteOnly() const;
 };
 
 #endif

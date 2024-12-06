@@ -1,5 +1,7 @@
 #include <Channel.hpp>
 #include <Commands.hpp>
+#include <iomanip>
+#include <sstream>
 
 // std::string Channel::JOIN_MESSAGE = "The User %s joined!";
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
@@ -7,7 +9,8 @@
 
 const std::string Channel::DEFAULT_PASS = "123";
 
-Channel::Channel(std::string name, Server* server, std::string key) : _channel(name), _pass(key), _topic(""), _limit(10), _op(), _serv_ptr(server)
+Channel::Channel(std::string name, Server* server, std::string key)
+    : _channel(name), _pass(key), _topic(""), _limit(10), _op(), _serv_ptr(server)
 {
     if (_channel[0] == '#' || key != DEFAULT_PASS)
     {
@@ -62,7 +65,7 @@ void Channel::addClient(Client& client, std::string password)
             return;
         }
         _member.push_back(&client);
-        broadcastMessage(RPL_JOIN(_channel), 0, 0);
+        broadcastReply(RPL_JOIN(_channel), 0);
         std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
     }
@@ -139,19 +142,35 @@ void Channel::topic(std::string topic, Client& client)
         std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 }
 
-bool Channel::broadcastMessage(const std::string& message, int rpl_code, int exceptFd)
+// NOTE: this function should not be for handling replies
+// if your need to send a reply use the reply func: broadcastReply
+bool Channel::broadcastMessage(const std::string& message)
 {
-	(void)exceptFd;
-
     for (size_t i = 0; i < _member.size(); i++)
     {
-		Client *client = _member[i];
-        if (isMember(*client) == false)
-            continue;
-		/*Client *server_client = _serv_ptr->findClient(client.getFd());
-		if (!server_client)
-			throw std::runtime_error("Client not found in server vector");*/
-		send_reply(/**server_client*/*client, rpl_code, message);
+        Client* client = _member[i];
+        if (isMember(*client) == false) // TODO: Do we really this ? Only members
+            continue;                   // should be  in member vector
+                                        //
+        client->setSendBuf(message);
+    }
+    return true;
+}
+
+bool Channel::broadcastReply(const std::string& message, int rpl_code)
+{
+    std::ostringstream os;
+    for (size_t i = 0; i < _member.size(); i++)
+    {
+        Client* client = _member[i];
+        if (isMember(*client) == false) // TODO: Do we really this ? Only members
+            continue;                   // should be  in member vector
+        os << ":" << client->getNick() << "!" << client->getUser() << "@" << client->getHost()
+           << " ";
+        if (rpl_code != 0)
+            os << std::setfill('0') << std::setw(3) << rpl_code << " ";
+        os << message;
+        client->setSendBuf(os.str());
     }
     return true;
 }
@@ -347,10 +366,12 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
 
 bool Channel::validName(const std::string& name)
 {
-    if (name.length() < 2 || name.length() > 200) return false;
-	if (name.at(0) != '&' && name.at(0) != '#') return false;
-	std::size_t s = name.find(' ');
-	return s == name.npos;
+    if (name.length() < 2 || name.length() > 200)
+        return false;
+    if (name.at(0) != '&' && name.at(0) != '#')
+        return false;
+    std::size_t s = name.find(' ');
+    return s == name.npos;
 }
 
 std::vector<Client*>& Channel::getMembers()
