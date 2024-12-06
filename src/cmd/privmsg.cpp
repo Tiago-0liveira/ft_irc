@@ -35,13 +35,11 @@ void privmsgCommand(Client& cli, std::string& msg)
         std::ostringstream os;
         os << USER_ID(cli.getNick(), cli.getUser()) << " " << cmd << " " << *it << " " << text[1]
            << "\r\n";
-        LOG(os.str());
-        LOG(*it);
         if (dupControl.insert(*it).second == false)
             send_error(cli, ERR_TOOMANYTARGETS, cmd);
         if (ptr->findChannel(*it) != NULL)
         { // TODO: The thing below needs changing
-            if (ptr->findChannel(*it)->broadcastMessage(text[1], 0, 0) == false)
+            if (ptr->findChannel(*it)->broadcastMessage(os.str()) == false)
                 return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
         else if (ptr->findClient(*it) != NULL)
