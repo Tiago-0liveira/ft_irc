@@ -69,10 +69,9 @@ void send_reply(Client& cli, int rpl_code, std::string msg)
 
 void broadcastNotice(Client& src, Channel& dst, std::string notice)
 {
-
     std::ostringstream os;
     os << ":" << src.getFd() << " " << notice << "\r\n";
-    dst.broadcastMessage(os.str(), 0, 0);
+    dst.broadcastMessage(os.str());
 }
 
 void send_notice(Client& src, Client& dst, std::string notice)
