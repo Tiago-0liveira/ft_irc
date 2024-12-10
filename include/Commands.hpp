@@ -16,6 +16,7 @@ void ignoreCommand(Client& cli, std::string &msg);
 void joinCommand(Client& cli, std::string &msg);
 void modeCommand(Client& cli, std::string &msg);
 void whoCommand(Client& cli, std::string &msg);
+void partCommand(Client& cli, std::string &msg);
 // void pongCommand(Client& cli, std::string& msg);
 
 #endif // !COMMANDS

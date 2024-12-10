@@ -50,7 +50,7 @@ void send_error(Client& cli, int errnum, const std::string& arg)
 {
     std::ostringstream os;
 
-    os << ":mariairc " << errnum << " * " << arg << errmap(errnum) << "\r\n";
+    os << ":" << SERVER_NAME << " " << errnum << " * " << arg << errmap(errnum) << "\r\n";
 
     // if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
     // throw std::runtime_error("failure to send error");

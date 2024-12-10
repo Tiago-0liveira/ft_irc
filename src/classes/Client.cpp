@@ -142,6 +142,11 @@ const std::string& Client::getSendBuf(void) const
     return _sendbuf;
 }
 
+std::string Client::getMessageNameBase(void) const
+{
+    return ":" + getNick() + "!" + getUser() + "@" + getHost() + " ";
+}
+
 void Client::setFd(int fd)
 {
     _fd = fd;

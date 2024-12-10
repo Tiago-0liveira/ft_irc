@@ -22,7 +22,7 @@
 Server::Server(int port, const std::string& password) : m_port(port), m_password(password)
 {
     int opt          = 1;
-    m_name           = "mariairc";
+    m_name           = SERVER_NAME;
     m_dateOfCreation = "28/11/2024";
     if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -63,6 +63,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_Cmd["MODE"]    = modeCommand;
     m_Cmd["WHO"]     = whoCommand;
     m_Cmd["PRIVMSG"] = privmsgCommand;
+	m_Cmd["PART"]    = partCommand;
     // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }

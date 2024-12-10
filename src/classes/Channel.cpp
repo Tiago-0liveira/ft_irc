@@ -65,12 +65,39 @@ void Channel::addClient(Client& client, std::string password)
             return;
         }
         _member.push_back(&client);
-        broadcastReply(RPL_JOIN(_channel), 0);
+        broadcastMessage(RPL_JOIN(client.getMessageNameBase(), _channel));
         std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
     }
     if (_op.size() == 0)
         _op.push_back(&client);
+}
+
+void Channel::removeClient(Client& client)
+{
+	std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
+	if (find != _member.end())
+	{
+		broadcastMessage(RPL_PART(client.getMessageNameBase(), getName()));
+		std::vector<Client*>::iterator find_op = std::find(_op.begin(), _op.end(), &client);
+		if (find_op != _op.end())
+		{
+			_op.erase(find_op);
+			_member.erase(find);
+			if (_op.size() == 0)
+			{
+				if (_member.size() != 0)
+				{
+					Client *cli = _member.at(0);
+					if (!cli)
+						throw std::runtime_error("cli is null, bad error!");
+					addOp(*cli);
+					broadcastMessage(getMessageBaseName() + NTC_MODE(_channel, cli->getNick(), "+o"));
+				}
+			}
+		} else 
+			_member.erase(find);
+	}
 }
 
 bool Channel::isMember(Client& client)
@@ -165,8 +192,7 @@ bool Channel::broadcastReply(const std::string& message, int rpl_code)
         Client* client = _member[i];
         if (isMember(*client) == false) // TODO: Do we really this ? Only members
             continue;                   // should be  in member vector
-        os << ":" << client->getNick() << "!" << client->getUser() << "@" << client->getHost()
-           << " ";
+        os << client->getMessageNameBase();
         if (rpl_code != 0)
             os << std::setfill('0') << std::setw(3) << rpl_code << " ";
         os << message;
@@ -402,6 +428,11 @@ std::string Channel::getpass()
 std::string Channel::getTopic() const
 {
     return (this->_topic);
+}
+
+std::string Channel::getMessageBaseName() const
+{
+    return ":" + std::string(SERVER_NAME) + " ";
 }
 
 void Channel::setTopic(std::string topic)

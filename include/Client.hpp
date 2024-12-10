@@ -39,6 +39,7 @@ class Client
     const std::string&       getPass(void) const;
     const std::string&       getReadBuf(void) const;
     const std::string&       getSendBuf(void) const;
+	std::string				 getMessageNameBase(void) const;
     time_t                   lastActiveWhen(void) const;
     bool                     getStatus(void) const;
     bool                     isAuth(void) const;

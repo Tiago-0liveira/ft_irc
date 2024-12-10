@@ -22,7 +22,8 @@ void        send_notice(Client& src, Client& dst, std::string notice);
     (":" + servername + " " + version + " " + available_user_modes + " " +                         \
      available_channel_modes + "\r\n")
 #define RPL_USER(server, nick) (format(":%s NICK %s\r\n", server, nick))
-#define RPL_JOIN(channel) ("JOIN " + channel + "\r\n")
+#define RPL_JOIN(userHost, channel) (userHost + "JOIN " + channel + "\r\n")
+#define RPL_PART(userHost, channel) (userHost + "PART " + channel + "\r\n")
 #define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
@@ -49,7 +50,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 
 // NOTICES
 #define NTC_NICK(nick) ("NICK :" + nick)
-#define NTC_MODE(nick, mode) ("MODE " + nick + " :" + mode)
+#define NTC_MODE(channel, nick, mode) ("MODE " + channel + " " + mode + " " + nick + "\r\n")
 #define NTC_JOIN(channel) ("JOIN :" + channel)
 #define NTC_PART(channel) ("PART :" + channel)
 #define NTC_PART_MSG(channel, msg) ("PART " + channel + " :\"" + msg + "\"")
@@ -57,7 +58,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define NTC_NOTICE(dest, msg) ("NOTICE " + dest + " " + msg)
 #define NTC_QUIT(msg) (" QUIT :Quit: " + msg)
 #define NTC_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
-#define NTC_CHANMODE(channel, mode) ("MODE " + channel + " :" + mode)
+#define NTC_CHANMODE(channel, mode) ( "MODE " + channel + " :" + mode)
 #define NTC_CHANMODE_ARG(channel, mode, arg) ("MODE " + channel + " " + mode + " :" + arg)
 #define NTC_KICK(channel, usr, reason) ("KICK " + channel + " " + usr + " " + reason)
 #define NTC_INVITE(channel, usr) ("INVITE " + usr + " :" + channel)
