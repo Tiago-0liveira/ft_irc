@@ -65,7 +65,8 @@ void Channel::addClient(Client& client, std::string password)
             return;
         }
         _member.push_back(&client);
-        broadcastMessage(RPL_JOIN(client.getMessageNameBase(), _channel));
+        client.setSendBuf(RPL_JOIN(client.getMessageNameBase(), _channel));
+        broadcastMessage(client, RPL_JOIN(client.getMessageNameBase(), _channel));
         std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
     }
@@ -75,29 +76,33 @@ void Channel::addClient(Client& client, std::string password)
 
 void Channel::removeClient(Client& client)
 {
-	std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
-	if (find != _member.end())
-	{
-		broadcastMessage(RPL_PART(client.getMessageNameBase(), getName()));
-		std::vector<Client*>::iterator find_op = std::find(_op.begin(), _op.end(), &client);
-		if (find_op != _op.end())
-		{
-			_op.erase(find_op);
-			_member.erase(find);
-			if (_op.size() == 0)
-			{
-				if (_member.size() != 0)
-				{
-					Client *cli = _member.at(0);
-					if (!cli)
-						throw std::runtime_error("cli is null, bad error!");
-					addOp(*cli);
-					broadcastMessage(getMessageBaseName() + NTC_MODE(_channel, cli->getNick(), "+o"));
-				}
-			}
-		} else 
-			_member.erase(find);
-	}
+    std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
+    if (find != _member.end())
+    {
+
+        client.setSendBuf(RPL_PART(client.getMessageNameBase(), getName()));
+        broadcastMessage(client, RPL_PART(client.getMessageNameBase(), getName()));
+        std::vector<Client*>::iterator find_op = std::find(_op.begin(), _op.end(), &client);
+        if (find_op != _op.end())
+        {
+            _op.erase(find_op);
+            _member.erase(find);
+            if (_op.size() == 0)
+            {
+                if (_member.size() != 0)
+                {
+                    Client* cli = _member.at(0);
+                    if (!cli)
+                        throw std::runtime_error("cli is null, bad error!");
+                    addOp(*cli);
+                    broadcastMessage(client, getMessageBaseName() +
+                                                 NTC_MODE(_channel, cli->getNick(), "+o"));
+                }
+            }
+        }
+        else
+            _member.erase(find);
+    }
 }
 
 bool Channel::isMember(Client& client)
@@ -171,14 +176,14 @@ void Channel::topic(std::string topic, Client& client)
 
 // NOTE: this function should not be for handling replies
 // if your need to send a reply use the reply func: broadcastReply
-bool Channel::broadcastMessage(const std::string& message)
+bool Channel::broadcastMessage(Client& exclude, const std::string& message)
 {
     for (size_t i = 0; i < _member.size(); i++)
     {
         Client* client = _member[i];
-        if (isMember(*client) == false) // TODO: Do we really this ? Only members
-            continue;                   // should be  in member vector
-                                        //
+        if (isMember(*client) == false ||
+            client->getFd() == exclude.getFd()) // TODO: Do we really this ? Only members
+            continue;                           // should be  in member vector
         client->setSendBuf(message);
     }
     return true;
