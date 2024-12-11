@@ -39,7 +39,7 @@ void privmsgCommand(Client& cli, std::string& msg)
             send_error(cli, ERR_TOOMANYTARGETS, cmd);
         if (ptr->findChannel(*it) != NULL)
         { // TODO: The thing below needs changing
-            if (ptr->findChannel(*it)->broadcastMessage(os.str()) == false)
+            if (ptr->findChannel(*it)->broadcastMessage(cli, os.str()) == false)
                 return send_error(cli, ERR_CANNOTSENDTOCHAN, os.str());
         }
         else if (ptr->findClient(*it) != NULL)
