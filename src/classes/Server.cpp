@@ -63,7 +63,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_Cmd["MODE"]    = modeCommand;
     m_Cmd["WHO"]     = whoCommand;
     m_Cmd["PRIVMSG"] = privmsgCommand;
-	m_Cmd["PART"]    = partCommand;
+    m_Cmd["PART"]    = partCommand;
+    m_Cmd["TOPIC"]   = topicCommand;
     // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }
@@ -189,12 +190,12 @@ bool Server::receiveData(int idx)
     }
     client->setReadBuf(buf);
     if (client->getReadBuf().find("\r\n") != std::string::npos)
-	{
-		handleClientUpdates(client->getReadBuf(), *client);
-		Client* client2 = findClient(m_pollFds[idx].fd);
-		if (client2->getSendBuf().find("\n") != std::string::npos)
-			m_pollFds[idx].events |= POLLOUT;
-	}
+    {
+        handleClientUpdates(client->getReadBuf(), *client);
+        Client* client2 = findClient(m_pollFds[idx].fd);
+        if (client2->getSendBuf().find("\n") != std::string::npos)
+            m_pollFds[idx].events |= POLLOUT;
+    }
     return true;
 }
 
@@ -228,7 +229,6 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
     std::vector<std::string>::iterator it;
     std::vector<std::string>           msg = strSplit(input, '\n');
     std::string                        command;
-
 
     // TODO: before calling any command we need to check if the client is
     // already logged in (not all commands need auth)
