@@ -20,6 +20,7 @@
 #define MAX_CLIENTS 100
 #define BUFFER_SIZE ((int)1024 * (int)2)
 
+extern bool server_on;
 class Client;
 class Channel;
 

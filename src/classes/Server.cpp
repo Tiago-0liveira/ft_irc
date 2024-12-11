@@ -90,7 +90,7 @@ void Server::start()
 {
     std::cout << format("Server listening on port: %d with password: ", m_port) << m_password
               << std::endl;
-    while (true)
+    while (server_on == false)
     { /* stop if ctrl+c */
         int pollCount = poll(m_pollFds.data(), m_fdNum, -1);
         if (pollCount == -1)
