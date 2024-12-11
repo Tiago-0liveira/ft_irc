@@ -1,7 +1,15 @@
 #include "../include/Server.hpp"
 #include <iostream>
+#include <signal.h>
 
 // Entry point of the IRC server
+bool server_on = false;
+
+static void sig_handler(int signal)
+{
+    (void)signal;
+    server_on = true;
+}
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +31,7 @@ int main(int argc, char* argv[])
 
     try
     {
+        signal(SIGINT, sig_handler);
         Server sv(port, password);
 
         sv.start();
