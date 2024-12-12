@@ -19,16 +19,8 @@ void inviteCommand(Client& cli, const std::string& msg)
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Client*  invitedCli = ptr->findClient(nick);
     Channel* chan       = ptr->findChannel(channel);
-    if (chan == NULL)
-        send_error(cli, ERR_NOSUCHCHANNEL, cmd);
-    else if (chan->isMember(cli) == false)
-        send_error(cli, ERR_NOTONCHANNEL, cmd);
-    // TODO: deal with the of channel being invite-only
-    //  else if ( ptr->findChannel(channel)->
-    //  && ptr->findChannel(channel)->isOp(*ptr->findClient(nick)) == false)
-    // send_error(cli, ERR_CHANOPRIVSNEEDED, cmd);
-    else if (invitedCli != NULL && chan->isMember(*invitedCli) == true)
-        send_error(cli, ERR_USERONCHANNEL, cmd);
+    if (invitedCli == NULL)
+        send_error(cli, ERR_NOSUCHNICK, cmd);
     chan->addClient(*invitedCli);
     chan->broadcastMessage(cli, RPL_INVITING(invitedCli->getNick(), chan->getName()));
     return;

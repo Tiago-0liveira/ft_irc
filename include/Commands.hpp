@@ -18,6 +18,7 @@ void modeCommand(Client& cli, std::string& msg);
 void whoCommand(Client& cli, std::string& msg);
 void partCommand(Client& cli, std::string& msg);
 void topicCommand(Client& cli, std::string& msg);
+void kickCommand(Client& cli, const std::string& msg);
 void inviteCommand(Client& cli, const std::string& msg);
 // void pongCommand(Client& cli, std::string& msg);
 
