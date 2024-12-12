@@ -71,6 +71,14 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
 
 Server::~Server()
 {
+    std::vector<Client>::const_iterator it = m_clients.begin();
+
+    while (it != m_clients.end())
+    {
+        close(it->getFd());
+        it++;
+    }
+
     close(m_socket);
 }
 
