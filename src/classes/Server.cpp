@@ -138,12 +138,11 @@ void Server::start()
         std::vector<int>::iterator it = m_deleteFds.begin();
         while (it != m_deleteFds.end())
         {
-            deleteFd(*it);
             Client* client = findClient(*it);
             if (!client)
                 LOG("client is NULL for " << *it)
             else
-                client->setStatus();
+				deleteClient(*client);
             it++;
         }
         m_fdNum -= m_deleteFds.size();
@@ -205,6 +204,33 @@ bool Server::receiveData(int idx)
             m_pollFds[idx].events |= POLLOUT;
     }
     return true;
+}
+
+void Server::deleteClient(Client& client)
+{
+	std::vector<Client>::iterator it = m_clients.begin();
+	int fd = 0;
+	while (it != m_clients.end())
+	{
+		if (it->getNick() == client.getNick())
+		{
+			fd = it->getFd();
+			Client& clientRef = *it;
+
+			std::vector<Channel>::iterator chan_it = m_channels.begin();
+			while (chan_it != m_channels.end())
+			{
+				if (chan_it->isMember(clientRef))
+					chan_it->removeClient(clientRef);	
+				chan_it++;
+			}
+
+			m_clients.erase(*&it);
+			break;
+		}
+		it++;
+	}
+	deleteFd(fd);
 }
 
 bool Server::deleteFd(int fd)

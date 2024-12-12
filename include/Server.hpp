@@ -3,9 +3,9 @@
 
 #include "irc.hpp"
 #include "misc.hpp"
+#include <Commands.hpp>
 #include <algorithm>
 #include <arpa/inet.h>
-#include <Commands.hpp>
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
@@ -36,13 +36,12 @@ class Server
 
     void start();
 
-    int                getPort() const;
-    int                getSocketFd() const;
-    std::string const& getHost(void) const;
-    Client*            findClient(std::string const& nick);
-    Client*            findClient(int fd);
-    Channel*           findChannel(std::string const& name);
-
+    int                   getPort() const;
+    int                   getSocketFd() const;
+    std::string const&    getHost(void) const;
+    Client*               findClient(std::string const& nick);
+    Client*               findClient(int fd);
+    Channel*              findChannel(std::string const& name);
     void                  setHost(std::string const& host);
     const std::string&    getPassword() const;
     void                  setName(const std::string& name);
@@ -52,28 +51,29 @@ class Server
     std::set<std::string> m_channelSet;
     std::set<std::string> m_nickSet;
     void                  addNewChannel(Channel channel);
-	Channel*			  getLastAddedChannel();
+    Channel*              getLastAddedChannel();
 
   private:
-    void                 handleNewConnections();
-    bool                 handleClientUpdates(const std::string& msg, Client& cli);
-    bool                 receiveData(int index);
-    bool                 addNewFd(int newfd);
-    bool                 deleteFd(int fd);
-    int                  m_port;
-    int                  m_socket;
-    int                  m_newFd;
-    std::string          m_dateOfCreation;
-    int                  m_fdNum;
-    std::string          m_name;
-    std::vector<Client>  m_clients;
-    std::string          m_password;
-    std::string          m_host;
-    struct sockaddr_in   m_address;
-    std::vector<pollfd>  m_pollFds;
-    std::map<std::string, FuncPtr>     m_Cmd;
-	std::vector<int>	 m_deleteFds;
-    std::vector<Channel> m_channels;
+    void                           handleNewConnections();
+    bool                           handleClientUpdates(const std::string& msg, Client& cli);
+    bool                           receiveData(int index);
+    void                           deleteClient(Client& client);
+    bool                           addNewFd(int newfd);
+    bool                           deleteFd(int fd);
+    int                            m_port;
+    int                            m_socket;
+    int                            m_newFd;
+    std::string                    m_dateOfCreation;
+    int                            m_fdNum;
+    std::string                    m_name;
+    std::vector<Client>            m_clients;
+    std::string                    m_password;
+    std::string                    m_host;
+    struct sockaddr_in             m_address;
+    std::vector<pollfd>            m_pollFds;
+    std::map<std::string, FuncPtr> m_Cmd;
+    std::vector<int>               m_deleteFds;
+    std::vector<Channel>           m_channels;
 };
 
 #include "Channel.hpp"

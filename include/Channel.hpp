@@ -23,6 +23,7 @@ class Server;
 class Channel
 {
     static const std::string DEFAULT_PASS;
+	static const std::string DEFAULT_TOPIC;
 
   private:
     // TODO: change to class Client (for now we're using int)
