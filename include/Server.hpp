@@ -62,7 +62,6 @@ class Server
     bool                           deleteFd(int fd);
     int                            m_port;
     int                            m_socket;
-    int                            m_newFd;
     std::string                    m_dateOfCreation;
     int                            m_fdNum;
     std::string                    m_name;
@@ -73,6 +72,7 @@ class Server
     std::vector<pollfd>            m_pollFds;
     std::map<std::string, FuncPtr> m_Cmd;
     std::vector<int>               m_deleteFds;
+	std::vector<int>               m_addFds;
     std::vector<Channel>           m_channels;
 };
 

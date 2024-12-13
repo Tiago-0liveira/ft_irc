@@ -19,7 +19,7 @@
 #include <sys/poll.h>
 #include <vector>
 
-Server::Server(int port, const std::string& password) : m_port(port), m_password(password)
+Server::Server(int port, const std::string& password) : m_port(port), m_clients(), m_password(password), m_pollFds()
 {
     int opt          = 1;
     m_name           = SERVER_NAME;
@@ -50,6 +50,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     {
         throw std::runtime_error("listen failed");
     }
+	m_pollFds.reserve(MAX_CLIENTS + 1);
+	m_clients.reserve(MAX_CLIENTS + 1);
     m_pollFds.push_back((pollfd){m_socket, POLLIN, 0});
     m_clients.push_back(Client(m_socket)); // This way the indexes are right
     m_fdNum = 1;
@@ -65,8 +67,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_Cmd["PRIVMSG"] = privmsgCommand;
     m_Cmd["PART"]    = partCommand;
     m_Cmd["TOPIC"]   = topicCommand;
-	m_Cmd["KICK"]    = kickCommand;
-	m_Cmd["INVITE"]  = inviteCommand;
+    m_Cmd["KICK"]    = kickCommand;
+    m_Cmd["INVITE"]  = inviteCommand;
     // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }
@@ -111,14 +113,9 @@ void Server::start()
             if (m_pollFds[i].revents & POLLIN)
             {
                 if (m_pollFds[i].fd == m_socket)
-                {
                     handleNewConnections();
-                    addNewFd(m_newFd);
-                }
                 else
-                {
                     receiveData(i);
-                }
             }
             else if (m_pollFds[i].revents & POLLOUT)
             {
@@ -137,6 +134,17 @@ void Server::start()
                 std::cout << "Socket error [POLLERR] " << strerror(errno);
             }
         }
+        std::vector<int>::iterator add_it = m_addFds.begin();
+        while (add_it != m_addFds.end())
+        {
+			int new_fd = *add_it;
+			if (addNewFd(new_fd))
+				std::cout << "new client " << new_fd << "\n";
+			else
+				std::cout << "new client could not connect because server is full!" << std::endl;
+            add_it++;
+        }
+		m_addFds.clear();
         std::vector<int>::iterator it = m_deleteFds.begin();
         while (it != m_deleteFds.end())
         {
@@ -144,10 +152,9 @@ void Server::start()
             if (!client)
                 LOG("client is NULL for " << *it)
             else
-				deleteClient(*client);
+                deleteClient(*client);
             it++;
         }
-        m_fdNum -= m_deleteFds.size();
         m_deleteFds.clear();
     }
 }
@@ -162,10 +169,10 @@ bool Server::addNewFd(int newfd)
     }
     m_pollFds.push_back(((pollfd){newfd, POLLIN | POLLOUT | POLLERR, 0}));
 
-    m_clients.push_back(Client(m_newFd));
+    m_clients.push_back(Client(newfd));
     // Warning: Client is created but then is copied to the array so the copy constructor is called
     Client& freshClient = m_clients[m_fdNum];
-    freshClient.setFd(m_newFd);
+    freshClient.setFd(newfd);
     freshClient.setServer(*this);
 
     m_fdNum++;
@@ -210,29 +217,29 @@ bool Server::receiveData(int idx)
 
 void Server::deleteClient(Client& client)
 {
-	std::vector<Client>::iterator it = m_clients.begin();
-	int fd = 0;
-	while (it != m_clients.end())
-	{
-		if (it->getNick() == client.getNick())
-		{
-			fd = it->getFd();
-			Client& clientRef = *it;
+    std::vector<Client>::iterator it = m_clients.begin();
+    int                           fd = 0;
+    while (it != m_clients.end())
+    {
+        if (it->getNick() == client.getNick())
+        {
+            fd                = it->getFd();
+            Client& clientRef = *it;
 
-			std::vector<Channel>::iterator chan_it = m_channels.begin();
-			while (chan_it != m_channels.end())
-			{
-				if (chan_it->isMember(clientRef))
-					chan_it->removeClient(clientRef);	
-				chan_it++;
-			}
+            std::vector<Channel>::iterator chan_it = m_channels.begin();
+            while (chan_it != m_channels.end())
+            {
+                if (chan_it->isMember(clientRef))
+                    chan_it->removeClient(clientRef);
+                chan_it++;
+            }
 
-			m_clients.erase(*&it);
-			break;
-		}
-		it++;
-	}
-	deleteFd(fd);
+            m_clients.erase(*&it);
+            break;
+        }
+        it++;
+    }
+    deleteFd(fd);
 }
 
 bool Server::deleteFd(int fd)
@@ -244,20 +251,19 @@ bool Server::deleteFd(int fd)
             break;
     }
     m_pollFds.erase(m_pollFds.begin() + i);
+    m_fdNum--;
     return true;
 }
 void Server::handleNewConnections()
 {
     sockaddr_in clientAddr;
     socklen_t   clientAddrSize = sizeof(clientAddr);
-    m_newFd                    = accept(m_socket, (struct sockaddr*)&clientAddr, &clientAddrSize);
-    if (fcntl(m_newFd, F_SETFL, O_NONBLOCK) == -1)
+    int         newFd          = accept(m_socket, (struct sockaddr*)&clientAddr, &clientAddrSize);
+    if (fcntl(newFd, F_SETFL, O_NONBLOCK) == -1)
         throw std::runtime_error(strerror(errno));
-    if (m_newFd == -1)
+    if (newFd == -1)
         throw std::runtime_error(strerror(errno));
-    std::cout << "new client " << m_newFd << " from " << inet_ntoa(clientAddr.sin_addr) << ":"
-              << ntohs(clientAddr.sin_port) << "\n";
-    return;
+    m_addFds.push_back(newFd);
 }
 
 bool Server::handleClientUpdates(const std::string& input, Client& cli)
@@ -382,10 +388,10 @@ Channel* Server::getLastAddedChannel()
 
 bool Server::broadcastMessage(Client& cli, const std::string& message, bool exceptSender)
 {
-	for (size_t i = 0; i < m_channels.size(); i++)
+    for (size_t i = 0; i < m_channels.size(); i++)
     {
         Channel& chan = m_channels.at(0);
-		chan.broadcastMessage(cli, message, exceptSender);
+        chan.broadcastMessage(cli, message, exceptSender);
     }
     return true;
 }
