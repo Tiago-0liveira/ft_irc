@@ -49,9 +49,9 @@ class Server
     const std::string&    getName() const;
     const std::string&    getDateOfCreation() const;
     std::set<std::string> m_channelSet;
-    std::set<std::string> m_nickSet;
     void                  addNewChannel(Channel channel);
     Channel*              getLastAddedChannel();
+	bool				  broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
 
   private:
     void                           handleNewConnections();

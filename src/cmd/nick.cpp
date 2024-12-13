@@ -53,7 +53,7 @@ void nickCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_ERRONEUSNICKNAME, args, false);
         return;
     }
-    else if (ptr->m_nickSet.count(args) == 1)
+    else if (p_serv->findClient(args))
     {
         send_error(cli, ERR_NICKNAMEINUSE, args, false);
         return;
