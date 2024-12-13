@@ -108,7 +108,7 @@ void Channel::removeClient(Client& client)
 					Client* cli = _member.at(0);
 					if (!cli)
 						throw std::runtime_error("cli is null, bad error!");
-					addOp(*cli);
+					addOp(cli);
 					broadcastMessage(client, getMessageBaseName() +
 												NTC_MODE(_channel, cli->getNick(), "+o"));
 				}
