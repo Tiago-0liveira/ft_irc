@@ -65,6 +65,8 @@ Server::Server(int port, const std::string& password) : m_port(port), m_password
     m_Cmd["PRIVMSG"] = privmsgCommand;
     m_Cmd["PART"]    = partCommand;
     m_Cmd["TOPIC"]   = topicCommand;
+	m_Cmd["KICK"]    = kickCommand;
+	m_Cmd["INVITE"]  = inviteCommand;
     // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }

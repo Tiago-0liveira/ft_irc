@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 
-void inviteCommand(Client& cli, const std::string& msg)
+void inviteCommand(Client& cli, std::string& msg)
 {
     Server*            ptr = cli.getServer();
     std::string        cmd, nick, channel;

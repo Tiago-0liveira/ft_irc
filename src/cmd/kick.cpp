@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-void kickCommand(Client& cli, const std::string& msg)
+void kickCommand(Client& cli, std::string& msg)
 {
     Server*                                  ptr = cli.getServer();
     std::vector<std::string>::const_iterator it;
