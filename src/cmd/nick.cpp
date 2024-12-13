@@ -55,11 +55,11 @@ void nickCommand(Client& cli, std::string& msg)
     }
     else if (p_serv->findClient(args))
     {
-        send_error(cli, ERR_NICKNAMEINUSE, args, false);
+        send_error(cli, ERR_NICKNAMEINUSE, args);
         return;
     }
     std::string oldNick = cli.getNick();
     cli.setNick(args);
     cli.setAuth();
-    p_serv->broadcastMessage(cli, MSG_NICK(oldNick, cli.getNick()), false);
+	p_serv->broadcastMessage(cli, MSG_NICK(oldNick, cli.getNick()), false);
 }
