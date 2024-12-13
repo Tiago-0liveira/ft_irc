@@ -32,7 +32,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
     (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + chanoper + \
      " :0 " + realname + "\r\n")
 #define RPL_ENDOFWHO(name) (name + " :End of /WHO list\r\n")
-#define RPL_CHANNELMODEIS(channel, mode) (channel + " :+" + mode + "\r\n")
+#define RPL_CHANNELMODEIS(channel, mode, mode_params) (channel + " MODE " + mode + " :" + mode_params + "\r\n") // 324 "<channel> <mode> <mode params>"
 #define RPL_NOTOPIC(channel) ("TOPIC " + channel + " :No topic is set" + "\r\n")
 #define RPL_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + "\r\n")
 #define RPL_TOPICWHOTIME(channel, who, when) (channel + " " + who + " :" + when + "\r\n")

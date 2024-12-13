@@ -101,8 +101,10 @@ void joinCommand(Client& cli, std::string& msg)
 			}
 		}
         if (password.size() != 0)
-            existingChannel->addClient(cli, password);
+            existingChannel->joinClient(cli, password);
         else 
-            existingChannel->addClient(cli);
+            existingChannel->joinClient(cli);
 	} while (channelName.size() != 0);
 }
+//falta ERR_NOSUCHCHANNEL & ERR_TOOMANYCHANNELS
+//is ERR_BADCHANMASK needed? visto que não se faz o mode -m
