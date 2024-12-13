@@ -48,7 +48,7 @@ void nickCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NONICKNAMEGIVEN, args, false);
         return;
     }
-    else if (args.size() < NICK_MIN_LENGTH || args.size() > NICK_MAX_LENGTH)
+    else if (!Client::validNick(args))
     {
         send_error(cli, ERR_ERRONEUSNICKNAME, args, false);
         return;

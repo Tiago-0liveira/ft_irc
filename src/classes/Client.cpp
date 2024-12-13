@@ -1,5 +1,6 @@
 #include <Client.hpp>
 #include <errors.hpp>
+#include <stdexcept>
 
 // TODO: add all the implem of the client class
 
@@ -216,6 +217,23 @@ void Client::setReg(void)
 void Client::setServer(Server& serv)
 {
     _serv = &serv;
+}
+
+bool Client::validNick(const std::string& nick)
+{
+    if (nick.empty() || nick.length() < NICK_MIN_LENGTH || nick.length() > NICK_MAX_LENGTH)
+        return false;
+
+    char firstChar = nick[0];
+    if (!std::isalpha(firstChar) && firstChar != '_' && firstChar != '^')
+        return false;
+    for (unsigned long i = 0; i < nick.size(); i++)
+	{
+		char c = nick.at(i);
+        if (!std::isalnum(c) && c != '-' && c != '[' && c != ']' && c != '\'' && c != '^' && c != '_' && c != '{' && c != '}' && c != '|')
+	        return false;
+	}
+    return true;
 }
 
 void Client::setSendBuf(const std::string& msg)

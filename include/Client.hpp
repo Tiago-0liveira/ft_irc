@@ -65,6 +65,7 @@ class Client
     void setLastActive(time_t when);
     void setStatus(void);
     void setServer(Server& serv);
+	static bool validNick(const std::string& nick);
 
   private:
     int                      _fd;
