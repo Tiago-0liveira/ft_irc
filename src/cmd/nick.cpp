@@ -26,7 +26,7 @@
  Numeric Replies:
 
            ERR_NONICKNAMEGIVEN             ERR_ERRONEUSNICKNAME
-           ERR_NICKNAMEINUSE               ERR_NICKCOLLISION
+           ERR_NICKNAMEINUSE
 
    Example:
 
@@ -37,7 +37,7 @@
 
 void nickCommand(Client& cli, std::string& msg)
 {
-    Server*            ptr = cli.getServer();
+    Server*            p_serv = cli.getServer();
     std::string        cmd, args;
     std::istringstream stream(msg);
     stream >> cmd;
@@ -58,8 +58,8 @@ void nickCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NICKNAMEINUSE, args, false);
         return;
     }
-    if (!cli.isPasswordSet())
-        return send_error(cli, ERR_NOTREGISTERED, cmd);
+    std::string oldNick = cli.getNick();
     cli.setNick(args);
     cli.setAuth();
+    p_serv->broadcastMessage(cli, MSG_NICK(oldNick, cli.getNick()), false);
 }

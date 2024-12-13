@@ -13,6 +13,9 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 
 #define LOCALHOST "localhost"
 
+// MESSAGES
+#define MSG_NICK(oldNick, new_nick) (":" + oldNick + " NICK :" + new_nick + "\r\n")
+
 // REPLIES
 #define RPL_WELCOME(nick, user, host) (nick + " :Welcome to the Internet Relay Network\r\n")
 #define RPL_YOURHOST(servername, version)                                                          \

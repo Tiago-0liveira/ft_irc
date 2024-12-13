@@ -380,6 +380,16 @@ Channel* Server::getLastAddedChannel()
     return &m_channels.back();
 }
 
+bool Server::broadcastMessage(Client& cli, const std::string& message, bool exceptSender)
+{
+	for (size_t i = 0; i < m_channels.size(); i++)
+    {
+        Channel& chan = m_channels.at(0);
+		chan.broadcastMessage(cli, message, exceptSender);
+    }
+    return true;
+}
+
 const std::string& Server::getPassword() const
 {
     return m_password;

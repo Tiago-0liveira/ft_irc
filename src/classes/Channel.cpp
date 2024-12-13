@@ -179,14 +179,13 @@ void Channel::topic(std::string topic, Client& client)
 
 // NOTE: this function should not be for handling replies
 // if your need to send a reply use the reply func: broadcastReply
-bool Channel::broadcastMessage(Client& exclude, const std::string& message)
+bool Channel::broadcastMessage(Client& exclude, const std::string& message, bool exceptSender)
 {
     for (size_t i = 0; i < _member.size(); i++)
     {
         Client* client = _member[i];
-        if (isMember(*client) == false ||
-            client->getFd() == exclude.getFd()) // TODO: Do we really this ? Only members
-            continue;                           // should be  in member vector
+        if (exceptSender && client->getFd() == exclude.getFd())
+            continue;
         client->setSendBuf(message);
     }
     return true;
@@ -198,8 +197,6 @@ bool Channel::broadcastReply(const std::string& message, int rpl_code)
     for (size_t i = 0; i < _member.size(); i++)
     {
         Client* client = _member[i];
-        if (isMember(*client) == false) // TODO: Do we really this ? Only members
-            continue;                   // should be  in member vector
         os << client->getMessageNameBase();
         if (rpl_code != 0)
             os << std::setfill('0') << std::setw(3) << rpl_code << " ";
