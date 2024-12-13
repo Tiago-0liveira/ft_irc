@@ -72,7 +72,11 @@ void joinCommand(Client& cli, std::string& msg)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
-    }
+    } else if (!cli.isAuth())
+	{
+		send_error(cli, ERR_NOTREGISTERED, cmd, false);
+		return;
+	}
     std::istringstream channelsStream(channelsList);
     std::istringstream passwordsStream(passwordsList);
     std::string channelName, password;

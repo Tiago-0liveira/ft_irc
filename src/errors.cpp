@@ -46,12 +46,12 @@ std::string errmap(int errcode)
     return m[errcode];
 }
 
-void send_error(Client& cli, int errnum, const std::string& arg)
+void send_error(Client& cli, int errnum, const std::string& arg, bool add_star)
 {
     std::ostringstream os;
 
     os << ":" << SERVER_NAME << " " << errnum;
-	if (errnum != ERR_CHANOPRIVSNEEDED)
+	if (add_star)
 		os << " *";
 	os << " " << arg << errmap(errnum) << "\r\n";
     // if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)

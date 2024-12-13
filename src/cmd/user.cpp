@@ -26,7 +26,7 @@ void userCommand(Client& cli, std::string& msg)
         return;
     }
     if (!cli.isAuth() || !cli.isPasswordSet())
-        return send_error(cli, ERR_NOTREGISTERED, cmd);
+        return send_error(cli, ERR_NOTREGISTERED, cmd, false);
     cli.setUser(user);
     cli.setMode(mode);
     (void)unused;

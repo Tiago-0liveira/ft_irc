@@ -45,17 +45,17 @@ void nickCommand(Client& cli, std::string& msg)
 
     if (args.size() == 0)
     {
-        send_error(cli, ERR_NONICKNAMEGIVEN, cmd);
+        send_error(cli, ERR_NONICKNAMEGIVEN, args, false);
         return;
     }
     else if (args.size() < NICK_MIN_LENGTH || args.size() > NICK_MAX_LENGTH)
     {
-        send_error(cli, ERR_ERRONEUSNICKNAME, cmd);
+        send_error(cli, ERR_ERRONEUSNICKNAME, args, false);
         return;
     }
     else if (ptr->m_nickSet.count(args) == 1)
     {
-        send_error(cli, ERR_NICKNAMEINUSE, cmd);
+        send_error(cli, ERR_NICKNAMEINUSE, args, false);
         return;
     }
     if (!cli.isPasswordSet())
