@@ -57,7 +57,7 @@ void topicCommand(Client& cli, std::string& msg)
     {
         if (!chan->isOp(cli))
         {
-            send_error(cli, ERR_CHANOPRIVSNEEDED, cmd);
+            send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName());
             return;
         }
         new_topic = msg.substr(colon_pos + 1);

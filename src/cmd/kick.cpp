@@ -34,9 +34,12 @@ void kickCommand(Client& cli, std::string& msg)
         {
             return send_error(cli, ERR_NEEDMOREPARAMS, "KICK");
         }
-        else if (ptr->findChannel(chanVector[i]) == NULL)
+        Channel* chan = ptr->findChannel(chanVector[i]);
+        if (chan == NULL)
             return send_error(cli, ERR_NOSUCHCHANNEL, "KICK");
-        ptr->findChannel(chanVector[i])->removeClient(*ptr->findClient(nickVector[i]));
+        else if (!chan->isOp(cli))
+            return send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName());
+        chan->removeClient(*ptr->findClient(nickVector[i]));
     }
     return;
 }
