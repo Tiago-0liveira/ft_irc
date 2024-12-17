@@ -168,6 +168,11 @@ void modeCommand(Client& cli, std::string& msg)
                 return;
             }
         }
+        if(mode == "+k" && params.size() == 0 )
+        {
+            send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+            return;
+        }
         chan->addMode(cli, mode, params);
     }
 }
