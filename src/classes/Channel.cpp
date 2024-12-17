@@ -1,3 +1,4 @@
+#include "errors.hpp"
 #include <Channel.hpp>
 #include <Commands.hpp>
 #include <iomanip>
@@ -132,8 +133,7 @@ void Channel::inviteClient(Client& member, Client& invited)
     if (find == invited.getChannalInvites().end())
     {
         invited.getChannalInvites().push_back(_channel);
-        // broadcastMessage(format(JOIN_MESSAGE, _member.back()->getNick()),
-        // _member.back()->getFd());
+        invited.setSendBuf(RPL_INVITING(invited.getNick(), getName()));
         std::cout << "The User " << invited.getNick() << " was invided channel " << _channel
                   << std::endl;
     }

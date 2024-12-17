@@ -16,12 +16,11 @@ void inviteCommand(Client& cli, std::string& msg)
     ss >> channel;
 
     if (nick.empty() || channel.empty())
-        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+        return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Client*  invitedCli = ptr->findClient(nick);
     Channel* chan       = ptr->findChannel(channel);
     if (invitedCli == NULL)
-        send_error(cli, ERR_NOSUCHNICK, cmd);
-    chan->addClient(*invitedCli);
-    chan->broadcastMessage(cli, RPL_INVITING(invitedCli->getNick(), chan->getName()));
+        return send_error(cli, ERR_NOSUCHNICK, cmd);
+    chan->inviteClient(cli, *invitedCli);
     return;
 }
