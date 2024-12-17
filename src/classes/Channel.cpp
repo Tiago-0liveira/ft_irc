@@ -289,13 +289,13 @@ void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 	(void)client;
 	std::map<char, int>::iterator aux = _nbr_modes.find('i');
 
-	if (mode[0] == '+')
+	if (mode == "+i")
 	{
 		aux->second += 1;
 		_invite_only = true;
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, "is now invite only."), 324);
 	}
-	else if (mode[0] == '-')
+	else if (mode == "-i")
 	{
 		aux->second += 1;
 		_invite_only = false;
@@ -309,13 +309,13 @@ void Channel::topicMode(Client& client, std::string mode, std::string argument)
 	(void)client;
 	std::map<char, int>::iterator aux = _nbr_modes.find('t');
 
-	if (mode[0] == '+')
+	if (mode == "+t")
 	{
 		_topic_change = true;
 		aux->second += 1;
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, "topic change is now available to evey member."), 324);
 	}
-	else if (mode[0] == '-')
+	else if (mode == "-t")
 	{
 		_topic_change = false;
 		aux->second += 1;
@@ -329,7 +329,7 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
 	std::string mode_params = "";
 
 	(void)client;
-	if (mode[0] == '+')
+	if (mode == "+k")
 	{
 		if (_is_key == true)
 		{
@@ -341,7 +341,7 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
 		mode_params = "set key to '" + argument + "'.";
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, mode_params), 324);
 	}
-	else if (mode[0] == '-')
+	else if (mode == "-k")
 	{
 		aux->second += 1;
 		_is_key = false;
@@ -377,14 +377,14 @@ void Channel::operatorMode(Client& client, std::string mode, std::string argumen
 	std::string mode_params = "";
 
 	find = findIt(_member.begin(), _member.end(), argument);
-	if (mode[0] == '+' && !this->isOp(client))
+	if (mode == "+o" && !this->isOp(client))
 	{
 		mode_params = "channel operator privileges were given to '" + argument + "'.";
 		aux->second += 1;
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, mode_params), 324);
 		addOp(*find);
 	}
-	else if (mode[0] == '-' && this->isOp(client) && _op.size() > 0)
+	else if (mode == "-o" && this->isOp(client) && _op.size() > 0)
 	{
 		mode_params =  "channel operator privileges were taken from '" + argument + "'.";
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, mode_params), 324);
@@ -417,7 +417,7 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
 	if (argument.empty())
 		argument = "10";
 	//Limit number of members on the channal by default is 10.
-	if (mode[0] == '+')
+	if (mode == "+l")
 	{
 		_is_limited = true;
 		int n       = nbrLimit(argument);
@@ -432,7 +432,7 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
 		mode_params =  "is now limited to '" + argument + "' members.";
 		broadcastReply(RPL_CHANNELMODEIS(_channel, mode, mode_params), 324);
 	}
-	else if (mode[0] == '-')
+	else if (mode == "-l")
 	{
 		_is_limited = false;
 		aux->second += 1;

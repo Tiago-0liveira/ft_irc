@@ -115,36 +115,59 @@
 
 */
 
+//[+|-]|k|i|t|o|l
+bool knowMode(std::string mode)
+{
+    if (mode.empty())
+        return (false);
+    if (mode.size() != 2)
+        return (false);
+    if (!(mode[0] == '+' || mode[0] == '-'))
+        return (false);
+    if (mode.find_first_not_of ("kitol", 1) != std::string::npos)
+        return (false);
+    return (true);
+}
+
+//MODE <channel> {[+|-]|k|i|t|o|l} [<limit>] [<user>]
 void modeCommand(Client& cli, std::string& msg)
 {
     Server*            serverPtr = cli.getServer();
-    std::string        cmd, channel_or_nick, params;
+    std::string        cmd, channel, mode, params;
     std::istringstream stream(msg);
-    
-    (void)serverPtr;
-    (void)cmd;
-    (void)stream;
 
-    // TODO: change this later
-    send_reply(cli, 472, "Unknown mode\r\n");
-    return;
+    stream >> cmd;
+    stream >> channel;
+    stream >> mode;
+    stream >> params;
 
-    if (channel_or_nick.size() == 0)
+    if (channel.size() == 0 || mode.size() == 0)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
     }
-    if (Channel::validName(channel_or_nick))
+    if (!knowMode(mode))
+    {
+        send_error(cli, ERR_UNKNOWNMODE, cmd);
+        return;
+    }
+    if (Channel::validName(channel))
     { //INFO: is channel
-        Channel *chan = serverPtr->findChannel(channel_or_nick);
+        Channel *chan = serverPtr->findChannel(channel);
         if (!chan)
         {
             send_error(cli, ERR_NOSUCHCHANNEL, cmd);
             return;
         }
-        if (params.size() == 0)
+        if(mode[1] == 'o')
         {
-
+            Client *client = serverPtr->findClient(params);
+            if (!client)
+            {
+                send_error(cli, ERR_NOSUCHNICK, cmd);
+                return;
+            }
         }
+        chan->addMode(cli, mode, params);
     }
 }
