@@ -69,6 +69,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_clients(
     m_Cmd["TOPIC"]   = topicCommand;
     m_Cmd["KICK"]    = kickCommand;
     m_Cmd["INVITE"]  = inviteCommand;
+    m_Cmd["QUIT"]    = quitCommand;
     // m_Cmd["NOTICE"] = noticeCommand;
     LOG(m_socket);
 }
@@ -141,7 +142,7 @@ void Server::start()
 			if (addNewFd(new_fd))
 				std::cout << "new client " << new_fd << "\n";
 			else
-				std::cout << "new client could not connect because server is full!" << std::endl;
+				std::cout << "new client could not connect because server    is full!" << std::endl;
             add_it++;
         }
 		m_addFds.clear();
@@ -384,6 +385,11 @@ Channel* Server::getLastAddedChannel()
         return NULL;
 
     return &m_channels.back();
+}
+
+void Server::queueDeleteFd(int fd)
+{
+    m_deleteFds.push_back(fd);
 }
 
 bool Server::broadcastMessage(Client& cli, const std::string& message, bool exceptSender)

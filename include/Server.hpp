@@ -51,7 +51,8 @@ class Server
     std::set<std::string> m_channelSet;
     void                  addNewChannel(Channel channel);
     Channel*              getLastAddedChannel();
-	bool				  broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
+    void                  queueDeleteFd(int fd);
+	  bool				          broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
 
   private:
     void                           handleNewConnections();

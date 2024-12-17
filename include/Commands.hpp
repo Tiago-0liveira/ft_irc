@@ -20,6 +20,7 @@ void partCommand(Client& cli, std::string& msg);
 void topicCommand(Client& cli, std::string& msg);
 void kickCommand(Client& cli, std::string& msg);
 void inviteCommand(Client& cli, std::string& msg);
+void quitCommand(Client& cli, std::string& msg);
 // void pongCommand(Client& cli, std::string& msg);
 
 #endif // !COMMANDS
