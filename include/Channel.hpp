@@ -23,7 +23,7 @@ class Server;
 class Channel
 {
     static const std::string DEFAULT_PASS;
-	static const std::string DEFAULT_TOPIC;
+    static const std::string DEFAULT_TOPIC;
 
   private:
     // TODO: change to class Client (for now we're using int)
@@ -56,7 +56,7 @@ class Channel
 
     // Member functions
     void addClient(Client& client, std::string password = DEFAULT_PASS);
-	void removeClient(Client &client);
+    void removeClient(Client& client);
     bool isMember(Client& client);
     void inviteClient(Client& member, Client& invited);
     bool kickClient(std::string clientNick);
@@ -82,7 +82,7 @@ class Channel
     std::string           getName();
     std::string           getpass();
     std::string           getTopic() const;
-	std::string			  getMessageBaseName() const;
+    std::string           getMessageBaseName() const;
     void                  setTopic(std::string topic);
     bool                  getInviteOnly() const;
 };

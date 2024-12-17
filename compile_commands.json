@@ -1,0 +1,398 @@
+[
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/errors.o",
+   "-c",
+   "src/errors.cpp"
+  ],
+  "file": "src/errors.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/main.o",
+   "-c",
+   "src/main.cpp"
+  ],
+  "file": "src/main.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/misc.o",
+   "-c",
+   "src/misc.cpp"
+  ],
+  "file": "src/misc.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/invite.o",
+   "-c",
+   "src/cmd/invite.cpp"
+  ],
+  "file": "src/cmd/invite.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/kick.o",
+   "-c",
+   "src/cmd/kick.cpp"
+  ],
+  "file": "src/cmd/kick.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/nick.o",
+   "-c",
+   "src/cmd/nick.cpp"
+  ],
+  "file": "src/cmd/nick.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/pass.o",
+   "-c",
+   "src/cmd/pass.cpp"
+  ],
+  "file": "src/cmd/pass.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/quit.o",
+   "-c",
+   "src/cmd/quit.cpp"
+  ],
+  "file": "src/cmd/quit.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/user.o",
+   "-c",
+   "src/cmd/user.cpp"
+  ],
+  "file": "src/cmd/user.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/join.o",
+   "-c",
+   "src/cmd/join.cpp"
+  ],
+  "file": "src/cmd/join.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/mode.o",
+   "-c",
+   "src/cmd/mode.cpp"
+  ],
+  "file": "src/cmd/mode.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/notice.o",
+   "-c",
+   "src/cmd/notice.cpp"
+  ],
+  "file": "src/cmd/notice.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/part.o",
+   "-c",
+   "src/cmd/part.cpp"
+  ],
+  "file": "src/cmd/part.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/ping.o",
+   "-c",
+   "src/cmd/ping.cpp"
+  ],
+  "file": "src/cmd/ping.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/privmsg.o",
+   "-c",
+   "src/cmd/privmsg.cpp"
+  ],
+  "file": "src/cmd/privmsg.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/topic.o",
+   "-c",
+   "src/cmd/topic.cpp"
+  ],
+  "file": "src/cmd/topic.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/who.o",
+   "-c",
+   "src/cmd/who.cpp"
+  ],
+  "file": "src/cmd/who.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/classes/Server.o",
+   "-c",
+   "src/classes/Server.cpp"
+  ],
+  "file": "src/classes/Server.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/classes/Client.o",
+   "-c",
+   "src/classes/Client.cpp"
+  ],
+  "file": "src/classes/Client.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/classes/Channel.o",
+   "-c",
+   "src/classes/Channel.cpp"
+  ],
+  "file": "src/classes/Channel.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/parsing.o",
+   "-c",
+   "src/parsing.cpp"
+  ],
+  "file": "src/parsing.cpp"
+ },
+ {
+  "directory": "/home/acuva-nu/ft_irc",
+  "arguments": [
+   "c++",
+   "-Wall",
+   "-Wextra",
+   "-Werror",
+   "-g",
+   "-std=c++98",
+   "-I",
+   "include/",
+   "-o",
+   "obj/cmd/ignore.o",
+   "-c",
+   "src/cmd/ignore.cpp"
+  ],
+  "file": "src/cmd/ignore.cpp"
+ }
+]

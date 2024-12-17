@@ -7,12 +7,13 @@
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
 // std::string Channel::TOPIC_MESSAGE = "Channel %s topic is %s!";
 
-const std::string Channel::DEFAULT_PASS = "123";
+const std::string Channel::DEFAULT_PASS  = "123";
 const std::string Channel::DEFAULT_TOPIC = "No Topic";
 
 Channel::Channel(std::string name, Server* server, std::string key)
     : _channel(name), _pass(key), _topic(DEFAULT_TOPIC), _limit(10), _op(), _serv_ptr(server)
 {
+    _serv_ptr = server;
     if (_channel[0] == '#' || key != DEFAULT_PASS)
     {
         _is_key = true;
@@ -67,8 +68,8 @@ void Channel::addClient(Client& client, std::string password)
         }
         _member.push_back(&client);
         client.setSendBuf(RPL_JOIN(client.getMessageNameBase(), _channel));
-		std::string topicCommandMsg = "TOPIC " + getName() + "\r\n";
-		topicCommand(client, topicCommandMsg);
+        std::string topicCommandMsg = "TOPIC " + getName() + "\r\n";
+        topicCommand(client, topicCommandMsg);
         broadcastMessage(client, RPL_JOIN(client.getMessageNameBase(), _channel));
         std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
