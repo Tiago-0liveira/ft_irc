@@ -41,6 +41,11 @@ void topicCommand(Client& cli, std::string& msg)
     stream >> cmd;
     stream >> chan_name;
 
+	if (!cli.isAuth() || !cli.isReg())
+	{
+		send_error(cli, ERR_NOTREGISTERED, cmd, false);
+		return;
+	}
     if (chan_name.empty())
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);

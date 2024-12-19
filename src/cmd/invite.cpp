@@ -15,7 +15,12 @@ void inviteCommand(Client& cli, std::string& msg)
     ss >> nick;
     ss >> channel;
 
-    if (nick.empty() || channel.empty())
+	if (!cli.isAuth() || !cli.isReg())
+	{
+		send_error(cli, ERR_NOTREGISTERED, cmd, false);
+		return;
+	}
+    else if (nick.empty() || channel.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Client*  invitedCli = ptr->findClient(nick);
     Channel* chan       = ptr->findChannel(channel);

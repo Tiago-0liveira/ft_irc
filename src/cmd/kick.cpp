@@ -21,6 +21,11 @@ void kickCommand(Client& cli, std::string& msg)
     ss >> comment;
 
     (void)comment;
+	if (!cli.isAuth() || !cli.isReg())
+	{
+		send_error(cli, ERR_NOTREGISTERED, cmd, false);
+		return;
+	}
     std::vector<std::string> nickVector = strSplit(nick, ',');
     std::vector<std::string> chanVector = strSplit(channel, ',');
     if (nickVector.empty() || chanVector.empty())

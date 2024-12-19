@@ -38,6 +38,11 @@ void partCommand(Client& cli, std::string& msg)
     stream >> cmd;
     stream >> arg;
 
+	if (!cli.isAuth() || !cli.isReg())
+	{
+		send_error(cli, ERR_NOTREGISTERED, cmd, false);
+		return;
+	}
     if (arg.empty())
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);

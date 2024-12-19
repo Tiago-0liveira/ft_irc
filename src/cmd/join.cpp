@@ -72,7 +72,7 @@ void joinCommand(Client& cli, std::string& msg)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
-    } else if (!cli.isAuth())
+    } else if (!cli.isAuth() || !cli.isReg())
 	{
 		send_error(cli, ERR_NOTREGISTERED, cmd, false);
 		return;
