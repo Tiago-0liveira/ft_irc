@@ -11,7 +11,6 @@ void nickCommand(Client& cli, std::string& msg);
 void userCommand(Client& cli, std::string& msg);
 void pingCommand(Client& cli, std::string& msg);
 void privmsgCommand(Client& cli, std::string& msg);
-void noticeCommand(Client& cli, std::string& msg);
 void ignoreCommand(Client& cli, std::string& msg);
 void joinCommand(Client& cli, std::string& msg);
 void modeCommand(Client& cli, std::string& msg);

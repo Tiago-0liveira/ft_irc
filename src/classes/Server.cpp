@@ -70,7 +70,7 @@ Server::Server(int port, const std::string& password) : m_port(port), m_clients(
     m_Cmd["KICK"]    = kickCommand;
     m_Cmd["INVITE"]  = inviteCommand;
     m_Cmd["QUIT"]    = quitCommand;
-    // m_Cmd["NOTICE"] = noticeCommand;
+
     LOG(m_socket);
 }
 
