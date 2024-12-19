@@ -11,7 +11,7 @@ OBJ_DIR = obj/
 SRC_ROOT_FILES =  errors.cpp  main.cpp  misc.cpp parsing.cpp\
 				 $(addprefix cmd/, \
 					invite.cpp  kick.cpp  nick.cpp    pass.cpp  quit.cpp   user.cpp \
-					join.cpp    mode.cpp  notice.cpp  part.cpp  ping.cpp  privmsg.cpp  topic.cpp  who.cpp \
+					join.cpp    mode.cpp  part.cpp  ping.cpp  privmsg.cpp  topic.cpp  who.cpp \
 					ignore.cpp \
 				 )
 				 
