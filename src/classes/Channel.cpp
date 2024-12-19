@@ -79,14 +79,16 @@ void Channel::addClient(Client& client, std::string password)
         _op.push_back(&client);
 }
 
-void Channel::removeClient(Client& client)
+void Channel::removeClient(Client& client, const std::string& leave_msg)
 {
     std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
     if (find != _member.end())
     {
-
-        client.setSendBuf(RPL_PART(client.getMessageNameBase(), getName()));
-        broadcastMessage(client, RPL_PART(client.getMessageNameBase(), getName()));
+		std::string msg = RPL_PART(client.getMessageNameBase(), getName());
+		if (!leave_msg.empty())
+			msg = RPL_PARTWMSG(client.getMessageNameBase(), getName(), leave_msg);
+		client.setSendBuf(msg);
+		broadcastMessage(client, msg);
         std::vector<Client*>::iterator find_op = std::find(_op.begin(), _op.end(), &client);
         if (find_op != _op.end())
         {

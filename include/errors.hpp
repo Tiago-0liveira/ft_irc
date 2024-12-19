@@ -27,6 +27,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_USER(server, nick) (format(":%s NICK %s\r\n", server, nick))
 #define RPL_JOIN(userHost, channel) (userHost + "JOIN " + channel + "\r\n")
 #define RPL_PART(userHost, channel) (userHost + "PART " + channel + "\r\n")
+#define RPL_PARTWMSG(userHost, channel, msg) (userHost + "PART " + channel + " :" + msg + "\r\n")
 #define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")

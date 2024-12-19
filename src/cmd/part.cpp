@@ -48,6 +48,17 @@ void partCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
     }
+	std::string leaveMsg = "";
+	std::size_t colon_pos = msg.find(':');
+    if (colon_pos != std::string::npos)
+    {
+		leaveMsg = msg.substr(colon_pos + 1);
+        if (leaveMsg.empty())
+        {
+            send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+            return;
+        }
+	}
 	std::vector<std::string> channels = strSplit(arg, ',');
 	for (std::vector<std::string>::const_iterator it = channels.begin(); it != channels.end(); it++)
 	{
@@ -63,6 +74,9 @@ void partCommand(Client& cli, std::string& msg)
 			send_error(cli, ERR_NOSUCHCHANNEL, cmd);
 			return;
 		}
-		chan->removeClient(cli);
+		if (leaveMsg.empty())
+			chan->removeClient(cli);
+		else
+			chan->removeClient(cli, leaveMsg);
 	}
 }
