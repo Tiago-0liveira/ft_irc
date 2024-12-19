@@ -196,7 +196,6 @@ bool Server::receiveData(int idx)
     }
     else if (bytesRead == 0)
     {
-        std::cout << "Client disconnected\n";
         m_deleteFds.push_back(m_pollFds[idx].fd);
         return false;
     }
@@ -222,7 +221,7 @@ void Server::deleteClient(Client& client)
     int                           fd = 0;
     while (it != m_clients.end())
     {
-        if (it->getNick() == client.getNick())
+        if (it->getFd() == client.getFd())
         {
             fd                = it->getFd();
             Client& clientRef = *it;
@@ -235,6 +234,10 @@ void Server::deleteClient(Client& client)
                 chan_it++;
             }
 
+			std::cout << " [INFO] Client " << it->getFd();
+			if (!it->getNick().empty())
+				std::cout << " - " << it->getNick();
+			std::cout << " Leaving" << std::endl;
             m_clients.erase(*&it);
             break;
         }
@@ -249,7 +252,10 @@ bool Server::deleteFd(int fd)
     for (; i < m_fdNum; i++)
     {
         if (m_pollFds[i].fd == fd)
+		{
+			close(fd);
             break;
+		}
     }
     m_pollFds.erase(m_pollFds.begin() + i);
     m_fdNum--;
