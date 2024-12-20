@@ -52,7 +52,7 @@ class Server
     void                  addNewChannel(Channel channel);
     Channel*              getLastAddedChannel();
     void                  queueDeleteFd(int fd);
-	  bool				          broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
+    bool broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
 
   private:
     void                           handleNewConnections();
@@ -73,7 +73,7 @@ class Server
     std::vector<pollfd>            m_pollFds;
     std::map<std::string, FuncPtr> m_Cmd;
     std::vector<int>               m_deleteFds;
-	std::vector<int>               m_addFds;
+    std::vector<int>               m_addFds;
     std::vector<Channel>           m_channels;
 };
 
