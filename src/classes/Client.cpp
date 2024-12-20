@@ -143,6 +143,11 @@ const std::string& Client::getSendBuf(void) const
     return _sendbuf;
 }
 
+const std::string& Client::getLeaveMsg(void) const
+{
+    return _leavemsg;
+}
+
 std::string Client::getMessageNameBase(void) const
 {
     return ":" + getNick() + "!" + getUser() + "@" + getHost() + " ";
@@ -217,6 +222,11 @@ void Client::setReg(void)
 void Client::setServer(Server& serv)
 {
     _serv = &serv;
+}
+
+void Client::setLeaveMsg(std::string leavemsg)
+{
+	_leavemsg = leavemsg;
 }
 
 bool Client::validNick(const std::string& nick)

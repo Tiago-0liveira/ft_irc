@@ -1,7 +1,7 @@
-#include "../../include/Client.hpp"
-#include "../../include/Commands.hpp"
-#include "../../include/errors.hpp"
-#include "misc.hpp"
+#include <Client.hpp>
+#include <Commands.hpp>
+#include <errors.hpp>
+#include <misc.hpp>
 #include <sstream>
 #include <string>
  
@@ -36,7 +36,7 @@ void partCommand(Client& cli, std::string& msg)
     std::string cmd, arg;
     
     stream >> cmd;
-    stream >> arg;
+	stream >> arg;
 
 	if (!cli.isAuth() || !cli.isReg())
 	{
@@ -75,8 +75,8 @@ void partCommand(Client& cli, std::string& msg)
 			return;
 		}
 		if (leaveMsg.empty())
-			chan->removeClient(cli);
+			chan->removeClient(cli, RPL_PART(cli.getMessageNameBase(), chan->getName()));
 		else
-			chan->removeClient(cli, leaveMsg);
+			chan->removeClient(cli, RPL_PARTWMSG(cli.getMessageNameBase(), chan->getName(), leaveMsg));
 	}
 }

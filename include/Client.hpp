@@ -39,6 +39,7 @@ class Client
     const std::string&       getPass(void) const;
     const std::string&       getReadBuf(void) const;
     const std::string&       getSendBuf(void) const;
+	const std::string&       getLeaveMsg(void) const;
 	std::string				 getMessageNameBase(void) const;
     time_t                   lastActiveWhen(void) const;
     bool                     getStatus(void) const;
@@ -65,6 +66,7 @@ class Client
     void setLastActive(time_t when);
     void setStatus(void);
     void setServer(Server& serv);
+	void setLeaveMsg(std::string leavemsg);
 	static bool validNick(const std::string& nick);
 
   private:
@@ -74,6 +76,7 @@ class Client
     std::string              _servername;
     std::string              _sendbuf;
     std::string              _readbuf;
+	std::string				 _leavemsg;
     std::vector<std::string> _channel_invites;
     Server*                  _serv;
     time_t                   _lastActive;

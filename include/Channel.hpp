@@ -56,7 +56,7 @@ class Channel
 
     // Member functions
     void addClient(Client& client, std::string password = DEFAULT_PASS);
-    void removeClient(Client& client, const std::string& leave_msg = "");
+    void removeClient(Client& client, const std::string& leave_msg);
     bool isMember(Client& client);
     void inviteClient(Client& member, Client& invited);
     bool kickClient(std::string clientNick);

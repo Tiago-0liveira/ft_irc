@@ -230,7 +230,12 @@ void Server::deleteClient(Client& client)
             while (chan_it != m_channels.end())
             {
                 if (chan_it->isMember(clientRef))
-                    chan_it->removeClient(clientRef);
+				{
+					if (client.getLeaveMsg().empty())
+                    	chan_it->removeClient(clientRef, RPL_QUIT(client.getMessageNameBase(), chan_it->getName()));
+					else
+						chan_it->removeClient(clientRef, RPL_QUITWMSG(client.getMessageNameBase(), chan_it->getName(), client.getLeaveMsg()));
+				}
                 chan_it++;
             }
 
