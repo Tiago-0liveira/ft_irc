@@ -72,40 +72,42 @@ void joinCommand(Client& cli, std::string& msg)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         return;
-    } else if (!cli.isAuth() || !cli.isReg())
-	{
-		send_error(cli, ERR_NOTREGISTERED, cmd, false);
-		return;
-	}
+    }
+    else if (!cli.isAuth() || !cli.isReg())
+    {
+        send_error(cli, ERR_NOTREGISTERED, cmd, false);
+        return;
+    }
     std::istringstream channelsStream(channelsList);
     std::istringstream passwordsStream(passwordsList);
-    std::string channelName, password;
-	do {
-		if (!(channelsStream >> channelName))
+    std::string        channelName, password;
+    do
+    {
+        if (!(channelsStream >> channelName))
             break;
-		passwordsStream >> password;
-		if (!Channel::validName(channelName))
-		{
-			send_error(cli, ERR_BADCHANMASK, cmd);
-			continue;
-		}
-		Channel *existingChannel = serverPtr->findChannel(channelName);
-		if (!existingChannel)
-		{
-			if (password.size() != 0)
-			{
-				serverPtr->addNewChannel(Channel(channelName, cli.getServer(), password));
-				existingChannel = serverPtr->getLastAddedChannel();
-			}
-			else
-			{
-				serverPtr->addNewChannel(Channel(channelName, cli.getServer()));
-				existingChannel = serverPtr->getLastAddedChannel();
-			}
-		}
+        passwordsStream >> password;
+        if (!Channel::validName(channelName))
+        {
+            send_error(cli, ERR_BADCHANMASK, cmd);
+            continue;
+        }
+        Channel* existingChannel = serverPtr->findChannel(channelName);
+        if (!existingChannel)
+        {
+            if (password.size() != 0)
+            {
+                serverPtr->addNewChannel(Channel(channelName, cli.getServer(), password));
+                existingChannel = serverPtr->getLastAddedChannel();
+            }
+            else
+            {
+                serverPtr->addNewChannel(Channel(channelName, cli.getServer()));
+                existingChannel = serverPtr->getLastAddedChannel();
+            }
+        }
         if (password.size() != 0)
             existingChannel->addClient(cli, password);
-        else 
+        else
             existingChannel->addClient(cli);
-	} while (channelName.size() != 0);
+    } while (channelName.size() != 0);
 }
