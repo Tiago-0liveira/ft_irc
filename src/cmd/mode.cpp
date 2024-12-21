@@ -85,12 +85,15 @@ void modeCommand(Client& cli, std::string& msg)
     if (channel.empty() || mode.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Channel* chan = serverPtr->findChannel(channel);
-
     if (!(mode[0] == '+' || mode[0] == '-') &&
         mode.find_last_not_of("kitol", 1) != std::string::npos)
         return send_error(cli, ERR_UNKNOWNMODE, cmd);
+    else if (mode.size() < 2)
+        return send_error(cli, ERR_UNKNOWNMODE, cmd);
     else if (chan == NULL)
         return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
+    else if (mode[1] == 'o' && serverPtr->findClient(params) == NULL)
+        return send_error(cli, ERR_NOSUCHNICK, cmd);
     else if (mode == "+k" && params.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     chan->addMode(cli, mode, params);
