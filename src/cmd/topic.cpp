@@ -41,39 +41,29 @@ void topicCommand(Client& cli, std::string& msg)
     stream >> cmd;
     stream >> chan_name;
 
-	if (!cli.isAuth() || !cli.isReg())
-	{
-		send_error(cli, ERR_NOTREGISTERED, cmd, false);
-		return;
-	}
-    if (chan_name.empty())
+    if (!cli.isAuth() || !cli.isReg())
     {
-        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+        send_error(cli, ERR_NOTREGISTERED, cmd, false);
         return;
     }
+    if (chan_name.empty())
+        return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Channel* chan = server_ptr->findChannel(chan_name);
     if (!chan)
-    {
-        send_error(cli, ERR_NOSUCHCHANNEL, cmd);
-        return;
-    }
+        return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
     std::size_t colon_pos = msg.find(':');
     if (colon_pos != std::string::npos)
     {
         if (!chan->isOp(cli))
-        {
-            send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName(), false);
-            return;
-        }
+            return send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName(),
+                              false);
         new_topic = msg.substr(colon_pos + 1);
         if (new_topic.empty())
-        {
-            send_error(cli, ERR_NEEDMOREPARAMS, cmd);
-            return;
-        }
+            return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
         chan->setTopic(new_topic);
-        chan->broadcastMessage(cli, ":" + cli.getNick() + " " +
-                                        RPL_TOPIC(chan->getName(), chan->getTopic()));
+
+        chan->broadcastMessage(
+            cli, ":" + cli.getNick() + " " + RPL_TOPIC(chan->getName(), chan->getTopic()), false);
     }
     else
     { /* No colon */
