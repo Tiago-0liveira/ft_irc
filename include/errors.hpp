@@ -31,7 +31,8 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_QUIT(userHost, channel) (userHost + "QUIT " + channel + "\r\n")
 #define RPL_QUITWMSG(userHost, channel, msg) (userHost + "QUIT " + channel + " :" + msg + "\r\n")
 #define RPL_KICK(userHost, channel, nick) (userHost + "KICK " + channel + " " + nick + "\r\n")
-#define RPL_KICKWMSG(userHost, channel, nick, msg) (userHost + "KICK " + channel + " " + nick +  " :" + msg + "\r\n")
+#define RPL_KICKWMSG(userHost, channel, nick, msg)                                                 \
+    (userHost + "KICK " + channel + " " + nick + " :" + msg + "\r\n")
 #define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
@@ -40,7 +41,9 @@ void        send_notice(Client& src, Client& dst, std::string notice);
     (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + chanoper + \
      " :0 " + realname + "\r\n")
 #define RPL_ENDOFWHO(name) (name + " :End of /WHO list\r\n")
-#define RPL_CHANNELMODEIS(channel, mode) (channel + " :+" + mode + "\r\n")
+#define RPL_CHANNELMODEIS(client, channel, mode) (client + " " + channel + " " + mode + "\r\n")
+#define RPL_CHANNELMODEISARGS(client, channel, mode, args)                                         \
+    (client + " " + channel + " " + mode + " " + args + "\r\n")
 #define RPL_NOTOPIC(channel) ("TOPIC " + channel + " :No topic is set" + "\r\n")
 #define RPL_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + "\r\n")
 #define RPL_TOPICWHOTIME(channel, who, when) (channel + " " + who + " :" + when + "\r\n")
@@ -50,7 +53,8 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_CREATIONTIME(channel, creation_time) (channel + " :" + creation_time + "\r\n")
 #define RPL_BANLIST(channel, mask) (channel + " :" + mask + "\r\n")
 #define RPL_ENDOFBANLIST(channel) (channel + " :End of channel ban list\r\n")
-#define RPL_INVITING(guest, channel) (guest + " :" + channel + "\r\n")
+#define RPL_INVITING(client, guest, channel) (client + " " + guest + " " + channel + "\r\n")
+#define RPL_INVITE(invited, channel) (" INVITE " + invited + " " + channel + "\r\n")
 #define ERR_SERVERISFULL(host)                                                                     \
     ("ERROR :Closing link: (unknown@" + host +                                                     \
      ") [No more connections allowed from your host via this connect class (local)]\r\n")
@@ -66,7 +70,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define NTC_NOTICE(dest, msg) ("NOTICE " + dest + " " + msg)
 #define NTC_QUIT(msg) (" QUIT :Quit: " + msg)
 #define NTC_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
-#define NTC_CHANMODE(channel, mode) ( "MODE " + channel + " :" + mode)
+#define NTC_CHANMODE(channel, mode) ("MODE " + channel + " :" + mode)
 #define NTC_CHANMODE_ARG(channel, mode, arg) ("MODE " + channel + " " + mode + " :" + arg)
 #define NTC_KICK(channel, usr, reason) ("KICK " + channel + " " + usr + " " + reason)
 #define NTC_INVITE(channel, usr) ("INVITE " + usr + " :" + channel)
