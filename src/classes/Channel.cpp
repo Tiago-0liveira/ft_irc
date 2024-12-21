@@ -54,19 +54,10 @@ void Channel::addClient(Client& client, std::string password)
             std::vector<std::string>::iterator find_invite = std::find(
                 client.getChannalInvites().begin(), client.getChannalInvites().end(), _channel);
             if (find_invite == client.getChannalInvites().end())
-            {
-                std::cout << RED << client.getNick()
-                          << " dosen't have the invitation for the channel " << _channel << RESET
-                          << std::endl;
-                return;
-            }
+                return send_error(client, ERR_INVITEONLYCHAN, "MODE");
         }
         if (_member.size() == _limit)
-        {
-            std::cout << RED << "Channel " << _channel << " has reached max number of people."
-                      << RESET << std::endl;
-            return;
-        }
+            return send_error(client, ERR_CHANNELISFULL, "CMD");
         _member.push_back(&client);
         client.setSendBuf(RPL_JOIN(client.getMessageNameBase(), _channel));
         std::string topicCommandMsg = "TOPIC " + getName() + "\r\n";
@@ -84,7 +75,7 @@ void Channel::removeClient(Client& client, const std::string& leave_msg)
     std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
     if (find != _member.end())
     {
-		broadcastMessage(client, leave_msg, false);
+        broadcastMessage(client, leave_msg, false);
         std::vector<Client*>::iterator find_op = std::find(_op.begin(), _op.end(), &client);
         if (find_op != _op.end())
         {
@@ -120,60 +111,17 @@ bool Channel::isMember(Client& client)
 
 void Channel::inviteClient(Client& member, Client& invited)
 {
-    if (!isMember(member))
-    {
-        std::cout << "The User " << member.getNick()
-                  << " can't invite people/ not part of the channel " << _channel << std::endl;
-        return;
-    }
+    (void)member;
     std::vector<std::string>::iterator find =
         std::find(invited.getChannalInvites().begin(), invited.getChannalInvites().end(), _channel);
     if (find == invited.getChannalInvites().end())
     {
         invited.getChannalInvites().push_back(_channel);
-        invited.setSendBuf(RPL_INVITING(invited.getNick(), getName()));
-        std::cout << "The User " << invited.getNick() << " was invided channel " << _channel
+        send_reply(member, 341, RPL_INVITING(member.getNick(), invited.getNick(), getName()));
+        invited.setSendBuf(member.getMessageNameBase() + RPL_INVITE(invited.getNick(), getName()));
+        std::cout << "The User " << invited.getNick() << " was invited channel " << _channel
                   << std::endl;
     }
-}
-
-bool Channel::kickClient(std::string clientNick)
-{
-    std::vector<Client*>::iterator find = _op.begin();
-
-    while (find != _op.end() && clientNick.compare((*find)->getNick()))
-        find++;
-    if (find != _op.end())
-        _op.erase(find);
-
-    find = _member.begin();
-    while (find != _member.end() && clientNick.compare((*find)->getNick()))
-        find++;
-    if (find == _member.end())
-        return false;
-    std::cout << "The User " << (*find)->getNick() << " left!" << std::endl;
-    // broadcastMessage(format(LEAVE_MESSAGE, find->getNick()), -1);
-    _member.erase(find);
-
-    return true;
-}
-
-void Channel::topic(std::string topic, Client& client)
-{
-    if (_topic_change == false && !isOp(client))
-    {
-        std::cout << RED << client.getNick() << " can't change TOPIC of the channel " << _channel
-                  << RESET << std::endl;
-        return;
-    }
-    if (!topic.empty())
-        setTopic(topic);
-    // sendMessage(_op[0]->getFd(), format(TOPIC_MESSAGE, _channel, _topic));
-    if (_topic.empty())
-        std::cout << RED << "Channel " << _channel << " dosen't have a topic." << RESET
-                  << std::endl;
-    else
-        std::cout << "Channel " << _channel << " topic is " << _topic << std::endl;
 }
 
 // NOTE: this function should not be for handling replies
@@ -209,64 +157,48 @@ void Channel::addMode(Client& client, std::string mode, std::string argument)
 {
     std::map<char, t_exe>::iterator found = _modes.find(mode[1]);
     std::map<char, int>::iterator   aux   = _nbr_modes.find(mode[1]);
-    ;
-    if (aux->second >= 3)
-    {
-        std::cout << RED << "Error: You have already used mode " << mode[1] << " tree times "
-                  << RESET << std::endl;
-        return;
-    }
-    if (found != _modes.end() && mode.size() == 2)
+    (void)aux;
+    if (found != _modes.end())
         (this->*(found->second))(client, mode, argument);
 }
 
 void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
+    (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('i');
 
-    if (!this->isOp(client))
-        std::cout << RED << "Member " << client.getNick()
-                  << " cant't invete other people to the channel " << _channel
-                  << " because he/she is not an operator." << RESET << std::endl;
-    else if (mode[0] == '+')
+    if (mode == "+i")
     {
         aux->second += 1;
         _invite_only = true;
-        std::cout << "Mode " << mode << ": " << argument << " was invited to the channal "
-                  << _channel << std::endl;
+        broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
-    else if (mode[0] == '-')
+    else if (mode == "-i")
     {
         aux->second += 1;
         _invite_only = false;
-        std::cout << "Mode " << mode << ": Invite to channel " << _channel << " was removed from "
-                  << argument << std::endl;
+        broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
 }
 
 void Channel::topicMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
+    (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('t');
 
-    if (!this->isOp(client) && !_topic_change)
-        std::cout << RED << "Member " << client.getNick()
-                  << " cant't change the topic in the channel " << _channel
-                  << " because he/she is not an operator." << RESET << std::endl;
-    else if (mode[0] == '+')
+    if (mode == "-t")
     {
         _topic_change = true;
         aux->second += 1;
-        std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel
-                  << " is free to use." << std::endl;
+        broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
-    else if (mode[0] == '-')
+    else if (mode == "+t")
     {
         _topic_change = false;
         aux->second += 1;
-        std::cout << "Mode " << mode << ": TOPIC command on channel " << _channel
-                  << " is now restricted." << std::endl;
+        broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
 }
 
@@ -274,29 +206,22 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
 {
     std::map<char, int>::iterator aux = _nbr_modes.find('k');
 
-    if (!this->isOp(client))
-        std::cout << RED << "Member " << client.getNick()
-                  << " dosen't have the clerence to add a password to channel " << _channel
-                  << " because he/she is not an operator." << RESET << std::endl;
-    else if (mode[0] == '+')
+    (void)client;
+    if (mode == "+k")
     {
         if (_is_key == true)
         {
-            std::cout << RED << "Key is already set." << _channel << std::endl;
+            send_error(client, ERR_KEYSET, "MODE"); // :Channel key already set
             return;
         }
         aux->second += 1;
-        _pass = argument;
-        std::cout << "Mode " << mode << ":  password was add to the channal " << _channel
-                  << std::endl;
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), getName(), mode, argument), 324);
     }
-    else if (mode[0] == '-')
+    else if (mode == "-k")
     {
         aux->second += 1;
         _is_key = false;
-        _pass   = "";
-        std::cout << "Mode " << mode << ": password was removed from the channel " << _channel
-                  << std::endl;
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), getName(), mode, argument), 324);
     }
 }
 
@@ -331,25 +256,24 @@ void Channel::removeOp(Client& client)
 
 void Channel::operatorMode(Client& client, std::string mode, std::string argument)
 {
-    (void)argument;
-    std::map<char, int>::iterator aux = _nbr_modes.find('o');
+    Server*                        ptr = client.getServer();
+    std::map<char, int>::iterator  aux = _nbr_modes.find('o');
+    std::vector<Client*>::iterator find;
 
-    if (mode[0] == '+' && !this->isOp(client))
+    if (isOp(client) == false)
+        return send_error(client, ERR_CHANOPRIVSNEEDED, "MODE");
+    if (mode == "+o")
     {
-        std::cout << "Mode " << mode << ": " << client.getNick()
-                  << " was promoted to operator of channel " << _channel << std::endl;
+        // mode_params = "channel operator privileges were given to '" + argument + "'.";
         aux->second += 1;
-        // broadcastMessage(str, argClient->getFd());
-        addOp(client);
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
+        addOp(*ptr->findClient(argument));
     }
-    else if (mode[0] == '-' && this->isOp(client) && _op.size() > 0)
+    else if (mode == "-o" && _op.size() > 0)
     {
-        // broadcastMessage(str, argClient->getFd());
-        std::cout << "Mode " << mode << ": " << client.getNick()
-                  << " is no longer a operator of channel " << _channel << std::endl;
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
         aux->second += 1;
-
-        removeOp(client);
+        removeOp(*ptr->findClient(argument));
     }
 }
 
@@ -372,25 +296,25 @@ void Channel::limitMode(Client& client, std::string mode, std::string argument)
 {
     (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('l');
-    ;
 
-    if (mode[0] == '+' && mode[1] == 'l')
+    if (argument.empty())
+        argument = "10";
+    // Limit number of members on the channal by default is 10.
+    if (mode == "+l")
     {
         _is_limited = true;
         int n       = nbrLimit(argument);
         if (n == -1)
-            std::cout << RED << "Error: invalid limit nbr on channel " << _channel << RESET
-                      << std::endl;
+            return;
         _limit = n;
         aux->second += 1;
-        std::cout << "Mode " << mode << ": channel " << _channel << " is now limited." << std::endl;
-        // Limit number of members on the channal by default is 10.
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
     }
-    else if (mode[0] == '-' && mode[1] == 'l')
+    else if (mode == "-l")
     {
         _is_limited = false;
         aux->second += 1;
-        std::cout << "Mode " << mode << ": channel " << _channel << " limmit removed." << std::endl;
+        broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
     }
 }
 
@@ -448,69 +372,3 @@ bool Channel::getInviteOnly() const
 {
     return _invite_only;
 }
-
-/*
-int main()
-{
-    Client toy, taylor, meghan, phill, nickle;
-    toy.setNick("Toy");
-    taylor.setNick("Taylor");
-    meghan.setNick("Meghan");
-    phill.setNick("Phill");
-    nickle.setNick("Nicleback");
-
-    std::cout << GREEN << "<<<<<<<<<<<<<<<<<<<<<<<<< Add >>>>>>>>>>>>>>>>>>>>>>>>>" << RESET <<
-std::endl; Channel canal("&Sing"); canal.addClient(toy,""); canal.addClient(taylor,"");
-    canal.addClient(meghan,"");
-    canal.inviteClient(toy, phill);
-    canal.addMode(meghan, "+t", "");
-    canal.addMode(meghan, "+o", "");
-    canal.addMode(meghan, "+l", "3");
-    canal.addMode(meghan, "+k", "banana");
-    canal.inviteClient(taylor, phill);
-    canal.addMode(toy, "+i", "Phill");
-    canal.addClient(phill,"");
-
-
-    std::cout << std::endl;
-    std::vector<Client>::iterator it;
-
-    std::cout << CYAN << "Members of " << canal.getName() << ": " << RESET;
-    for(it = canal.getMembers().begin(); it != canal.getMembers().end(); ++it)
-        std::cout << (*it)->getNick() << ", ";
-    std::cout << std::endl;
-
-    std::cout << PURPLE << "Opratores of " << canal.getName() << ":  " << RESET;
-    for(it = canal.getOp().begin(); it != canal.getOp().end(); ++it)
-        std::cout << (*it)->getNick() << ", ";
-    std::cout << std::endl << std::endl;
-
-    std::cout << GREEN << "<<<<<<<<<<<<<<<<<<<<<<<< Remove >>>>>>>>>>>>>>>>>>>>>>>>" << RESET <<
-std::endl; canal.kickClient("Taylor"); canal.addMode(toy, "-o", "remove operator");
-    canal.addMode(meghan, "-t", "");
-    canal.addMode(meghan, "+t", "banana");
-    canal.addMode(meghan, "-t", "");
-    canal.addMode(meghan, "-l", "");
-    canal.addClient(phill,"");
-    canal.addClient(nickle,"");
-
-
-    std::cout << std::endl << CYAN << "Members of " << canal.getName() << ": " << RESET;
-    for(it = canal.getMembers().begin(); it != canal.getMembers().end(); ++it)
-        std::cout << (*it)->getNick() << ", ";
-    std::cout << std::endl;
-
-    std::cout << PURPLE << "Opratores of " << canal.getName() << ":  " << RESET;
-    for(it = canal.getOp().begin(); it != canal.getOp().end(); ++it)
-        std::cout << (*it)->getNick() << ", ";
-    std::cout << std::endl << std::endl;
-
-    std::cout << GREEN << "<<<<<<<<<<<<<<<<<<<<<<<< Topic >>>>>>>>>>>>>>>>>>>>>>>>" << RESET <<
-std::endl; canal.topic("", taylor); canal.topic("poop", meghan);
-
-    std::map<char, int>::iterator aux;
-    for(aux = canal.getNbrMode().begin(); aux != canal.getNbrMode().end(); ++aux)
-        std::cout << "{" << aux->first << ", " << aux->second <<  "}" << std::endl;
-    std::cout << std::endl;
-}
-*/
