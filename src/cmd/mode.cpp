@@ -1,7 +1,8 @@
-#include <sstream>
 #include <Client.hpp>
 #include <errors.hpp>
 #include <irc.hpp>
+#include <sstream>
+#include <string>
 
 /*
  * Command: MODE
@@ -26,51 +27,14 @@
         The various modes available for channels are as follows:
 
                 o - give/take channel operator privileges;
-                p - private channel flag;
-                s - secret channel flag;
                 i - invite-only channel flag;
                 t - topic settable by channel operator only flag;
-                n - no messages to channel from clients on the outside;
-                m - moderated channel;
                 l - set the user limit to channel;
-                b - set a ban mask to keep users out;
-                v - give/take the ability to speak on a moderated channel;
                 k - set a channel key (password).
 
         When using the 'o' and 'b' options, a restriction on a total of three
         per mode command has been imposed.  That is, any combination of 'o'
         and
-
-    User modes:
-        Parameters: <nickname> {[+|-]|i|w|s|o}
-
-        The user MODEs are typically changes which affect either how the
-        client is seen by others or what 'extra' messages the client is sent.
-        A user MODE command may only be accepted if both the sender of the
-        message and the nickname given as a parameter are both the same.
-
-        The available modes are as follows:
-
-                i - marks a users as invisible;
-                s - marks a user for receipt of server notices;
-                w - user receives wallops;
-                o - operator flag.
-
-        Additional modes may be available later on.
-
-        If a user attempts to make themselves an operator using the "+o"
-        flag, the attempt should be ignored.  There is no restriction,
-        however, on anyone `deopping' themselves (using "-o").  Numeric
-        Replies:
-
-                ERR_NEEDMOREPARAMS              RPL_CHANNELMODEIS
-                ERR_CHANOPRIVSNEEDED            ERR_NOSUCHNICK
-                ERR_NOTONCHANNEL                ERR_KEYSET
-                RPL_BANLIST                     RPL_ENDOFBANLIST
-                ERR_UNKNOWNMODE                 ERR_NOSUCHCHANNEL
-
-                ERR_USERSDONTMATCH              RPL_UMODEIS
-                ERR_UMODEUNKNOWNFLAG
 
         Examples:
 
@@ -79,7 +43,7 @@
         MODE #Finnish +im               ; Makes #Finnish channel moderated and
                                         'invite-only'.
 
-        MODE #Finnish +o Kilroy         ; Gives 'chanop' privileges to Kilroy on 
+        MODE #Finnish +o Kilroy         ; Gives 'chanop' privileges to Kilroy on
                                         channel #Finnish.
 
         MODE #Finnish +v Wiz            ; Allow WiZ to speak on #Finnish.
@@ -99,52 +63,36 @@
         MODE &oulu +b *!*@*.edu         ; prevent any user from a hostname
                                         matching *.edu from joining.
 
-                Use of user Modes:
-
-        :MODE WiZ -w                    ; turns reception of WALLOPS messages
-                                        off for WiZ.
-
-        :Angel MODE Angel +i            ; Message from Angel to make themselves
-                                        invisible.
-
-        MODE WiZ -o                     ; WiZ 'deopping' (removing operator
-                                        status).  The plain reverse of this
-                                        command ("MODE WiZ +o") must not be
-                                        allowed from users since would bypass
-                                        the OPER command.
-
 */
+
+// o - give/take channel operator privileges;
+// i - invite-only channel flag;
+// t - topic settable by channel operator only flag;
+// l - set the user limit to channel;
+// k - set a channel key (password).
 
 void modeCommand(Client& cli, std::string& msg)
 {
     Server*            serverPtr = cli.getServer();
-    std::string        cmd, channel_or_nick, params;
+    std::string        cmd, channel, mode, params;
     std::istringstream stream(msg);
-    
-    (void)serverPtr;
-    (void)cmd;
-    (void)stream;
 
-    // TODO: change this later
-    send_reply(cli, 472, "Unknown mode\r\n");
+    stream >> cmd;
+    stream >> channel;
+    stream >> mode;
+    stream >> params;
+
+    if (channel.empty() || mode.empty())
+        return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+    Channel* chan = serverPtr->findChannel(channel);
+
+    if (!(mode[0] == '+' || mode[0] == '-') &&
+        mode.find_last_not_of("kitol", 1) != std::string::npos)
+        return send_error(cli, ERR_UNKNOWNMODE, cmd);
+    else if (chan == NULL)
+        return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
+    else if (mode == "+k" && params.empty())
+        return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+    chan->addMode(cli, mode, params);
     return;
-
-    if (channel_or_nick.size() == 0)
-    {
-        send_error(cli, ERR_NEEDMOREPARAMS, cmd);
-        return;
-    }
-    if (Channel::validName(channel_or_nick))
-    { //INFO: is channel
-        Channel *chan = serverPtr->findChannel(channel_or_nick);
-        if (!chan)
-        {
-            send_error(cli, ERR_NOSUCHCHANNEL, cmd);
-            return;
-        }
-        if (params.size() == 0)
-        {
-
-        }
-    }
 }
