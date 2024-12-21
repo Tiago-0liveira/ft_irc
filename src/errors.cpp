@@ -51,9 +51,9 @@ void send_error(Client& cli, int errnum, const std::string& arg, bool add_star)
     std::ostringstream os;
 
     os << ":" << SERVER_NAME << " " << errnum;
-	if (add_star)
-		os << " *";
-	os << " " << arg << errmap(errnum) << "\r\n";
+    if (add_star)
+        os << " *";
+    os << " " << arg << errmap(errnum) << "\r\n";
     // if (send(cli.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
     // throw std::runtime_error("failure to send error");
     cli.setSendBuf(os.str());
