@@ -50,11 +50,11 @@ class Channel
     // static std::string LEAVE_MESSAGE;
     // static std::string TOPIC_MESSAGE;
 
-    Channel(std::string name, Server* server, std::string key = DEFAULT_PASS);
+    Channel(std::string name, Server* server, std::string key = "");
     ~Channel();
 
     // Member functions
-    void addClient(Client& client, std::string password = DEFAULT_PASS);
+    void addClient(Client& client, std::string password = "");
     void removeClient(Client& client, const std::string& leave_msg);
     bool isMember(Client& client);
     void inviteClient(Client& member, Client& invited);
