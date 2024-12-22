@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <vector>
 
-#define MAX_CLIENTS 100
+#define MAX_CLIENTS 30
 #define MAX_CHANNELS 30
 #define BUFFER_SIZE ((int)1024 * (int)2)
 
