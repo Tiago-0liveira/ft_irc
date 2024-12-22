@@ -18,6 +18,7 @@
 #include <vector>
 
 #define MAX_CLIENTS 100
+#define MAX_CHANNELS 30
 #define BUFFER_SIZE ((int)1024 * (int)2)
 
 extern bool server_on;
@@ -48,6 +49,7 @@ class Server
     void                  getdateOfCreation(const std::string& date);
     const std::string&    getName() const;
     const std::string&    getDateOfCreation() const;
+    bool                  isSpaceAvailableForNewChannel() const;
     std::set<std::string> m_channelSet;
     void                  addNewChannel(Channel channel);
     Channel*              getLastAddedChannel();

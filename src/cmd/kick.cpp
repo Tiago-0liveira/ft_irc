@@ -36,22 +36,28 @@ void kickCommand(Client& cli, std::string& msg)
     std::size_t colon_pos = msg.find(':');
     if (colon_pos != std::string::npos)
         kickMsg = msg.substr(colon_pos + 1);
+    if (kickMsg.empty())
+        kickMsg = DEFAULT_KICKMSG;
     for (size_t i = 0; i < chanVector.size(); ++i)
     {
         if (dupChan.insert(chanVector[i]).second == false ||
             dupNick.insert(nickVector[i]).second == false)
         {
-            return send_error(cli, ERR_NEEDMOREPARAMS, "KICK");
+            send_error(cli, ERR_NEEDMOREPARAMS, "KICK");
+            continue;
         }
         Channel* chan = ptr->findChannel(chanVector[i]);
         if (chan == NULL)
-            return send_error(cli, ERR_NOSUCHCHANNEL, "KICK");
+        {
+            send_error(cli, ERR_NOSUCHCHANNEL, "KICK");
+            continue;
+        }
         else if (!chan->isOp(cli))
-            return send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName(),
-                              false);
+        {
+            send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName(), false);
+            continue;
+        }
         Client& kickedClient = *ptr->findClient(nickVector[i]);
-        if (kickMsg.empty())
-            kickMsg = DEFAULT_KICKMSG;
         chan->removeClient(kickedClient,
                            RPL_KICKWMSG(kickedClient.getMessageNameBase(), chan->getName(),
                                         kickedClient.getNick(), kickMsg));

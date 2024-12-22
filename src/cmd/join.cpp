@@ -94,6 +94,11 @@ void joinCommand(Client& cli, std::string& msg)
         Channel* existingChannel = serverPtr->findChannel(channelName);
         if (!existingChannel)
         {
+            if (!serverPtr->isSpaceAvailableForNewChannel())
+            {
+                send_error(cli, ERR_TOOMANYCHANNELS, cmd);
+                continue;
+            }
             if (channelPassword.size() != 0)
             {
                 serverPtr->addNewChannel(Channel(channelName, cli.getServer(), channelPassword));

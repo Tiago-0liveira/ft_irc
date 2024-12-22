@@ -87,6 +87,8 @@ void modeCommand(Client& cli, std::string& msg)
     Channel* chan = serverPtr->findChannel(channel);
     if (chan == NULL)
         return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
+    if (!chan->isMember(cli))
+        return send_error(cli, ERR_NOTONCHANNEL, cmd);
     if (mode.empty())
         return cli.setSendBuf(":" + std::string(SERVER_NAME) + " 324 " + cli.getNick() + " " +
                               channel + " " + chan->getActiveModesInString() + "\r\n");

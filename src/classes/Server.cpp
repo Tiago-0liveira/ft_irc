@@ -385,6 +385,11 @@ const std::string& Server::getDateOfCreation() const
     return m_dateOfCreation;
 }
 
+bool Server::isSpaceAvailableForNewChannel() const
+{
+    return m_channels.size() < MAX_CHANNELS;
+}
+
 void Server::addNewChannel(Channel channel)
 {
     m_channels.push_back(channel);

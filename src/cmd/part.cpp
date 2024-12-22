@@ -66,13 +66,13 @@ void partCommand(Client& cli, std::string& msg)
 		if (!Channel::validName(chan_name))
 		{
 			send_error(cli, ERR_NOSUCHCHANNEL, cmd);
-			return;
+			continue;
 		}
 		Channel *chan = server_ptr->findChannel(chan_name);
 		if (!chan)
 		{
 			send_error(cli, ERR_NOSUCHCHANNEL, cmd);
-			return;
+			continue;
 		}
 		if (leaveMsg.empty())
 			chan->removeClient(cli, RPL_PART(cli.getMessageNameBase(), chan->getName()));
