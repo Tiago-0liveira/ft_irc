@@ -168,7 +168,6 @@ void Channel::addMode(Client& client, std::string mode, std::string argument)
 void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
-    (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('i');
 
     if (mode == "+i")
@@ -188,7 +187,6 @@ void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 void Channel::topicMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
-    (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('t');
 
     if (mode == "-t")
@@ -208,8 +206,7 @@ void Channel::topicMode(Client& client, std::string mode, std::string argument)
 void Channel::keyMode(Client& client, std::string mode, std::string argument)
 {
     std::map<char, int>::iterator aux = _nbr_modes.find('k');
-
-    (void)client;
+    
     if (mode == "+k")
     {
         if (_is_key == true)
@@ -297,7 +294,6 @@ int nbrLimit(std::string str)
 
 void Channel::limitMode(Client& client, std::string mode, std::string argument)
 {
-    (void)client;
     std::map<char, int>::iterator aux = _nbr_modes.find('l');
 
     if (argument.empty())

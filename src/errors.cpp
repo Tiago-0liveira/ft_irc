@@ -76,12 +76,3 @@ void broadcastNotice(Client& src, Channel& dst, std::string notice)
     os << ":" << src.getFd() << " " << notice << "\r\n";
     dst.broadcastMessage(src, os.str());
 }
-
-void send_notice(Client& src, Client& dst, std::string notice)
-{
-    std::ostringstream os;
-    os << ":" << src.getFd() << " " << notice << "\r\n";
-    // if (send(dst.getFd(), os.str().c_str(), os.str().size(), 0) == -1)
-    //     throw std::runtime_error("failure to send error");
-    dst.setSendBuf(os.str());
-}

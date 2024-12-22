@@ -59,8 +59,6 @@ class Channel
     void removeClient(Client& client, const std::string& leave_msg);
     bool isMember(Client& client);
     void inviteClient(Client& member, Client& invited);
-    bool kickClient(std::string clientNick);
-    void topic(std::string topic, Client& client);
     bool broadcastMessage(Client& cli, const std::string& message, bool exceptSender = true);
     bool broadcastReply(const std::string& message, int rpl_code);
 
