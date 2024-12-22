@@ -82,16 +82,19 @@ void modeCommand(Client& cli, std::string& msg)
     stream >> mode;
     stream >> params;
 
-    if (channel.empty() || mode.empty())
+    if (channel.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Channel* chan = serverPtr->findChannel(channel);
+    if (chan == NULL)
+        return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
+    if (mode.empty())
+        return cli.setSendBuf(":" + std::string(SERVER_NAME) + " 324 " + cli.getNick() + " " +
+                              channel + " " + chan->getActiveModesInString() + "\r\n");
     if (!(mode[0] == '+' || mode[0] == '-') &&
         mode.find_last_not_of("kitol", 1) != std::string::npos)
         return send_error(cli, ERR_UNKNOWNMODE, cmd);
     else if (mode.size() < 2)
         return send_error(cli, ERR_UNKNOWNMODE, cmd);
-    else if (chan == NULL)
-        return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
     else if (mode[1] == 'o' && serverPtr->findClient(params) == NULL)
         return send_error(cli, ERR_NOSUCHNICK, cmd);
     else if (mode == "+k" && params.empty())

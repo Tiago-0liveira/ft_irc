@@ -74,6 +74,7 @@ class Channel
     void        operatorMode(Client& client, std::string mode, std::string argument);
     void        limitMode(Client& client, std::string mode, std::string argument);
     static bool validName(const std::string& name);
+    std::string getActiveModesInString();
 
     // Acessers
     std::vector<Client*>& getMembers();

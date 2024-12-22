@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 
+const std::string DEFAULT_KICKMSG = "u died";
+
 void kickCommand(Client& cli, std::string& msg)
 {
     Server*                                  ptr = cli.getServer();
@@ -49,12 +51,10 @@ void kickCommand(Client& cli, std::string& msg)
                               false);
         Client& kickedClient = *ptr->findClient(nickVector[i]);
         if (kickMsg.empty())
-            chan->removeClient(kickedClient, RPL_KICK(kickedClient.getMessageNameBase(),
-                                                      chan->getName(), kickedClient.getNick()));
-        else
-            chan->removeClient(kickedClient,
-                               RPL_KICKWMSG(kickedClient.getMessageNameBase(), chan->getName(),
-                                            kickedClient.getNick(), kickMsg));
+            kickMsg = DEFAULT_KICKMSG;
+        chan->removeClient(kickedClient,
+                           RPL_KICKWMSG(kickedClient.getMessageNameBase(), chan->getName(),
+                                        kickedClient.getNick(), kickMsg));
     }
     return;
 }

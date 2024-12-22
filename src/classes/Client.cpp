@@ -28,23 +28,22 @@ Client& Client::operator=(const Client& rhs)
 {
     if (this != &rhs)
     {
-        _hostname        = rhs.getHost();
-        _realname        = rhs.getRealname();
-        _nickname        = rhs.getNick();
-        _username        = rhs.getUser();
-        _mode            = rhs.getMode();
-        _passwd          = rhs.getPass();
-        _servername      = rhs.getServname();
-        _channel_invites = rhs.getChannalInvites();
-        _serv            = rhs.getServer();
-        _lastActive      = rhs.lastActiveWhen();
-        _auth            = rhs.isAuth();
-        _reg             = rhs.isReg();
-        _pSet            = rhs.isPasswordSet();
-        _status          = rhs.getStatus();
-        _fd              = rhs.getFd();
-        _readbuf         = rhs.getReadBuf();
-        _sendbuf         = rhs.getSendBuf();
+        _hostname   = rhs.getHost();
+        _realname   = rhs.getRealname();
+        _nickname   = rhs.getNick();
+        _username   = rhs.getUser();
+        _mode       = rhs.getMode();
+        _passwd     = rhs.getPass();
+        _servername = rhs.getServname();
+        _serv       = rhs.getServer();
+        _lastActive = rhs.lastActiveWhen();
+        _auth       = rhs.isAuth();
+        _reg        = rhs.isReg();
+        _pSet       = rhs.isPasswordSet();
+        _status     = rhs.getStatus();
+        _fd         = rhs.getFd();
+        _readbuf    = rhs.getReadBuf();
+        _sendbuf    = rhs.getSendBuf();
     }
     return *this;
 }
@@ -128,7 +127,7 @@ Server* Client::getServer(void) const
     return _serv;
 }
 
-std::vector<std::string> Client::getChannalInvites(void) const
+std::set<std::string>& Client::getChannalInvites(void)
 {
     return _channel_invites;
 }
@@ -226,7 +225,7 @@ void Client::setServer(Server& serv)
 
 void Client::setLeaveMsg(std::string leavemsg)
 {
-	_leavemsg = leavemsg;
+    _leavemsg = leavemsg;
 }
 
 bool Client::validNick(const std::string& nick)
@@ -238,11 +237,12 @@ bool Client::validNick(const std::string& nick)
     if (!std::isalpha(firstChar) && firstChar != '_' && firstChar != '^')
         return false;
     for (unsigned long i = 0; i < nick.size(); i++)
-	{
-		char c = nick.at(i);
-        if (!std::isalnum(c) && c != '-' && c != '[' && c != ']' && c != '\'' && c != '^' && c != '_' && c != '{' && c != '}' && c != '|')
-	        return false;
-	}
+    {
+        char c = nick.at(i);
+        if (!std::isalnum(c) && c != '-' && c != '[' && c != ']' && c != '\'' && c != '^' &&
+            c != '_' && c != '{' && c != '}' && c != '|')
+            return false;
+    }
     return true;
 }
 

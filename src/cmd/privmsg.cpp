@@ -19,11 +19,11 @@ void privmsgCommand(Client& cli, std::string& msg)
     stream >> cmd;
     stream >> targets;
 
-	if (!cli.isAuth() || !cli.isReg())
-	{
-		send_error(cli, ERR_NOTREGISTERED, cmd, false);
-		return;
-	}
+    if (!cli.isAuth() || !cli.isReg())
+    {
+        send_error(cli, ERR_NOTREGISTERED, cmd, false);
+        return;
+    }
     if (targets.empty())
     {
         send_error(cli, ERR_NORECIPIENT, cmd);

@@ -78,14 +78,14 @@ void joinCommand(Client& cli, std::string& msg)
         send_error(cli, ERR_NOTREGISTERED, cmd, false);
         return;
     }
-    std::istringstream channelsStream(channelsList);
-    std::istringstream passwordsStream(passwordsList);
-    std::string        channelName, password;
-    do
+    std::vector<std::string> channels  = strSplit(channelsList, ',');
+    std::vector<std::string> passwords = strSplit(passwordsList, ',');
+    for (size_t i = 0; i < channels.size(); i++)
     {
-        if (!(channelsStream >> channelName))
-            break;
-        passwordsStream >> password;
+        std::string& channelName = channels[i];
+        std::string  channelPassword;
+        if (i < passwords.size())
+            channelPassword = passwords[i];
         if (!Channel::validName(channelName))
         {
             send_error(cli, ERR_BADCHANMASK, cmd);
@@ -94,9 +94,9 @@ void joinCommand(Client& cli, std::string& msg)
         Channel* existingChannel = serverPtr->findChannel(channelName);
         if (!existingChannel)
         {
-            if (password.size() != 0)
+            if (channelPassword.size() != 0)
             {
-                serverPtr->addNewChannel(Channel(channelName, cli.getServer(), password));
+                serverPtr->addNewChannel(Channel(channelName, cli.getServer(), channelPassword));
                 existingChannel = serverPtr->getLastAddedChannel();
             }
             else
@@ -105,9 +105,9 @@ void joinCommand(Client& cli, std::string& msg)
                 existingChannel = serverPtr->getLastAddedChannel();
             }
         }
-        if (password.size() != 0)
-            existingChannel->addClient(cli, password);
+        if (channelPassword.size() != 0)
+            existingChannel->addClient(cli, channelPassword);
         else
             existingChannel->addClient(cli);
-    } while (channelName.size() != 0);
+    }
 }

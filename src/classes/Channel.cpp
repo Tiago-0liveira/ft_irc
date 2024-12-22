@@ -46,18 +46,22 @@ void Channel::addClient(Client& client, std::string password)
 {
     std::vector<Client*>::iterator find = std::find(_member.begin(), _member.end(), &client);
 
-    (void)password;
     if (find == _member.end())
     {
-        if (_invite_only == true)
+        if (_invite_only)
         {
-            std::vector<std::string>::iterator find_invite = std::find(
-                client.getChannalInvites().begin(), client.getChannalInvites().end(), _channel);
-            if (find_invite == client.getChannalInvites().end())
+            if (client.getChannalInvites().count(_channel) == 0)
                 return send_error(client, ERR_INVITEONLYCHAN, "JOIN");
+        }
+        if (_is_key)
+        {
+            if (getpass() != password)
+                return send_error(client, ERR_PASSWDMISMATCH, "JOIN");
         }
         if (_member.size() == _limit)
             return send_error(client, ERR_CHANNELISFULL, "JOIN");
+        if (_invite_only)
+            client.getChannalInvites().erase(client.getChannalInvites().find(_channel));
         _member.push_back(&client);
         client.setSendBuf(RPL_JOIN(client.getMessageNameBase(), _channel));
         std::string topicCommandMsg = "TOPIC " + getName() + "\r\n";
@@ -114,11 +118,9 @@ bool Channel::isMember(Client& client)
 void Channel::inviteClient(Client& member, Client& invited)
 {
     (void)member;
-    std::vector<std::string>::iterator find =
-        std::find(invited.getChannalInvites().begin(), invited.getChannalInvites().end(), _channel);
-    if (find == invited.getChannalInvites().end())
+    if (invited.getChannalInvites().count(_channel) == 0)
     {
-        invited.getChannalInvites().push_back(_channel);
+        invited.getChannalInvites().insert(_channel);
         send_reply(member, 341, RPL_INVITING(member.getNick(), invited.getNick(), getName()));
         invited.setSendBuf(member.getMessageNameBase() + RPL_INVITE(invited.getNick(), getName()));
         std::cout << "The User " << invited.getNick() << " was invited channel " << _channel
@@ -328,6 +330,26 @@ bool Channel::validName(const std::string& name)
         return false;
     std::size_t s = name.find(' ');
     return s == name.npos;
+}
+
+std::string Channel::getActiveModesInString()
+{
+
+    std::string res;
+
+    if (_invite_only)
+        res += "i";
+    if (_topic_change)
+        res += "t";
+    if (_is_limited)
+        res += "l";
+    if (_is_key)
+        res += "k " + getpass();
+
+    if (!res.empty())
+        res = "+" + res;
+
+    return res;
 }
 
 std::vector<Client*>& Channel::getMembers()
