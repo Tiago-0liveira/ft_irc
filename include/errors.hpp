@@ -9,7 +9,6 @@ std::string errmap(int errcode);
 void        send_error(Client& cli, int errnum, const std::string& arg, bool add_star = true);
 void        send_reply(Client& cli, int rpl_code, std::string msg);
 void        broadcastNotice(Client& src, Channel& dst, std::string notice);
-void        send_notice(Client& src, Client& dst, std::string notice);
 
 #define LOCALHOST "localhost"
 
@@ -36,7 +35,6 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_MOTDSTART(server) (":- " + server + " Message of the day - \r\n")
 #define RPL_MOTD(txt) (txt + "\r\n")
 #define RPL_ENDOFMOTD() (":End of /MOTD command\r\n")
-#define RPL_UMODEIS(user_mode) (user_mode + "\r\n")
 #define RPL_WHOREPLY(curr_chan, username, hostname, servname, nick, chanoper, realname)            \
     (curr_chan + " " + username + " " + hostname + " " + servname + " " + nick + " H" + chanoper + \
      " :0 " + realname + "\r\n")
@@ -46,13 +44,9 @@ void        send_notice(Client& src, Client& dst, std::string notice);
     (client + " " + channel + " " + mode + " " + args + "\r\n")
 #define RPL_NOTOPIC(channel) ("TOPIC " + channel + " :No topic is set" + "\r\n")
 #define RPL_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic + "\r\n")
-#define RPL_TOPICWHOTIME(channel, who, when) (channel + " " + who + " :" + when + "\r\n")
 #define RPL_NAMREPLY(name, channel, list) (name + " = " + channel + " :" + list + "\r\n")
 #define RPL_ENDOFNAMES(channel) (channel + " :End of /NAMES list.\r\n")
-#define RPL_AWAY(nick, msg) (nick + " :" + msg + "\r\n")
 #define RPL_CREATIONTIME(channel, creation_time) (channel + " :" + creation_time + "\r\n")
-#define RPL_BANLIST(channel, mask) (channel + " :" + mask + "\r\n")
-#define RPL_ENDOFBANLIST(channel) (channel + " :End of channel ban list\r\n")
 #define RPL_INVITING(client, guest, channel) (client + " " + guest + " " + channel + "\r\n")
 #define RPL_INVITE(invited, channel) (" INVITE " + invited + " " + channel + "\r\n")
 #define ERR_SERVERISFULL(host)                                                                     \
@@ -61,19 +55,7 @@ void        send_notice(Client& src, Client& dst, std::string notice);
 #define RPL_PONG(user_id, server) (user_id + " PONG " + server + "\r\n")
 
 // NOTICES
-#define NTC_NICK(nick) ("NICK :" + nick)
 #define NTC_MODE(channel, nick, mode) ("MODE " + channel + " " + mode + " " + nick + "\r\n")
-#define NTC_JOIN(channel) ("JOIN :" + channel)
-#define NTC_PART(channel) ("PART :" + channel)
-#define NTC_PART_MSG(channel, msg) ("PART " + channel + " :\"" + msg + "\"")
-#define NTC_PRIVMSG(dest, msg) ("PRIVMSG " + dest + " " + msg)
-#define NTC_NOTICE(dest, msg) ("NOTICE " + dest + " " + msg)
-#define NTC_QUIT(msg) (" QUIT :Quit: " + msg)
-#define NTC_TOPIC(channel, topic) ("TOPIC " + channel + " :" + topic)
-#define NTC_CHANMODE(channel, mode) ("MODE " + channel + " :" + mode)
-#define NTC_CHANMODE_ARG(channel, mode, arg) ("MODE " + channel + " " + mode + " :" + arg)
-#define NTC_KICK(channel, usr, reason) ("KICK " + channel + " " + usr + " " + reason)
-#define NTC_INVITE(channel, usr) ("INVITE " + usr + " :" + channel)
 
 // ERRORS
 #define ERR_NOSUCHNICK 401
