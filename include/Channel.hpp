@@ -36,7 +36,6 @@ private:
 	bool					_invite_only;
 	bool					_topic_change;
 	bool					_is_limited;
-	std::map<char, int>		_nbr_modes;
 	std::map<char, t_exe>	_modes;
 	std::vector<Client*>	_member; /* Vector of Client* that live inside the server class */
 	std::vector<Client*>	_op; /* Vector of Client* ops that live inside the server class */
