@@ -30,7 +30,7 @@ void inviteCommand(Client& cli, std::string& msg)
         return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
     else if (chan->isMember(cli) == false)
         return send_error(cli, ERR_NOTONCHANNEL, cmd);
-    else if (chan->isMember(*invitedCli) == false)
+    else if (chan->isMember(*invitedCli) == true)
         return send_error(cli, ERR_USERONCHANNEL, cmd);
     else if (chan->getInviteOnly() == true && chan->isOp(cli) == false)
         return send_error(cli, ERR_CHANOPRIVSNEEDED, cmd);

@@ -54,10 +54,10 @@ void Channel::addClient(Client& client, std::string password)
             std::vector<std::string>::iterator find_invite = std::find(
                 client.getChannalInvites().begin(), client.getChannalInvites().end(), _channel);
             if (find_invite == client.getChannalInvites().end())
-                return send_error(client, ERR_INVITEONLYCHAN, "MODE");
+                return send_error(client, ERR_INVITEONLYCHAN, "JOIN");
         }
         if (_member.size() == _limit)
-            return send_error(client, ERR_CHANNELISFULL, "CMD");
+            return send_error(client, ERR_CHANNELISFULL, "JOIN");
         _member.push_back(&client);
         client.setSendBuf(RPL_JOIN(client.getMessageNameBase(), _channel));
         std::string topicCommandMsg = "TOPIC " + getName() + "\r\n";
@@ -66,6 +66,8 @@ void Channel::addClient(Client& client, std::string password)
         std::cout << "The User " << _member.back()->getNick() << " joined channel " << _channel
                   << std::endl;
     }
+    else
+        send_error(client, ERR_USERONCHANNEL, "JOIN");
     if (_op.size() == 0)
         _op.push_back(&client);
 }

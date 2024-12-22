@@ -209,24 +209,6 @@
    "-I",
    "include/",
    "-o",
-   "obj/cmd/notice.o",
-   "-c",
-   "src/cmd/notice.cpp"
-  ],
-  "file": "src/cmd/notice.cpp"
- },
- {
-  "directory": "/home/acuva-nu/ft_irc",
-  "arguments": [
-   "c++",
-   "-Wall",
-   "-Wextra",
-   "-Werror",
-   "-g",
-   "-std=c++98",
-   "-I",
-   "include/",
-   "-o",
    "obj/cmd/part.o",
    "-c",
    "src/cmd/part.cpp"
