@@ -52,6 +52,11 @@ void kickCommand(Client& cli, std::string& msg)
             send_error(cli, ERR_NOSUCHCHANNEL, "KICK");
             continue;
         }
+        else if (!chan->isMember(cli))
+		{
+			send_error(cli, ERR_NOTONCHANNEL, cmd);
+			continue;
+		}
         else if (!chan->isOp(cli))
         {
             send_error(cli, ERR_CHANOPRIVSNEEDED, cli.getNick() + " " + chan->getName(), false);

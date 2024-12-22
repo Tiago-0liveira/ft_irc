@@ -51,6 +51,8 @@ void topicCommand(Client& cli, std::string& msg)
     Channel* chan = server_ptr->findChannel(chan_name);
     if (!chan)
         return send_error(cli, ERR_NOSUCHCHANNEL, cmd);
+    if (!chan->isMember(cli))
+        return send_error(cli, ERR_NOTONCHANNEL, cmd);
     std::size_t colon_pos = msg.find(':');
     if (colon_pos != std::string::npos)
     {

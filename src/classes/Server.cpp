@@ -166,6 +166,7 @@ bool Server::addNewFd(int newfd)
     {
         std::string msg = ERR_SERVERISFULL(m_name);
         sendMessage(newfd, msg);
+        close(newfd);
         return false;
     }
     m_pollFds.push_back(((pollfd){newfd, POLLIN | POLLOUT | POLLERR, 0}));
@@ -287,12 +288,11 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
     // TODO: before calling any command we need to check if the client is
     // already logged in (not all commands need auth)
     // LOG("handleClientUpdates loop start\n");
-    LOG(input);
     for (it = msg.begin(); it != msg.end(); it++)
     {
         std::istringstream stream(*it);
         stream >> command;
-        LOG(format("%s", command.c_str()))
+        std::cout << "[" << command << "] " << "fd: " << cli.getFd() << std::endl;
         std::transform(command.begin(), command.end(), command.begin(), ::toupper);
         if (m_Cmd.count(command) == 1)
         {
@@ -302,7 +302,6 @@ bool Server::handleClientUpdates(const std::string& input, Client& cli)
         {
             send_error(cli, ERR_UNKNOWNCOMMAND, command);
             continue;
-            // return false;
         }
     }
     cli.resetReadBuf();

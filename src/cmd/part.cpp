@@ -74,6 +74,11 @@ void partCommand(Client& cli, std::string& msg)
 			send_error(cli, ERR_NOSUCHCHANNEL, cmd);
 			continue;
 		}
+		if (!chan->isMember(cli))
+		{
+			send_error(cli, ERR_NOTONCHANNEL, cmd);
+			continue;
+		}
 		if (leaveMsg.empty())
 			chan->removeClient(cli, RPL_PART(cli.getMessageNameBase(), chan->getName()));
 		else
