@@ -45,6 +45,11 @@ void whoCommand(Client& cli, std::string& msg)
 	stream >> cmd;
 	stream >> channel_or_name;
 
+    if (!cli.isAuth() || !cli.isReg())
+    {
+        send_error(cli, ERR_NOTREGISTERED, cmd, false);
+        return;
+    }
     if (channel_or_name.size() == 0)
     {
         send_error(cli, ERR_NEEDMOREPARAMS, cmd);

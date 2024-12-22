@@ -82,6 +82,11 @@ void modeCommand(Client& cli, std::string& msg)
     stream >> mode;
     stream >> params;
 
+    if (!cli.isAuth() || !cli.isReg())
+    {
+        send_error(cli, ERR_NOTREGISTERED, cmd, false);
+        return;
+    }
     if (channel.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
     Channel* chan = serverPtr->findChannel(channel);
@@ -101,6 +106,8 @@ void modeCommand(Client& cli, std::string& msg)
         return send_error(cli, ERR_NOSUCHNICK, cmd);
     else if (mode == "+k" && params.empty())
         return send_error(cli, ERR_NEEDMOREPARAMS, cmd);
+    if (!chan->isOp(cli))
+        return send_error(cli, ERR_CHANOPRIVSNEEDED, cmd);
     chan->addMode(cli, mode, params);
     return;
 }

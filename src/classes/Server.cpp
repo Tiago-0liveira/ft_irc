@@ -205,7 +205,7 @@ bool Server::receiveData(int idx)
         return false;
     }
     client->setReadBuf(buf);
-    if (client->getReadBuf().find("\n") != std::string::npos)
+    if (client->getReadBuf().find("\r\n") != std::string::npos)
     {
         handleClientUpdates(client->getReadBuf(), *client);
         Client* client2 = findClient(m_pollFds[idx].fd);

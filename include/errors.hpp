@@ -56,6 +56,7 @@ void        broadcastNotice(Client& src, Channel& dst, std::string notice);
 
 // NOTICES
 #define NTC_MODE(channel, nick, mode) ("MODE " + channel + " " + mode + " " + nick + "\r\n")
+#define NTC_LASTOP(nick, channel) ("NOTICE " + nick + " :You are the only operator in " + channel + ". You cannot remove your own operator status.\r\n")
 
 // ERRORS
 #define ERR_NOSUCHNICK 401

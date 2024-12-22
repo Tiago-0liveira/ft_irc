@@ -2,7 +2,7 @@
 #include <Channel.hpp>
 #include <Commands.hpp>
 #include <iomanip>
-#include <sstream>  
+#include <sstream>
 
 // std::string Channel::JOIN_MESSAGE = "The User %s joined!";
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
@@ -50,7 +50,7 @@ void Channel::addClient(Client& client, std::string password)
         if (_is_key)
         {
             if (getpass() != password)
-                return send_error(client, ERR_PASSWDMISMATCH, "JOIN");
+                return send_error(client, ERR_BADCHANNELKEY, "JOIN");
         }
         if (_member.size() == _limit)
             return send_error(client, ERR_CHANNELISFULL, "JOIN");
@@ -139,7 +139,7 @@ bool Channel::broadcastReply(const std::string& message, int rpl_code)
 {
     for (size_t i = 0; i < _member.size(); i++)
     {
-        Client* client = _member[i];
+        Client*            client = _member[i];
         std::ostringstream os;
         os << client->getMessageNameBase();
         if (rpl_code != 0)
@@ -191,7 +191,7 @@ void Channel::topicMode(Client& client, std::string mode, std::string argument)
 }
 
 void Channel::keyMode(Client& client, std::string mode, std::string argument)
-{   
+{
     if (mode == "+k")
     {
         if (_is_key == true)
@@ -199,7 +199,7 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
             send_error(client, ERR_KEYSET, "MODE"); // :Channel key already set
             return;
         }
-        _pass = argument;
+        _pass   = argument;
         _is_key = true;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), getName(), mode, argument), 324);
     }
@@ -251,8 +251,13 @@ void Channel::operatorMode(Client& client, std::string mode, std::string argumen
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
         addOp(*ptr->findClient(argument));
     }
-    else if (mode == "-o" && _op.size() > 0)
+    else if (mode == "-o")
     {
+        if (_op.size() == 1)
+        {
+            broadcastMessage(client, getMessageBaseName() + NTC_LASTOP(client.getNick(), getName()), false);
+            return;
+        }
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
         removeOp(*ptr->findClient(argument));
     }
