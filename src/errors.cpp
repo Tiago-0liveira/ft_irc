@@ -42,6 +42,7 @@ std::string errmap(int errcode)
     m[ERR_NOOPERHOST]       = " :No O-lines for your host";
     m[ERR_PASSWDMISMATCH]   = " :Password incorrect";
     m[ERR_BADCHANNAME]      = " :Cannot join channel";
+    m[ERR_UNKNOWNCOMMAND]   = " :Unknown command";
 
     return m[errcode];
 }
