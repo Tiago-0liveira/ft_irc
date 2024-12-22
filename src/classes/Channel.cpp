@@ -2,7 +2,7 @@
 #include <Channel.hpp>
 #include <Commands.hpp>
 #include <iomanip>
-#include <sstream>
+#include <sstream>  
 
 // std::string Channel::JOIN_MESSAGE = "The User %s joined!";
 // std::string Channel::LEAVE_MESSAGE = "The User %s left!";
@@ -15,7 +15,7 @@ Channel::Channel(std::string name, Server* server, std::string key)
     : _channel(name), _pass(key), _topic(DEFAULT_TOPIC), _limit(10), _op(), _serv_ptr(server)
 {
     _serv_ptr = server;
-    if (_channel[0] == '#' || key != DEFAULT_PASS)
+    if (!key.empty())
     {
         _is_key = true;
         _pass   = key;
@@ -32,12 +32,6 @@ Channel::Channel(std::string name, Server* server, std::string key)
     _modes['k'] = &Channel::keyMode;
     _modes['o'] = &Channel::operatorMode;
     _modes['l'] = &Channel::limitMode;
-
-    _nbr_modes['i'] = 0;
-    _nbr_modes['t'] = 0;
-    _nbr_modes['k'] = 0;
-    _nbr_modes['o'] = 0;
-    _nbr_modes['l'] = 0;
 }
 
 Channel::~Channel() {}
@@ -159,8 +153,7 @@ bool Channel::broadcastReply(const std::string& message, int rpl_code)
 void Channel::addMode(Client& client, std::string mode, std::string argument)
 {
     std::map<char, t_exe>::iterator found = _modes.find(mode[1]);
-    std::map<char, int>::iterator   aux   = _nbr_modes.find(mode[1]);
-    (void)aux;
+
     if (found != _modes.end())
         (this->*(found->second))(client, mode, argument);
 }
@@ -168,17 +161,14 @@ void Channel::addMode(Client& client, std::string mode, std::string argument)
 void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
-    std::map<char, int>::iterator aux = _nbr_modes.find('i');
 
     if (mode == "+i")
     {
-        aux->second += 1;
         _invite_only = true;
         broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
     else if (mode == "-i")
     {
-        aux->second += 1;
         _invite_only = false;
         broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
@@ -187,26 +177,21 @@ void Channel::inviteMode(Client& client, std::string mode, std::string argument)
 void Channel::topicMode(Client& client, std::string mode, std::string argument)
 {
     (void)argument;
-    std::map<char, int>::iterator aux = _nbr_modes.find('t');
 
     if (mode == "-t")
     {
         _topic_change = true;
-        aux->second += 1;
         broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
     else if (mode == "+t")
     {
         _topic_change = false;
-        aux->second += 1;
         broadcastReply(RPL_CHANNELMODEIS(client.getNick(), getName(), mode), 324);
     }
 }
 
 void Channel::keyMode(Client& client, std::string mode, std::string argument)
-{
-    std::map<char, int>::iterator aux = _nbr_modes.find('k');
-    
+{   
     if (mode == "+k")
     {
         if (_is_key == true)
@@ -214,12 +199,12 @@ void Channel::keyMode(Client& client, std::string mode, std::string argument)
             send_error(client, ERR_KEYSET, "MODE"); // :Channel key already set
             return;
         }
-        aux->second += 1;
+        _pass = argument;
+        _is_key = true;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), getName(), mode, argument), 324);
     }
     else if (mode == "-k")
     {
-        aux->second += 1;
         _is_key = false;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), getName(), mode, argument), 324);
     }
@@ -257,22 +242,18 @@ void Channel::removeOp(Client& client)
 void Channel::operatorMode(Client& client, std::string mode, std::string argument)
 {
     Server*                        ptr = client.getServer();
-    std::map<char, int>::iterator  aux = _nbr_modes.find('o');
     std::vector<Client*>::iterator find;
 
     if (isOp(client) == false)
         return send_error(client, ERR_CHANOPRIVSNEEDED, "MODE");
     if (mode == "+o")
     {
-        // mode_params = "channel operator privileges were given to '" + argument + "'.";
-        aux->second += 1;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
         addOp(*ptr->findClient(argument));
     }
     else if (mode == "-o" && _op.size() > 0)
     {
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
-        aux->second += 1;
         removeOp(*ptr->findClient(argument));
     }
 }
@@ -281,6 +262,8 @@ int nbrLimit(std::string str)
 {
     size_t i = 0;
     int    n = -1;
+    if (str.size() > 3)
+        return -1;
     while (i < str.size())
     {
         if (!isdigit(str[i]))
@@ -294,25 +277,20 @@ int nbrLimit(std::string str)
 
 void Channel::limitMode(Client& client, std::string mode, std::string argument)
 {
-    std::map<char, int>::iterator aux = _nbr_modes.find('l');
-
-    if (argument.empty())
-        argument = "10";
-    // Limit number of members on the channal by default is 10.
     if (mode == "+l")
     {
+        if (argument.empty())
+            argument = "10";
         _is_limited = true;
         int n       = nbrLimit(argument);
         if (n == -1)
-            return;
+            return send_error(client, ERR_INVALIDMODEPARAM, "MODE");
         _limit = n;
-        aux->second += 1;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
     }
     else if (mode == "-l")
     {
         _is_limited = false;
-        aux->second += 1;
         broadcastReply(RPL_CHANNELMODEISARGS(client.getNick(), _channel, mode, argument), 324);
     }
 }
@@ -355,11 +333,6 @@ std::vector<Client*>& Channel::getMembers()
 std::vector<Client*>& Channel::getOp()
 {
     return (_op);
-}
-
-std::map<char, int>& Channel::getNbrMode()
-{
-    return (_nbr_modes);
 }
 
 std::string Channel::getName()

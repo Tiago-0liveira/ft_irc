@@ -43,6 +43,7 @@ std::string errmap(int errcode)
     m[ERR_PASSWDMISMATCH]   = " :Password incorrect";
     m[ERR_BADCHANNAME]      = " :Cannot join channel";
     m[ERR_UNKNOWNCOMMAND]   = " :Unknown command";
+    m[ERR_INVALIDMODEPARAM] = " :Invalid mode parameter";
 
     return m[errcode];
 }

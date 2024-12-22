@@ -38,7 +38,6 @@ class Channel
     bool                  _invite_only;
     bool                  _topic_change;
     bool                  _is_limited;
-    std::map<char, int>   _nbr_modes;
     std::map<char, t_exe> _modes;
     /* Vector of Client* that live inside the server class */
     std::vector<Client*> _member;
@@ -77,7 +76,6 @@ class Channel
     // Acessers
     std::vector<Client*>& getMembers();
     std::vector<Client*>& getOp();
-    std::map<char, int>&  getNbrMode();
     std::string           getName();
     std::string           getpass();
     std::string           getTopic() const;
