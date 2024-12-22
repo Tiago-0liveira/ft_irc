@@ -117,7 +117,6 @@ bool Channel::isMember(Client& client)
 
 void Channel::inviteClient(Client& member, Client& invited)
 {
-    (void)member;
     if (invited.getChannalInvites().count(_channel) == 0)
     {
         invited.getChannalInvites().insert(_channel);
@@ -144,10 +143,10 @@ bool Channel::broadcastMessage(Client& exclude, const std::string& message, bool
 
 bool Channel::broadcastReply(const std::string& message, int rpl_code)
 {
-    std::ostringstream os;
     for (size_t i = 0; i < _member.size(); i++)
     {
         Client* client = _member[i];
+        std::ostringstream os;
         os << client->getMessageNameBase();
         if (rpl_code != 0)
             os << std::setfill('0') << std::setw(3) << rpl_code << " ";
